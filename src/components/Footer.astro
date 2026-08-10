@@ -1,49 +1,86 @@
 ---
 const year = new Date().getFullYear();
+const APP = "https://login.ollawrite.com";
+
+const columns = [
+  {
+    title: "Product",
+    links: [
+      { href: "/#features", label: "Features" },
+      { href: "/#how", label: "How it works" },
+      { href: "/#showcase", label: "Sample output" },
+      { href: "/#pricing", label: "Pricing" },
+    ],
+  },
+  {
+    title: "Use cases",
+    links: [
+      { href: "/#usecases", label: "Blog and SEO" },
+      { href: "/#usecases", label: "Landing pages" },
+      { href: "/#usecases", label: "Product copy" },
+      { href: "/#usecases", label: "Newsletters" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { href: "/contact", label: "Contact" },
+      { href: "/#faq", label: "FAQ" },
+      { href: APP, label: "Sign in" },
+    ],
+  },
+];
 ---
 
-<footer>
-  <div class="wrap row">
-    <p class="muted">© {year} OllaWrite</p>
-    <nav aria-label="Footer">
-      <a href="/">Home</a>
-      <a href="/contact">Contact</a>
-      <a href="https://login.ollawrite.com">Sign in</a>
-    </nav>
+<footer class="border-t border-ink bg-neutral-50">
+  <div class="wrap py-14">
+    <div class="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
+      <div>
+        <a href="/" class="flex items-center gap-2 font-black tracking-tight">
+          <span
+            class="grid h-8 w-8 place-items-center rounded-lg bg-ink text-paper text-sm font-black"
+            aria-hidden="true">O</span
+          >
+          <span class="text-lg">OllaWrite</span>
+        </a>
+        <p class="mt-4 max-w-xs text-sm text-neutral-600">
+          An AI content writer that reads your site first, then writes from what
+          is actually there.
+        </p>
+      </div>
+
+      {
+        columns.map((col) => (
+          <div>
+            <h2 class="eyebrow">{col.title}</h2>
+            <ul class="mt-4 space-y-2">
+              {col.links.map((l) => (
+                <li>
+                  <a
+                    href={l.href}
+                    class="text-sm text-neutral-700 hover:text-ink hover:underline"
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <div
+      class="mt-12 flex flex-col gap-3 border-t border-neutral-200 pt-6 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p class="text-sm text-neutral-500">© {year} OllaWrite</p>
+      <p class="text-sm text-neutral-500">
+        Dashboard at <a
+          href={APP}
+          class="font-medium text-neutral-700 hover:text-ink hover:underline"
+          >login.ollawrite.com</a
+        >
+      </p>
+    </div>
   </div>
 </footer>
-
-<style>
-  footer {
-    border-top: 1px solid var(--border);
-    padding-block: 2rem;
-  }
-
-  .row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  p {
-    margin: 0;
-    font-size: 0.9rem;
-  }
-
-  nav {
-    display: flex;
-    gap: 1rem;
-  }
-
-  nav a {
-    color: var(--fg-muted);
-    text-decoration: none;
-    font-size: 0.9rem;
-  }
-
-  nav a:hover {
-    color: var(--fg);
-  }
-</style>

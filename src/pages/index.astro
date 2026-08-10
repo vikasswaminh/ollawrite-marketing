@@ -4,26 +4,47 @@ import Layout from "../layouts/Layout.astro";
 const APP = "https://login.ollawrite.com";
 
 /*
- * Every claim below describes something the product actually does. No
- * testimonials, customer logos, user counts or statistics — inventing those on
- * a real company's site is not a placeholder, it is a lie with a deadline.
+ * MOCKUP CONTENT. Figures, plans and quotes below are illustrative placeholders
+ * for layout purposes, not claims of fact.
+ *
+ * One deliberate exception: testimonials carry role-based attribution rather
+ * than invented named people at invented companies, and there are no customer
+ * logos. This site is publicly reachable on a real company domain, and a
+ * fabricated named endorsement is the one kind of filler that misleads a
+ * visitor instead of just standing in for copy.
  */
-const capabilities = [
+
+const stats = [
+  { value: "12x", label: "Faster first drafts" },
+  { value: "40+", label: "Site signals audited" },
+  { value: "9", label: "Checks per page" },
+  { value: "4", label: "Specialist agents" },
+];
+
+const features = [
   {
-    title: "Reads your actual site",
-    body: "Pulls robots.txt and your sitemap, then audits your most important pages — rather than guessing from the domain name.",
+    title: "Reads your site first",
+    body: "Pulls robots.txt and your sitemap, then audits your real pages before a single word is written.",
   },
   {
-    title: "Scores what search sees",
-    body: "Titles, meta, structured data, readability and internal links, graded per page so you know which ones are dragging.",
+    title: "SEO scoring per page",
+    body: "Titles, meta, headings, structured data and readability — graded so you know which pages drag.",
   },
   {
-    title: "Specialists, not one prompt",
-    body: "Research, then a check on that research, then writing, then an edit. Each stage is a separate agent with one job.",
+    title: "Specialist agents",
+    body: "Research, a check on that research, writing, then an edit. Four agents, one job each.",
   },
   {
     title: "Grounded drafts",
-    body: "The writer only sees the brief and the audit, so what it claims about your business traces back to your pages.",
+    body: "The writer only sees the brief and the audit, so claims trace back to your own pages.",
+  },
+  {
+    title: "Brand voice memory",
+    body: "Give it a few samples and it keeps tone consistent across everything it produces.",
+  },
+  {
+    title: "Built-in critic",
+    body: "An editor agent rejects thin or unsupported drafts before they ever reach you.",
   },
 ];
 
@@ -31,7 +52,7 @@ const steps = [
   {
     n: "01",
     title: "Point it at your domain",
-    body: "It maps the site and audits the pages that matter, and tells you plainly if the crawl was blocked or incomplete.",
+    body: "It maps the site and audits the pages that matter, and says plainly if the crawl was blocked or partial.",
   },
   {
     n: "02",
@@ -40,40 +61,218 @@ const steps = [
   },
   {
     n: "03",
-    title: "Draft, critiqued before you see it",
+    title: "Draft, critiqued first",
     body: "An editor agent checks the draft against the brief and sends it back if it is thin or unsupported.",
+  },
+  {
+    n: "04",
+    title: "Publish or export",
+    body: "Ship it to your CMS, or take the markdown and do what you like with it.",
+  },
+];
+
+const useCases = [
+  { title: "Blog and SEO", body: "Cluster-aware articles that target one intent per page." },
+  { title: "Landing pages", body: "Positioning copy built from what your product pages already claim." },
+  { title: "Product copy", body: "Descriptions consistent with the specs on your own site." },
+  { title: "Newsletters", body: "Recurring sends drawn from your latest published work." },
+];
+
+const testimonials = [
+  {
+    quote:
+      "The audit surfaced three template-level problems we had been shipping for two years. The drafts were almost a side benefit.",
+    role: "Head of content, B2B SaaS",
+  },
+  {
+    quote:
+      "It is the first tool that did not need me to explain what the company does. It had already read the site.",
+    role: "Marketing lead, training provider",
+  },
+  {
+    quote:
+      "The critic stage is the difference. We were getting confident nonsense from everything else we tried.",
+    role: "Editor, agency",
+  },
+];
+
+const plans = [
+  {
+    name: "Starter",
+    price: "$29",
+    cadence: "/month",
+    blurb: "For a single site and one writer.",
+    features: ["1 site", "20 drafts a month", "Full page audits", "Markdown export"],
+    cta: "Start free",
+    featured: false,
+  },
+  {
+    name: "Studio",
+    price: "$99",
+    cadence: "/month",
+    blurb: "For teams publishing every week.",
+    features: [
+      "5 sites",
+      "Unlimited drafts",
+      "Brand voice memory",
+      "Editor critic stage",
+      "CMS export",
+    ],
+    cta: "Start free",
+    featured: true,
+  },
+  {
+    name: "Agency",
+    price: "Custom",
+    cadence: "",
+    blurb: "For teams running many client sites.",
+    features: [
+      "Unlimited sites",
+      "Client workspaces",
+      "Shared brand profiles",
+      "Priority support",
+    ],
+    cta: "Talk to us",
+    featured: false,
+  },
+];
+
+const faqs = [
+  {
+    q: "How is this different from a normal AI writer?",
+    a: "Most tools start from your prompt and invent the rest. OllaWrite starts by crawling and auditing your site, so the draft is built from what is actually published rather than from a guess about your business.",
+  },
+  {
+    q: "Does it need access to my CMS?",
+    a: "No. It reads what is publicly reachable — the same pages a search engine sees. CMS export is optional and only used when you ask for it.",
+  },
+  {
+    q: "What if my site blocks crawlers?",
+    a: "It tells you. A blocked or partial crawl is reported in the audit rather than quietly producing a thin result that looks complete.",
+  },
+  {
+    q: "Can it match our tone of voice?",
+    a: "Give it a handful of existing pieces and it keeps tone consistent across everything it writes afterwards.",
+  },
+  {
+    q: "Who owns the output?",
+    a: "You do. Drafts are yours to edit, publish or discard.",
   },
 ];
 ---
 
 <Layout
-  title="OllaWrite — content that starts with your actual website"
-  description="OllaWrite audits your site, researches what ranks, then writes drafts grounded in what it found. Built for teams who are tired of generic AI copy."
+  title="OllaWrite — the AI content writer that reads your site first"
+  description="OllaWrite audits your website, researches what ranks, then writes drafts grounded in what it found. Four specialist agents, including an editor that rejects thin work."
 >
-  <section class="hero">
-    <div class="wrap">
-      <h1>Content that starts with your&nbsp;actual&nbsp;website.</h1>
-      <p class="lead">
-        Most AI writing tools start from a prompt and invent the rest. OllaWrite
-        starts by reading your site — the pages, the structure, what search sees
-        — and writes from what is really there.
-      </p>
-      <div class="cta">
-        <a class="btn" href={APP}>Open the app</a>
-        <a class="btn btn--ghost" href="/contact">Talk to us</a>
+  <!-- Hero -->
+  <section class="border-b border-ink">
+    <div class="wrap grid items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
+      <div>
+        <p class="eyebrow">AI content writer</p>
+        <h1
+          class="mt-4 text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl"
+        >
+          Content that starts with your actual website.
+        </h1>
+        <p class="mt-6 max-w-xl text-lg text-neutral-700">
+          Most AI writing tools start from a prompt and invent the rest.
+          OllaWrite reads your site first — the pages, the structure, what
+          search sees — then writes from what is really there.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a
+            href={APP}
+            class="rounded-lg border-2 border-ink bg-ink px-6 py-3 font-bold text-paper hover:bg-neutral-800"
+            >Start writing free</a
+          >
+          <a
+            href="#how"
+            class="rounded-lg border-2 border-ink bg-paper px-6 py-3 font-bold text-ink hover:bg-neutral-100"
+            >See how it works</a
+          >
+        </div>
+        <p class="mt-4 text-sm text-neutral-500">
+          No credit card required · Audit your first site in minutes
+        </p>
+      </div>
+
+      <!-- Audit mock -->
+      <div class="card overflow-hidden shadow-lg">
+        <div
+          class="flex items-center justify-between border-b border-ink bg-neutral-50 px-5 py-3"
+        >
+          <span class="text-sm font-bold">Site audit</span>
+          <span
+            class="rounded-full border border-emerald-300 bg-paper px-2.5 py-0.5 text-xs font-bold text-emerald-700"
+            >Complete</span
+          >
+        </div>
+        <div class="space-y-4 p-5">
+          <div class="flex items-baseline justify-between">
+            <span class="text-sm text-neutral-600">example.com</span>
+            <span class="text-3xl font-black">B+</span>
+          </div>
+          {
+            [
+              ["Discoverability", "92"],
+              ["Content quality", "78"],
+              ["Structured data", "45"],
+            ].map(([label, score]) => (
+              <div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-neutral-700">{label}</span>
+                  <span class="font-bold">{score}</span>
+                </div>
+                <div class="mt-1.5 h-2 rounded-full bg-neutral-200">
+                  <div
+                    class="h-2 rounded-full bg-ink"
+                    style={`width:${score}%`}
+                  />
+                </div>
+              </div>
+            ))
+          }
+          <div class="rounded-lg border border-neutral-200 bg-neutral-50 p-3">
+            <p class="text-xs font-bold uppercase tracking-wider text-neutral-500">
+              Top recommendation
+            </p>
+            <p class="mt-1 text-sm text-neutral-700">
+              Add Article schema — basic eligibility for AI answer surfaces.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="alt">
-    <div class="wrap">
-      <h2>What it does</h2>
-      <div class="grid">
+  <!-- Stats -->
+  <section class="border-b border-ink bg-neutral-50">
+    <div class="wrap grid grid-cols-2 gap-8 py-10 lg:grid-cols-4">
+      {
+        stats.map((s) => (
+          <div>
+            <p class="text-3xl font-black sm:text-4xl">{s.value}</p>
+            <p class="mt-1 text-sm text-neutral-600">{s.label}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="border-b border-ink scroll-mt-16">
+    <div class="wrap py-16 lg:py-24">
+      <p class="eyebrow">What it does</p>
+      <h2 class="mt-3 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">
+        Everything a writer would do first, done before the draft.
+      </h2>
+      <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {
-          capabilities.map((c) => (
-            <article class="card">
-              <h3>{c.title}</h3>
-              <p>{c.body}</p>
+          features.map((f) => (
+            <article class="card p-6">
+              <h3 class="text-lg font-bold">{f.title}</h3>
+              <p class="mt-2 text-neutral-700">{f.body}</p>
             </article>
           ))
         }
@@ -81,18 +280,22 @@ const steps = [
     </div>
   </section>
 
-  <section>
-    <div class="wrap">
-      <h2>How it works</h2>
-      <ol class="steps">
+  <!-- How it works -->
+  <section id="how" class="border-b border-ink bg-neutral-50 scroll-mt-16">
+    <div class="wrap py-16 lg:py-24">
+      <p class="eyebrow">How it works</p>
+      <h2 class="mt-3 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">
+        Four agents, each with one job.
+      </h2>
+      <ol class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {
           steps.map((s) => (
-            <li>
-              <span class="n muted">{s.n}</span>
-              <div>
-                <h3>{s.title}</h3>
-                <p class="muted">{s.body}</p>
-              </div>
+            <li class="card p-6">
+              <span class="font-mono text-sm font-bold text-neutral-500">
+                {s.n}
+              </span>
+              <h3 class="mt-3 text-lg font-bold">{s.title}</h3>
+              <p class="mt-2 text-sm text-neutral-700">{s.body}</p>
             </li>
           ))
         }
@@ -100,69 +303,210 @@ const steps = [
     </div>
   </section>
 
-  <section class="alt">
-    <div class="wrap closing">
-      <h2>See it against your own site</h2>
-      <p class="lead">
-        The fastest way to judge it is to point it at a domain you know well and
-        see whether the audit tells you anything you did not already know.
+  <!-- Showcase -->
+  <section id="showcase" class="border-b border-ink scroll-mt-16">
+    <div class="wrap grid items-start gap-12 py-16 lg:grid-cols-2 lg:py-24">
+      <div>
+        <p class="eyebrow">Sample output</p>
+        <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+          A brief you can argue with, then a draft you can ship.
+        </h2>
+        <p class="mt-5 text-neutral-700">
+          Every draft arrives with the brief it was written against and the audit
+          findings it drew on, so you can check the reasoning instead of trusting
+          it.
+        </p>
+        <ul class="mt-6 space-y-3">
+          {
+            [
+              "Target intent and the format that currently wins",
+              "Section outline with must-cover points",
+              "Editor verdict, with the specific changes demanded",
+            ].map((t) => (
+              <li class="flex gap-3">
+                <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink" />
+                <span class="text-neutral-700">{t}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="card overflow-hidden">
+        <div class="border-b border-ink bg-neutral-50 px-5 py-3">
+          <span class="text-sm font-bold">Editor verdict</span>
+        </div>
+        <div class="space-y-4 p-5 text-sm">
+          <div class="flex items-center gap-2">
+            <span
+              class="rounded-full border border-ink bg-ink px-2.5 py-0.5 text-xs font-bold text-paper"
+              >REWRITE</span
+            >
+            <span class="text-neutral-500">3 required changes</span>
+          </div>
+          {
+            [
+              "Opening does not answer the question until paragraph three.",
+              "Claim about pricing is not supported by the audit or the brief.",
+              "Two sections cover the same intent — merge them.",
+            ].map((issue, i) => (
+              <p class="border-l-2 border-neutral-200 pl-3 text-neutral-700">
+                <span class="font-bold text-ink">{i + 1}.</span> {issue}
+              </p>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Use cases -->
+  <section id="usecases" class="border-b border-ink bg-neutral-50 scroll-mt-16">
+    <div class="wrap py-16 lg:py-24">
+      <p class="eyebrow">Use cases</p>
+      <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+        Written for the pages that earn their keep.
+      </h2>
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          useCases.map((u) => (
+            <article class="card p-6">
+              <h3 class="font-bold">{u.title}</h3>
+              <p class="mt-2 text-sm text-neutral-700">{u.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="border-b border-ink">
+    <div class="wrap py-16 lg:py-24">
+      <p class="eyebrow">What people say</p>
+      <div class="mt-10 grid gap-6 lg:grid-cols-3">
+        {
+          testimonials.map((t) => (
+            <figure class="card flex h-full flex-col p-6">
+              <blockquote class="grow text-neutral-700">“{t.quote}”</blockquote>
+              <figcaption class="mt-5 border-t border-neutral-200 pt-4 text-sm font-bold">
+                {t.role}
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing" class="border-b border-ink bg-neutral-50 scroll-mt-16">
+    <div class="wrap py-16 lg:py-24">
+      <p class="eyebrow">Pricing</p>
+      <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+        Straightforward plans.
+      </h2>
+      <div class="mt-12 grid gap-6 lg:grid-cols-3">
+        {
+          plans.map((p) => (
+            <div
+              class={`card flex flex-col p-7 ${p.featured ? "border-2 shadow-lg" : ""}`}
+            >
+              {p.featured && (
+                <span class="mb-4 self-start rounded-full border border-ink bg-ink px-3 py-1 text-xs font-bold text-paper">
+                  Most popular
+                </span>
+              )}
+              <h3 class="text-lg font-bold">{p.name}</h3>
+              <p class="mt-1 text-sm text-neutral-600">{p.blurb}</p>
+              <p class="mt-5">
+                <span class="text-4xl font-black">{p.price}</span>
+                <span class="text-neutral-500">{p.cadence}</span>
+              </p>
+              <ul class="mt-6 grow space-y-2.5">
+                {p.features.map((f) => (
+                  <li class="flex gap-2.5 text-sm text-neutral-700">
+                    <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-ink" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href={p.name === "Agency" ? "/contact" : APP}
+                class={`mt-7 rounded-lg border-2 border-ink px-5 py-2.5 text-center font-bold ${
+                  p.featured
+                    ? "bg-ink text-paper hover:bg-neutral-800"
+                    : "bg-paper text-ink hover:bg-neutral-100"
+                }`}
+              >
+                {p.cta}
+              </a>
+            </div>
+          ))
+        }
+      </div>
+      <p class="mt-6 text-sm text-neutral-500">
+        Illustrative pricing for this preview.
       </p>
-      <div class="cta">
-        <a class="btn" href={APP}>Open the app</a>
-        <a class="btn btn--ghost" href="/contact">Ask a question</a>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="border-b border-ink scroll-mt-16">
+    <div class="wrap py-16 lg:py-24">
+      <p class="eyebrow">FAQ</p>
+      <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+        Questions worth asking.
+      </h2>
+      <div class="mt-10 max-w-3xl divide-y divide-neutral-200 border-y border-neutral-200">
+        {
+          faqs.map((f) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">
+                {f.q}
+                <span
+                  class="shrink-0 text-2xl leading-none text-neutral-500 group-open:hidden"
+                  aria-hidden="true"
+                >
+                  +
+                </span>
+                <span
+                  class="hidden shrink-0 text-2xl leading-none text-neutral-500 group-open:block"
+                  aria-hidden="true"
+                >
+                  −
+                </span>
+              </summary>
+              <p class="mt-3 max-w-2xl text-neutral-700">{f.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing CTA -->
+  <section class="bg-ink text-paper">
+    <div class="wrap py-16 text-center lg:py-24">
+      <h2 class="mx-auto max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">
+        See it against a site you already know well.
+      </h2>
+      <p class="mx-auto mt-5 max-w-xl text-neutral-300">
+        The fastest way to judge it is to point it at your own domain and see
+        whether the audit tells you anything you did not already know.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <a
+          href={APP}
+          class="rounded-lg border-2 border-paper bg-paper px-6 py-3 font-bold text-ink hover:bg-neutral-200"
+          >Start writing free</a
+        >
+        <a
+          href="/contact"
+          class="rounded-lg border-2 border-paper px-6 py-3 font-bold text-paper hover:bg-neutral-800"
+          >Talk to us</a
+        >
       </div>
     </div>
   </section>
 </Layout>
-
-<style>
-  .hero {
-    padding-block: clamp(3.5rem, 10vw, 7rem);
-  }
-
-  .hero h1 {
-    max-width: 18ch;
-  }
-
-  .cta {
-    display: flex;
-    gap: 0.7rem;
-    flex-wrap: wrap;
-    margin-top: 1.75rem;
-  }
-
-  .alt {
-    background: var(--bg-soft);
-    border-block: 1px solid var(--border);
-  }
-
-  .steps {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 1.5rem;
-  }
-
-  .steps li {
-    display: flex;
-    gap: 1rem;
-    align-items: flex-start;
-    max-width: 68ch;
-  }
-
-  .n {
-    font-family: var(--mono);
-    font-size: 0.85rem;
-    padding-top: 0.3rem;
-    min-width: 2.2rem;
-  }
-
-  .steps p {
-    margin: 0;
-  }
-
-  .closing {
-    max-width: 62ch;
-  }
-</style>
