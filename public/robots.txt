@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# No Sitemap directive yet: @astrojs/sitemap is not installed, and pointing at
+# a sitemap that 404s is worse than pointing at none. Add both together.

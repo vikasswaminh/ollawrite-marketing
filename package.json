@@ -1,0 +1,22 @@
+{
+  "name": "ollawrite-marketing",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Marketing site for OllaWrite — www.ollawrite.com",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "deploy": "astro build && wrangler pages deploy dist --project-name=ollawrite-marketing"
+  },
+  "dependencies": {
+    "astro": "^7.2.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^5.9.2",
+    "wrangler": "^4.120.0"
+  }
+}

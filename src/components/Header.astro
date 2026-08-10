@@ -1,0 +1,81 @@
+---
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === "/" ? path === "/" : path.startsWith(href);
+---
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="/">OllaWrite</a>
+
+    <nav aria-label="Main">
+      <a href="/" aria-current={isActive("/") ? "page" : undefined}>Home</a>
+      <a
+        href="/contact"
+        aria-current={isActive("/contact") ? "page" : undefined}>Contact</a
+      >
+      <a class="btn" href="https://login.ollawrite.com">Sign in</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  header {
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    z-index: 5;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 64px;
+  }
+
+  .brand {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-size: 1.1rem;
+    text-decoration: none;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  nav a {
+    text-decoration: none;
+    color: var(--fg-muted);
+    padding: 0.45rem 0.7rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+
+  nav a:hover {
+    color: var(--fg);
+  }
+
+  nav a[aria-current="page"] {
+    color: var(--fg);
+    font-weight: 600;
+  }
+
+  nav a.btn {
+    color: var(--accent-fg);
+    margin-left: 0.35rem;
+  }
+
+  /* The two text links compete with the CTA on a phone; keep the CTA. */
+  @media (max-width: 520px) {
+    nav a:not(.btn) {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,49 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer>
+  <div class="wrap row">
+    <p class="muted">© {year} OllaWrite</p>
+    <nav aria-label="Footer">
+      <a href="/">Home</a>
+      <a href="/contact">Contact</a>
+      <a href="https://login.ollawrite.com">Sign in</a>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--border);
+    padding-block: 2rem;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+
+  nav {
+    display: flex;
+    gap: 1rem;
+  }
+
+  nav a {
+    color: var(--fg-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  nav a:hover {
+    color: var(--fg);
+  }
+</style>

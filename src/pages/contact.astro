@@ -1,0 +1,124 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+/*
+ * PLACEHOLDER — swap for the real inbox before launch.
+ */
+const EMAIL = "hello@ollawrite.com";
+---
+
+<Layout
+  title="Contact — OllaWrite"
+  description="Get in touch with the OllaWrite team."
+>
+  <section>
+    <div class="wrap narrow">
+      <h1>Get in touch</h1>
+      <p class="lead">
+        Questions about what OllaWrite does, or whether it fits how your team
+        already works? Send a note.
+      </p>
+
+      <div class="notice" role="note">
+        <strong>Heads up:</strong> this form is not connected to anything yet. Use
+        <a href={`mailto:${EMAIL}`}>{EMAIL}</a> and it will actually reach us.
+      </div>
+
+      <!--
+        The form is deliberately inert. It has no action and no backend, so
+        submitting explains that rather than showing a success message for a
+        message that was silently discarded.
+      -->
+      <form id="contact-form" novalidate>
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" autocomplete="name" />
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" />
+        </div>
+
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="6"></textarea>
+        </div>
+
+        <button class="btn" type="submit">Send</button>
+
+        <p id="form-status" class="status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</Layout>
+
+<script is:inline>
+  document.getElementById("contact-form")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const status = document.getElementById("form-status");
+    if (status) {
+      // Never claim it was sent. Nothing received it.
+      status.textContent =
+        "This form isn't wired up yet — nothing was sent. Please email hello@ollawrite.com instead.";
+    }
+  });
+</script>
+
+<style>
+  .narrow {
+    max-width: 46rem;
+  }
+
+  .notice {
+    border: 1px solid var(--border);
+    background: var(--bg-soft);
+    border-radius: var(--radius);
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+  }
+
+  form {
+    display: grid;
+    gap: 1.1rem;
+    max-width: 34rem;
+  }
+
+  .field {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  label {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  input,
+  textarea {
+    font: inherit;
+    font-size: 0.97rem;
+    color: var(--fg);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.65rem 0.8rem;
+    width: 100%;
+    resize: vertical;
+  }
+
+  button {
+    justify-self: start;
+  }
+
+  .status:empty {
+    display: none;
+  }
+
+  .status {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--fg-muted);
+  }
+</style>
