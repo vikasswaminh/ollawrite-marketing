@@ -30,6 +30,23 @@
   --color-neutral-800: #262626;
   --color-neutral-900: #171717;
 
+  /*
+   * BRAND — layered on top of the cloned neutrals, not replacing them.
+   *
+   * ONE RULE, and it is not a stylistic preference: `punch` is a BACKGROUND
+   * COLOUR ONLY. #bef264 on white measures about 1.5:1 contrast, which is
+   * effectively invisible and a straight WCAG failure. Black on #bef264 is
+   * about 13:1, which is excellent. So lime may fill a badge, a highlighter
+   * swipe or a bar behind black text — it must never BE the text on white.
+   *
+   * Cobalt is the opposite: #1d4ed8 on white and white on #1d4ed8 both clear
+   * AA, so anything that has to be read in colour uses brand, not punch.
+   */
+  --color-brand: #1d4ed8;
+  --color-brand-deep: #1e3a8a;
+  --color-brand-tint: #eff4ff;
+  --color-punch: #bef264;
+
   /* Semantic accents only — never used for page chrome in the source. */
   --color-amber-700: #b45309;
   --color-emerald-700: #047857;
@@ -177,7 +194,27 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--color-neutral-500);
+    color: var(--color-brand);
+  }
+
+  /*
+   * Highlighter swipe. A skewed lime block sits BEHIND the text rather than
+   * colouring it, so the words stay pure black — which is both the accessible
+   * choice and the one that actually looks like a marker pen.
+   */
+  .swipe {
+    position: relative;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .swipe::before {
+    content: "";
+    position: absolute;
+    inset: 0.12em -0.18em 0.1em;
+    background: var(--color-punch);
+    transform: skewX(-10deg) rotate(-0.6deg);
+    z-index: -1;
   }
 
   /* Bordered card on white — the defining shape of the reference design. */

@@ -173,7 +173,8 @@ const faqs = [
         <h1
           class="mt-4 text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl"
         >
-          Content that starts with your actual website.
+          Content that starts with your <span class="swipe">actual website</span
+          >.
         </h1>
         <p class="mt-6 max-w-xl text-lg text-neutral-700">
           Most AI writing tools start from a prompt and invent the rest.
@@ -183,7 +184,7 @@ const faqs = [
         <div class="mt-8 flex flex-wrap gap-3">
           <a
             href={APP}
-            class="rounded-lg border-2 border-ink bg-ink px-6 py-3 font-bold text-paper hover:bg-neutral-800"
+            class="rounded-lg border-2 border-brand bg-brand px-6 py-3 font-bold text-paper hover:border-brand-deep hover:bg-brand-deep"
             >Start writing free</a
           >
           <a
@@ -211,14 +212,15 @@ const faqs = [
         <div class="space-y-4 p-5">
           <div class="flex items-baseline justify-between">
             <span class="text-sm text-neutral-600">example.com</span>
-            <span class="text-3xl font-black">B+</span>
+            <span class="text-3xl font-black text-brand">B+</span>
           </div>
           {
+            /* The strongest score gets the lime bar — as a FILL, never as text. */
             [
-              ["Discoverability", "92"],
-              ["Content quality", "78"],
-              ["Structured data", "45"],
-            ].map(([label, score]) => (
+              ["Discoverability", "92", true],
+              ["Content quality", "78", false],
+              ["Structured data", "45", false],
+            ].map(([label, score, best]) => (
               <div>
                 <div class="flex justify-between text-sm">
                   <span class="text-neutral-700">{label}</span>
@@ -226,15 +228,15 @@ const faqs = [
                 </div>
                 <div class="mt-1.5 h-2 rounded-full bg-neutral-200">
                   <div
-                    class="h-2 rounded-full bg-ink"
+                    class={`h-2 rounded-full ${best ? "bg-punch" : "bg-brand"}`}
                     style={`width:${score}%`}
                   />
                 </div>
               </div>
             ))
           }
-          <div class="rounded-lg border border-neutral-200 bg-neutral-50 p-3">
-            <p class="text-xs font-bold uppercase tracking-wider text-neutral-500">
+          <div class="rounded-lg border border-brand/20 bg-brand-tint p-3">
+            <p class="text-xs font-bold uppercase tracking-wider text-brand">
               Top recommendation
             </p>
             <p class="mt-1 text-sm text-neutral-700">
@@ -247,12 +249,12 @@ const faqs = [
   </section>
 
   <!-- Stats -->
-  <section class="border-b border-ink bg-neutral-50">
+  <section class="border-b border-ink bg-brand-tint">
     <div class="wrap grid grid-cols-2 gap-8 py-10 lg:grid-cols-4">
       {
         stats.map((s) => (
           <div>
-            <p class="text-3xl font-black sm:text-4xl">{s.value}</p>
+            <p class="text-3xl font-black text-brand sm:text-4xl">{s.value}</p>
             <p class="mt-1 text-sm text-neutral-600">{s.label}</p>
           </div>
         ))
@@ -291,9 +293,7 @@ const faqs = [
         {
           steps.map((s) => (
             <li class="card p-6">
-              <span class="font-mono text-sm font-bold text-neutral-500">
-                {s.n}
-              </span>
+              <span class="font-mono text-sm font-bold text-brand">{s.n}</span>
               <h3 class="mt-3 text-lg font-bold">{s.title}</h3>
               <p class="mt-2 text-sm text-neutral-700">{s.body}</p>
             </li>
@@ -337,10 +337,16 @@ const faqs = [
           <span class="text-sm font-bold">Editor verdict</span>
         </div>
         <div class="space-y-4 p-5 text-sm">
-          <div class="flex items-center gap-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Verdict badges stay literal, not brand moments: REWRITE is
+                 black, SHIP is lime with BLACK text (13:1), never lime text. -->
             <span
               class="rounded-full border border-ink bg-ink px-2.5 py-0.5 text-xs font-bold text-paper"
               >REWRITE</span
+            >
+            <span
+              class="rounded-full border border-ink bg-punch px-2.5 py-0.5 text-xs font-bold text-ink"
+              >SHIP</span
             >
             <span class="text-neutral-500">3 required changes</span>
           </div>
@@ -410,10 +416,11 @@ const faqs = [
         {
           plans.map((p) => (
             <div
-              class={`card flex flex-col p-7 ${p.featured ? "border-2 shadow-lg" : ""}`}
+              class={`card flex flex-col p-7 ${p.featured ? "border-2 border-brand shadow-lg" : ""}`}
             >
               {p.featured && (
-                <span class="mb-4 self-start rounded-full border border-ink bg-ink px-3 py-1 text-xs font-bold text-paper">
+                /* Lime fill, BLACK label — the accessible pairing. */
+                <span class="mb-4 self-start rounded-full border border-ink bg-punch px-3 py-1 text-xs font-bold text-ink">
                   Most popular
                 </span>
               )}
@@ -433,10 +440,10 @@ const faqs = [
               </ul>
               <a
                 href={p.name === "Agency" ? "/contact" : APP}
-                class={`mt-7 rounded-lg border-2 border-ink px-5 py-2.5 text-center font-bold ${
+                class={`mt-7 rounded-lg border-2 px-5 py-2.5 text-center font-bold ${
                   p.featured
-                    ? "bg-ink text-paper hover:bg-neutral-800"
-                    : "bg-paper text-ink hover:bg-neutral-100"
+                    ? "border-brand bg-brand text-paper hover:border-brand-deep hover:bg-brand-deep"
+                    : "border-ink bg-paper text-ink hover:bg-neutral-100"
                 }`}
               >
                 {p.cta}
@@ -465,13 +472,13 @@ const faqs = [
               <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">
                 {f.q}
                 <span
-                  class="shrink-0 text-2xl leading-none text-neutral-500 group-open:hidden"
+                  class="shrink-0 text-2xl leading-none text-brand group-open:hidden"
                   aria-hidden="true"
                 >
                   +
                 </span>
                 <span
-                  class="hidden shrink-0 text-2xl leading-none text-neutral-500 group-open:block"
+                  class="hidden shrink-0 text-2xl leading-none text-brand group-open:block"
                   aria-hidden="true"
                 >
                   −
@@ -486,24 +493,27 @@ const faqs = [
   </section>
 
   <!-- Closing CTA -->
-  <section class="bg-ink text-paper">
+  <!-- The one full-saturation moment on the page. -->
+  <section class="bg-brand text-paper">
     <div class="wrap py-16 text-center lg:py-24">
       <h2 class="mx-auto max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">
         See it against a site you already know well.
       </h2>
-      <p class="mx-auto mt-5 max-w-xl text-neutral-300">
+      <p class="mx-auto mt-5 max-w-xl text-brand-tint">
         The fastest way to judge it is to point it at your own domain and see
         whether the audit tells you anything you did not already know.
       </p>
       <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <!-- Lime fill with BLACK label: ~13:1. The same lime as text on this
+             cobalt ground would be unreadable. -->
         <a
           href={APP}
-          class="rounded-lg border-2 border-paper bg-paper px-6 py-3 font-bold text-ink hover:bg-neutral-200"
+          class="rounded-lg border-2 border-punch bg-punch px-6 py-3 font-bold text-ink hover:brightness-95"
           >Start writing free</a
         >
         <a
           href="/contact"
-          class="rounded-lg border-2 border-paper px-6 py-3 font-bold text-paper hover:bg-neutral-800"
+          class="rounded-lg border-2 border-paper px-6 py-3 font-bold text-paper hover:bg-brand-deep"
           >Talk to us</a
         >
       </div>
