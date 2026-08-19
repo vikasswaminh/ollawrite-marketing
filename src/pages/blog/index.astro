@@ -1,0 +1,208 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { BLOG_POSTS } from "../../data/blog";
+
+const categories = [
+  "All",
+  "Product & Research",
+  "Engineering",
+  "SEO & Strategy",
+  "Editorial",
+];
+
+const featuredPost = BLOG_POSTS[0];
+const secondaryPosts = BLOG_POSTS.slice(1);
+---
+
+<Layout
+  title="OllaWrite Journal — Editorial intelligence, technical search & verification"
+  description="In-depth research on site-first AI writing, canonical SEO grounding, and multi-agent systems."
+>
+  <div class="bg-paper text-ink">
+    <!-- Header bar -->
+    <div class="border-b border-ink">
+      <div class="wrap py-12 lg:py-16">
+        <p class="eyebrow">OllaWrite Journal</p>
+        <h1 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+          Editorial intelligence, technical search &amp; verification.
+        </h1>
+        <p class="mt-3 max-w-xl text-neutral-600">
+          In-depth research on site-first AI writing, canonical SEO grounding,
+          and multi-agent systems.
+        </p>
+
+        <!-- Filter bar -->
+        <div
+          class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div class="flex flex-wrap gap-2">
+            {
+              categories.map((cat, i) => (
+                <button
+                  type="button"
+                  data-category={cat}
+                  aria-pressed={i === 0 ? "true" : "false"}
+                  class:list={[
+                    "blog-filter rounded-full border px-3 py-1 text-xs font-bold transition-colors",
+                    i === 0
+                      ? "border-brand bg-brand text-white"
+                      : "border-neutral-300 bg-paper text-neutral-700 hover:border-neutral-400",
+                  ]}
+                >
+                  {cat}
+                </button>
+              ))
+            }
+          </div>
+          <input
+            id="blog-search"
+            type="text"
+            placeholder="Search articles…"
+            class="w-full rounded-lg border border-neutral-300 px-3 py-1.5 text-sm text-ink placeholder-neutral-400 focus:border-brand focus:outline-none sm:w-64"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Articles -->
+    <div class="wrap py-12">
+      <!-- Featured -->
+      <article
+        class="card blog-card mb-8 overflow-hidden p-6 shadow-sm sm:p-8"
+        data-category={featuredPost.category}
+        data-search={`${featuredPost.title} ${featuredPost.excerpt}`.toLowerCase()}
+      >
+        <div class="grid gap-8 lg:grid-cols-[2fr_1fr]">
+          <div>
+            <span
+              class="rounded-full border border-brand/30 bg-brand-tint px-2.5 py-0.5 text-xs font-bold text-brand"
+            >
+              {featuredPost.category}
+            </span>
+            <h2
+              class="mt-3 text-2xl font-black leading-snug tracking-tight sm:text-3xl"
+            >
+              <a
+                href={`/blog/${featuredPost.slug}`}
+                class="transition-colors hover:text-brand"
+              >
+                {featuredPost.title}
+              </a>
+            </h2>
+            <p class="mt-3 text-neutral-600">{featuredPost.excerpt}</p>
+            <div class="mt-4 flex items-center gap-3 text-sm text-neutral-500">
+              <span class="font-bold text-ink">{featuredPost.author.name}</span>
+              <span>·</span>
+              <span>{featuredPost.date}</span>
+              <span>·</span>
+              <span>{featuredPost.readTime}</span>
+            </div>
+          </div>
+          <div
+            class="flex flex-col justify-between rounded-xl border border-brand/20 bg-brand-tint p-5"
+          >
+            <span
+              class="text-xs font-bold uppercase tracking-widest text-brand"
+              >Featured</span
+            >
+            <a
+              href={`/blog/${featuredPost.slug}`}
+              class="mt-4 inline-block rounded-lg border-2 border-brand bg-brand px-5 py-2 text-center text-sm font-bold text-white transition-colors hover:border-brand-deep hover:bg-brand-deep"
+            >
+              Read dispatch →
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Grid -->
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          secondaryPosts.map((post) => (
+            <article
+              class="card blog-card flex flex-col p-6"
+              data-category={post.category}
+              data-search={`${post.title} ${post.excerpt}`.toLowerCase()}
+            >
+              <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-neutral-500">
+                  {post.category}
+                </span>
+                <h3 class="mt-2 text-lg font-bold leading-snug">
+                  <a
+                    href={`/blog/${post.slug}`}
+                    class="transition-colors hover:text-brand"
+                  >
+                    {post.title}
+                  </a>
+                </h3>
+                <p class="mt-2 text-sm text-neutral-600 line-clamp-3">
+                  {post.excerpt}
+                </p>
+              </div>
+              <div class="mt-5 flex items-center justify-between border-t border-neutral-200 pt-4 text-xs text-neutral-500">
+                <span class="font-bold text-neutral-700">
+                  {post.author.name}
+                </span>
+                <span>{post.readTime}</span>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <p id="blog-empty" class="hidden py-16 text-center text-neutral-500">
+        No articles found.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const buttons = Array.from(
+      document.querySelectorAll<HTMLButtonElement>(".blog-filter")
+    );
+    const search = document.getElementById(
+      "blog-search"
+    ) as HTMLInputElement | null;
+    const cards = Array.from(
+      document.querySelectorAll<HTMLElement>(".blog-card")
+    );
+    const empty = document.getElementById("blog-empty");
+
+    let activeCategory = "All";
+
+    const apply = () => {
+      const q = (search?.value || "").toLowerCase();
+      let visible = 0;
+      cards.forEach((card) => {
+        const matchesCategory =
+          activeCategory === "All" ||
+          card.dataset.category === activeCategory;
+        const matchesSearch = (card.dataset.search || "").includes(q);
+        const show = matchesCategory && matchesSearch;
+        card.classList.toggle("hidden", !show);
+        if (show) visible++;
+      });
+      empty?.classList.toggle("hidden", visible !== 0);
+    };
+
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        activeCategory = btn.dataset.category || "All";
+        buttons.forEach((b) => {
+          const active = b === btn;
+          b.setAttribute("aria-pressed", String(active));
+          b.classList.toggle("border-brand", active);
+          b.classList.toggle("bg-brand", active);
+          b.classList.toggle("text-white", active);
+          b.classList.toggle("border-neutral-300", !active);
+          b.classList.toggle("bg-paper", !active);
+          b.classList.toggle("text-neutral-700", !active);
+        });
+        apply();
+      });
+    });
+
+    search?.addEventListener("input", apply);
+  </script>
+</Layout>

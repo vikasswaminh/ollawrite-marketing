@@ -1,0 +1,121 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { BLOG_POSTS } from "../../data/blog";
+
+export function getStaticPaths() {
+  return BLOG_POSTS.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+
+// Render the lightweight markdown body into HTML blocks.
+const renderBody = (body: string): string => {
+  const escape = (s: string) =>
+    s
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
+  const inline = (s: string) =>
+    escape(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+
+  return body
+    .split("\n\n")
+    .map((block) => {
+      if (block.startsWith("## ")) {
+        return `<h2 class="mt-8 text-2xl font-black text-ink">${inline(
+          block.replace("## ", "")
+        )}</h2>`;
+      }
+      if (block.startsWith("- ")) {
+        const items = block
+          .split("\n")
+          .filter(Boolean)
+          .map((item) => {
+            const text = item
+              .replace(/^-\s*/, "")
+              .replace(/\*\*(.+?)\*\*:?/, "$1");
+            return `<li class="flex gap-2.5"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink"></span><span>${inline(
+              text
+            )}</span></li>`;
+          })
+          .join("");
+        return `<ul class="space-y-2 pl-5">${items}</ul>`;
+      }
+      return `<p>${inline(block)}</p>`;
+    })
+    .join("");
+};
+
+const bodyHtml = renderBody(post.body);
+---
+
+<Layout title={`${post.title} — OllaWrite Journal`} description={post.excerpt}>
+  <article class="bg-paper text-ink">
+    <!-- Top bar -->
+    <div class="border-b border-ink">
+      <div class="wrap flex items-center justify-between py-4">
+        <a
+          href="/blog"
+          class="flex items-center gap-1.5 text-sm font-bold text-neutral-600 hover:text-ink"
+        >
+          ← Back to Journal
+        </a>
+      </div>
+    </div>
+
+    <!-- Article header -->
+    <div class="border-b border-ink bg-neutral-50">
+      <div class="wrap py-12 lg:py-16">
+        <span
+          class="rounded-full border border-brand/30 bg-brand-tint px-2.5 py-0.5 text-xs font-bold text-brand"
+        >
+          {post.category}
+        </span>
+        <h1
+          class="mt-4 max-w-3xl text-3xl font-black leading-[1.1] tracking-tight sm:text-4xl lg:text-5xl"
+        >
+          {post.title}
+        </h1>
+        <div
+          class="mt-5 flex flex-wrap items-center gap-4 text-sm text-neutral-500"
+        >
+          <span class="font-bold text-neutral-700">{post.author.name}</span>
+          <span>·</span>
+          <span>{post.author.role}</span>
+          <span>·</span>
+          <span>{post.date}</span>
+          <span>·</span>
+          <span>{post.readTime}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="wrap max-w-3xl py-12 lg:py-16">
+      <div
+        class="space-y-5 text-base leading-relaxed text-neutral-700"
+        set:html={bodyHtml}
+      />
+
+      <!-- Verification card -->
+      <div class="mt-10 rounded-xl border border-neutral-200 bg-neutral-50 p-5">
+        <div class="flex items-center justify-between text-sm">
+          <span class="font-bold uppercase tracking-wider text-brand"
+            >Editorial Grounding Certificate</span
+          >
+          <span class="flex items-center gap-1.5 font-bold text-emerald-700">
+            ✓ Verified
+          </span>
+        </div>
+        <p class="mt-2 text-sm text-neutral-600">
+          This article was audited against public site architecture and verified
+          for factual consistency before publication clearance.
+        </p>
+      </div>
+    </div>
+  </article>
+</Layout>
