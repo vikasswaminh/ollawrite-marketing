@@ -353,18 +353,20 @@ const quickPicks = [
   </article>
 </Layout>
 
-<style>
-  /* Force all text inside the TL;DR box to be fully visible on dark background */
+<style is:global>
+  /* Force all text inside the TL;DR box to be fully visible on dark background.
+     MUST use is:global because the content is injected via set:html and has no
+     data-astro-cid-* attributes — scoped styles would never match it. */
   .tldr-body,
   .tldr-body * {
-    color: #ffffff;
+    color: #ffffff !important;
   }
   .tldr-body p {
     margin-top: 0.75rem;
     font-size: 1.1rem;
     line-height: 1.8;
     font-weight: 500;
-    color: #ffffff;
+    color: #ffffff !important;
   }
   .tldr-body strong {
     color: #bef264 !important;
@@ -380,12 +382,7 @@ const quickPicks = [
     display: grid;
     gap: 0.75rem;
   }
-  .tldr-body li span,
-  .tldr-body li span.text-neutral-700,
-  .tldr-body li span.text-neutral-600,
-  .tldr-body li span.text-neutral-800,
-  .tldr-body li span.text-neutral-900,
-  .tldr-body li span.text-ink {
+  .tldr-body li span {
     color: #ffffff !important;
     font-weight: 500;
   }
