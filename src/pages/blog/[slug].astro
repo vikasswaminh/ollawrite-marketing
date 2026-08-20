@@ -17,11 +17,13 @@ const renderBody = (body: string): string => {
     s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
   const inline = (s: string) =>
-    escape(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    escape(s)
+      .replace(/\*\*(.+?)\*\*/g, "<strong class=\"font-bold text-ink\">$1</strong>")
+      .replace(/\*(.+?)\*/g, "<em>$1</em>");
 
   const li = (item: string) => {
     const text = item.replace(/^-\s*/, "");
-    return `<li class="flex gap-2.5"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink"></span><span>${inline(
+    return `<li class="flex gap-2.5 items-start"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand"></span><span class="text-neutral-700">${inline(
       text
     )}</span></li>`;
   };
@@ -30,28 +32,47 @@ const renderBody = (body: string): string => {
   let list: string[] = [];
   const flushList = () => {
     if (list.length) {
-      out.push(`<ul class="space-y-2 pl-5">${list.join("")}</ul>`);
+      out.push(`<ul class="my-4 space-y-2.5 pl-2">${list.join("")}</ul>`);
       list = [];
     }
   };
 
-  // Split into paragraphs first, then walk lines so a list that directly
-  // follows a paragraph line still becomes a <ul>.
   body.split("\n\n").forEach((block) => {
-    block.split("\n").forEach((line) => {
-      if (line.startsWith("- ")) {
-        list.push(li(line));
+    const lines = block.split("\n");
+    lines.forEach((line) => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith("- ")) {
+        list.push(li(trimmed));
         return;
       }
       flushList();
-      if (line.startsWith("## ")) {
+
+      if (trimmed.startsWith("### ")) {
         out.push(
-          `<h2 class="mt-8 text-2xl font-black text-ink">${inline(
-            line.replace("## ", "")
+          `<h3 class="mt-8 mb-3 text-xl font-bold text-ink sm:text-2xl">${inline(
+            trimmed.replace("### ", "")
+          )}</h3>`
+        );
+      } else if (trimmed.startsWith("## ")) {
+        out.push(
+          `<h2 class="mt-12 mb-4 text-2xl font-black tracking-tight text-ink sm:text-3xl border-b border-neutral-200 pb-3">${inline(
+            trimmed.replace("## ", "")
           )}</h2>`
         );
-      } else if (line.trim()) {
-        out.push(`<p>${inline(line)}</p>`);
+      } else if (trimmed.startsWith("Who should use it:")) {
+        out.push(
+          `<div class="my-4 rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 text-sm text-emerald-900"><strong class="font-bold text-emerald-800">Who should use it:</strong> ${inline(
+            trimmed.replace(/^Who should use it:\s*/i, "")
+          )}</div>`
+        );
+      } else if (trimmed.startsWith("Who should skip it:")) {
+        out.push(
+          `<div class="my-4 rounded-xl border border-amber-200 bg-amber-50/70 p-4 text-sm text-amber-900"><strong class="font-bold text-amber-800">Who should skip it:</strong> ${inline(
+            trimmed.replace(/^Who should skip it:\s*/i, "")
+          )}</div>`
+        );
+      } else if (trimmed) {
+        out.push(`<p class="mt-4 leading-relaxed text-neutral-700">${inline(trimmed)}</p>`);
       }
     });
     flushList();
