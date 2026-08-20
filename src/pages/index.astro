@@ -165,145 +165,90 @@ const faqs = [
   title="OllaWrite — the AI content writer that reads your site first"
   description="OllaWrite audits your website, researches what ranks, then writes drafts grounded in what it found. Four specialist agents, including an editor that rejects thin work."
 >
-  <!-- Hero — Terminal edition -->
-  <section class="relative overflow-hidden bg-neutral-950 border-b border-white/10">
-
-    <!-- Subtle grid bg -->
-    <div class="pointer-events-none absolute inset-0"
-         style="background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:48px 48px">
-    </div>
-
-    <!-- Lime glow blob top-right -->
-    <div class="pointer-events-none absolute -top-32 right-0 h-96 w-96 rounded-full"
-         style="background:radial-gradient(circle,#bef26418 0%,transparent 70%)">
-    </div>
-
-    <div class="wrap relative z-10 grid items-center gap-12 py-20 lg:grid-cols-2 lg:py-28">
-
-      <!-- Left: headline -->
+  <!-- Hero -->
+  <section class="border-b border-ink">
+    <div class="wrap grid items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
       <div>
-        <span class="inline-flex items-center gap-2 rounded-full border border-punch/30 bg-punch/10 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-punch">
-          <span class="h-1.5 w-1.5 rounded-full bg-punch animate-pulse"></span>
-          AI content writer
-        </span>
-
-        <h1 class="mt-6 text-5xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl">
-          Your site,<br/>
-          already<br/>
-          <span class="text-punch">read.</span>
+        <p class="eyebrow">AI content writer</p>
+        <h1
+          class="mt-4 text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl"
+        >
+          Content that starts with your <span class="swipe">actual website</span
+          >.
         </h1>
-
-        <p class="mt-6 max-w-md text-base leading-relaxed text-neutral-400">
-          Most AI tools start from a prompt and invent the rest.
-          OllaWrite reads your actual site first — pages, structure,
-          what search sees — then writes from what's really there.
+        <p class="mt-6 max-w-xl text-lg text-neutral-700">
+          Most AI writing tools start from a prompt and invent the rest.
+          OllaWrite reads your site first — the pages, the structure, what
+          search sees — then writes from what is really there.
         </p>
-
         <div class="mt-8 flex flex-wrap gap-3">
           <a
             href={APP}
-            class="group inline-flex items-center gap-2 rounded-lg border-2 border-punch bg-punch px-6 py-3 font-black text-ink transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_#bef26450]"
+            class="rounded-lg border-2 border-brand bg-brand px-6 py-3 font-bold text-paper hover:border-brand-deep hover:bg-brand-deep"
+            >Start writing free</a
           >
-            Start writing free
-            <span class="transition-transform group-hover:translate-x-0.5">→</span>
-          </a>
           <a
             href="#how"
-            class="inline-flex items-center gap-2 rounded-lg border border-white/15 px-6 py-3 font-bold text-white/70 transition-all hover:border-white/30 hover:text-white"
+            class="rounded-lg border-2 border-ink bg-paper px-6 py-3 font-bold text-ink hover:bg-neutral-100"
+            >See how it works</a
           >
-            See how it works
-          </a>
         </div>
-
-        <p class="mt-4 text-xs text-neutral-600 font-medium tracking-wide">
+        <p class="mt-4 text-sm text-neutral-500">
           No credit card required · Audit your first site in minutes
         </p>
       </div>
 
-      <!-- Right: Terminal window -->
-      <div class="rounded-xl border border-white/10 bg-neutral-900 shadow-[0_32px_80px_#00000080] overflow-hidden">
-
-        <!-- Terminal title bar -->
-        <div class="flex items-center gap-2 border-b border-white/8 bg-neutral-800/80 px-4 py-3">
-          <span class="h-3 w-3 rounded-full bg-red-500/80"></span>
-          <span class="h-3 w-3 rounded-full bg-yellow-500/80"></span>
-          <span class="h-3 w-3 rounded-full bg-green-500/80"></span>
-          <span class="ml-3 flex-1 text-center text-xs text-neutral-500 font-mono">ollawrite — audit</span>
+      <!-- Audit mock -->
+      <div class="card overflow-hidden shadow-lg">
+        <div
+          class="flex items-center justify-between border-b border-ink bg-neutral-50 px-5 py-3"
+        >
+          <span class="text-sm font-bold">Site audit</span>
+          <span
+            class="rounded-full border border-emerald-300 bg-paper px-2.5 py-0.5 text-xs font-bold text-emerald-700"
+            >Complete</span
+          >
         </div>
-
-        <!-- Terminal body -->
-        <div class="p-6 font-mono text-sm space-y-1 min-h-[320px]">
-
-          <!-- Command line -->
-          <p class="text-neutral-500">
-            <span class="text-punch">~</span>
-            <span class="text-neutral-600"> $ </span>
-            <span class="text-white">ollawrite audit yourdomain.com</span>
-          </p>
-
-          <!-- Output lines — staggered fade-in via CSS animation -->
-          <div class="mt-3 space-y-2 terminal-lines">
-            <p class="terminal-line terminal-line-1 text-neutral-500">Connecting to yourdomain.com...</p>
-            <p class="terminal-line terminal-line-2"><span class="text-punch">✓</span> <span class="text-neutral-300">Sitemap found — <span class="text-white">47 pages</span> indexed</span></p>
-            <p class="terminal-line terminal-line-3"><span class="text-punch">✓</span> <span class="text-neutral-300">robots.txt read — crawl allowed</span></p>
-            <p class="terminal-line terminal-line-4"><span class="text-punch">✓</span> <span class="text-neutral-300">Scoring SEO signals across all pages...</span></p>
-            <p class="terminal-line terminal-line-5"><span class="text-punch">✓</span> <span class="text-neutral-300">Structured data — <span class="text-yellow-400">3 missing schemas</span></span></p>
-            <p class="terminal-line terminal-line-6"><span class="text-punch">✓</span> <span class="text-neutral-300">Content quality pass complete</span></p>
-            <p class="terminal-line terminal-line-7"><span class="text-punch">✓</span> <span class="text-neutral-300">Reading top-ranking competitors...</span></p>
-            <p class="terminal-line terminal-line-8 mt-4 border-t border-white/8 pt-4">
-              <span class="text-white font-black">Audit complete.</span>
-              <span class="text-neutral-500"> Grade: </span>
-              <span class="text-punch font-black text-lg">B+</span>
+        <div class="space-y-4 p-5">
+          <div class="flex items-baseline justify-between">
+            <span class="text-sm text-neutral-600">example.com</span>
+            <span class="text-3xl font-black text-brand">B+</span>
+          </div>
+          {
+            /* The strongest score gets the lime bar — as a FILL, never as text. */
+            [
+              ["Discoverability", "92", true],
+              ["Content quality", "78", false],
+              ["Structured data", "45", false],
+            ].map(([label, score, best]) => (
+              <div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-neutral-700">{label}</span>
+                  <span class="font-bold">{score}</span>
+                </div>
+                <div class="mt-1.5 h-2 rounded-full bg-neutral-200">
+                  <div
+                    class={`h-2 rounded-full ${best ? "bg-punch" : "bg-brand"}`}
+                    style={`width:${score}%`}
+                  />
+                </div>
+              </div>
+            ))
+          }
+          <div class="rounded-lg border border-brand/20 bg-brand-tint p-3">
+            <p class="text-xs font-bold uppercase tracking-wider text-brand">
+              Top recommendation
             </p>
-            <p class="terminal-line terminal-line-9 text-neutral-500">→ 3 critical fixes · 8 opportunities · brief ready</p>
-            <p class="terminal-line terminal-line-10 mt-2">
-              <span class="text-neutral-600">Ready to draft? </span>
-              <span class="text-punch">ollawrite draft --brief=audit</span>
-              <span class="terminal-cursor inline-block w-2 h-4 bg-punch ml-0.5 align-middle"></span>
+            <p class="mt-1 text-sm text-neutral-700">
+              Add Article schema — basic eligibility for AI answer surfaces.
             </p>
           </div>
         </div>
       </div>
-
     </div>
   </section>
 
-  <style is:global>
-    /* Staggered terminal line reveal */
-    .terminal-line {
-      opacity: 0;
-      transform: translateY(4px);
-      animation: termLine 0.3s ease forwards;
-    }
-    .terminal-line-1  { animation-delay: 0.4s; }
-    .terminal-line-2  { animation-delay: 0.9s; }
-    .terminal-line-3  { animation-delay: 1.4s; }
-    .terminal-line-4  { animation-delay: 1.9s; }
-    .terminal-line-5  { animation-delay: 2.4s; }
-    .terminal-line-6  { animation-delay: 2.9s; }
-    .terminal-line-7  { animation-delay: 3.3s; }
-    .terminal-line-8  { animation-delay: 3.8s; }
-    .terminal-line-9  { animation-delay: 4.1s; }
-    .terminal-line-10 { animation-delay: 4.5s; }
-
-    @keyframes termLine {
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Blinking cursor */
-    .terminal-cursor {
-      animation: blink 1s step-end infinite;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0; }
-    }
-  </style>
-
-
-
   <!-- Stats -->
-
   <section class="border-b border-ink bg-brand-tint">
     <div class="wrap grid grid-cols-2 gap-8 py-10 lg:grid-cols-4">
       {
@@ -449,7 +394,7 @@ const faqs = [
         {
           testimonials.map((t) => (
             <figure class="card flex h-full flex-col p-6">
-              <blockquote class="grow text-neutral-700">"{t.quote}"</blockquote>
+              <blockquote class="grow text-neutral-700">“{t.quote}”</blockquote>
               <figcaption class="mt-5 border-t border-neutral-200 pt-4 text-sm font-bold">
                 {t.role}
               </figcaption>
@@ -513,174 +458,65 @@ const faqs = [
     </div>
   </section>
 
-  <!-- FAQ — redesigned: two-column editorial, always-visible answers -->
-  <section id="faq" class="border-b border-ink scroll-mt-16 overflow-hidden">
-
-    <!-- Top bar -->
-    <div class="border-b border-ink bg-neutral-900">
-      <div class="wrap flex items-center justify-between py-4">
-        <p class="text-xs font-black uppercase tracking-[0.25em] text-punch">FAQ</p>
-        <span class="text-xs text-neutral-500 uppercase tracking-widest font-bold">{faqs.length} questions</span>
-      </div>
-    </div>
-
-    <div class="wrap py-0">
-      <div class="lg:grid lg:grid-cols-[300px_1fr]">
-
-        <!-- Left: sticky header -->
-        <div class="relative border-r border-ink">
-          <div class="sticky top-24 p-8 lg:p-10">
-            <!-- Giant watermark -->
-            <p
-              aria-hidden="true"
-              class="select-none font-black text-[7rem] leading-none text-neutral-100 -mx-2"
-            >
-              ?
-            </p>
-            <h2 class="mt-4 text-2xl font-black tracking-tight lg:text-3xl">
-              Questions<br/>worth<br/>asking.
-            </h2>
-            <p class="mt-4 text-sm text-neutral-600 leading-relaxed max-w-[18ch]">
-              Still not answered? We're one message away.
-            </p>
-            <a
-              href="/contact"
-              class="mt-6 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-paper px-5 py-2 text-xs font-black uppercase tracking-widest text-ink shadow-[3px_3px_0_0_#bef264] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#bef264]"
-            >
-              Ask us →
-            </a>
-          </div>
-        </div>
-
-        <!-- Right: Q&As always visible -->
-        <div class="divide-y divide-neutral-200">
-          {
-            faqs.map((f, i) => (
-              <div class={`group px-8 py-10 lg:px-12 lg:py-12 transition-colors hover:bg-neutral-50 ${i === 0 ? "border-t-0" : ""}`}>
-                <div class="flex gap-6">
-                  <!-- Number -->
-                  <span class="shrink-0 mt-1 text-xs font-black tabular-nums text-punch bg-neutral-900 rounded-full w-7 h-7 flex items-center justify-center">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div>
-                    <h3 class="text-lg font-black text-ink leading-snug lg:text-xl">
-                      {f.q}
-                    </h3>
-                    <p class="mt-3 text-neutral-600 leading-relaxed text-[0.95rem]">
-                      {f.a}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))
-          }
-        </div>
-
+  <!-- FAQ -->
+  <section id="faq" class="border-b border-ink scroll-mt-16">
+    <div class="wrap py-16 lg:py-24">
+      <p class="eyebrow">FAQ</p>
+      <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+        Questions worth asking.
+      </h2>
+      <div class="mt-10 max-w-3xl divide-y divide-neutral-200 border-y border-neutral-200">
+        {
+          faqs.map((f) => (
+            <details class="group py-5">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">
+                {f.q}
+                <span
+                  class="shrink-0 text-2xl leading-none text-brand group-open:hidden"
+                  aria-hidden="true"
+                >
+                  +
+                </span>
+                <span
+                  class="hidden shrink-0 text-2xl leading-none text-brand group-open:block"
+                  aria-hidden="true"
+                >
+                  −
+                </span>
+              </summary>
+              <p class="mt-3 max-w-2xl text-neutral-700">{f.a}</p>
+            </details>
+          ))
+        }
       </div>
     </div>
   </section>
 
-  <!-- Closing CTA — redesigned: split-screen, editorial -->
-  <section class="overflow-hidden">
-    <div class="lg:grid lg:grid-cols-2 lg:min-h-[480px]">
-
-      <!-- Left: Dark navy editorial panel -->
-      <div class="relative bg-brand-deep flex flex-col justify-between p-10 lg:p-16 overflow-hidden">
-
-        <!-- Giant bg text watermark -->
-        <p
-          aria-hidden="true"
-          class="pointer-events-none absolute -bottom-6 -left-4 select-none text-[11rem] font-black leading-none text-white/5 lg:text-[14rem]"
+  <!-- Closing CTA -->
+  <!-- The one full-saturation moment on the page. -->
+  <section class="bg-brand text-paper">
+    <div class="wrap py-16 text-center lg:py-24">
+      <h2 class="mx-auto max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">
+        See it against a site you already know well.
+      </h2>
+      <p class="mx-auto mt-5 max-w-xl text-brand-tint">
+        The fastest way to judge it is to point it at your own domain and see
+        whether the audit tells you anything you did not already know.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <!-- Lime fill with BLACK label: ~13:1. The same lime as text on this
+             cobalt ground would be unreadable. -->
+        <a
+          href={APP}
+          class="rounded-lg border-2 border-punch bg-punch px-6 py-3 font-bold text-ink hover:brightness-95"
+          >Start writing free</a
         >
-          Write.
-        </p>
-
-        <div class="relative z-10">
-          <!-- Label -->
-          <span class="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-punch">
-            <span class="block h-px w-8 bg-punch"></span>
-            Get started
-          </span>
-
-          <!-- Headline -->
-          <h2 class="mt-6 text-4xl font-black tracking-tight text-white leading-[1.05] sm:text-5xl lg:text-6xl">
-            See it against<br/>
-            a site you<br/>
-            <span class="text-punch">already know.</span>
-          </h2>
-
-          <p class="mt-6 max-w-sm text-blue-200 leading-relaxed text-sm">
-            The fastest way to judge OllaWrite is to point it at your own domain.
-            The audit will tell you something you didn't already know — or it's free.
-          </p>
-        </div>
-
-        <!-- Bottom: Social proof row -->
-        <div class="relative z-10 mt-12 flex flex-wrap gap-6">
-          {[
-            { val: "12×", label: "faster drafts" },
-            { val: "40+", label: "signals audited" },
-            { val: "4", label: "specialist agents" },
-          ].map((s) => (
-            <div>
-              <p class="text-2xl font-black text-punch">{s.val}</p>
-              <p class="text-xs font-bold uppercase tracking-widest text-blue-300">{s.label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <!-- Right: Black action panel -->
-      <div class="relative bg-neutral-900 flex flex-col justify-center p-10 lg:p-16">
-
-        <!-- Input mockup -->
-        <div class="rounded-xl border border-white/10 bg-white/5 px-5 py-4 flex items-center gap-3">
-          <span class="text-neutral-500 text-sm font-mono shrink-0">https://</span>
-          <span class="flex-1 text-white/30 text-sm font-mono">yourdomain.com</span>
-          <span class="shrink-0 rounded-md bg-punch px-3 py-1.5 text-xs font-black text-ink">
-            Audit →
-          </span>
-        </div>
-        <p class="mt-2 text-[0.7rem] text-neutral-600 font-medium tracking-wide pl-1">
-          No login needed for the audit preview.
-        </p>
-
-        <!-- Divider -->
-        <div class="my-8 flex items-center gap-4">
-          <span class="flex-1 h-px bg-white/10"></span>
-          <span class="text-xs text-neutral-600 font-bold uppercase tracking-widest">then</span>
-          <span class="flex-1 h-px bg-white/10"></span>
-        </div>
-
-        <!-- CTAs -->
-        <div class="flex flex-col gap-3">
-          <a
-            href={APP}
-            class="group flex items-center justify-between rounded-xl border-2 border-punch bg-punch px-6 py-4 font-black text-ink transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_#bef26440]"
-          >
-            <span>Start writing free</span>
-            <span class="text-lg transition-transform group-hover:translate-x-1">→</span>
-          </a>
-          <a
-            href="/contact"
-            class="group flex items-center justify-between rounded-xl border border-white/15 px-6 py-4 font-bold text-white/70 transition-all hover:border-white/30 hover:text-white"
-          >
-            <span>Talk to the team</span>
-            <span class="text-lg transition-transform group-hover:translate-x-1">→</span>
-          </a>
-        </div>
-
-        <!-- Trust badges -->
-        <div class="mt-8 flex flex-wrap gap-4">
-          {["No credit card", "Cancel anytime", "Your data stays yours"].map((t) => (
-            <span class="flex items-center gap-1.5 text-xs text-neutral-500 font-medium">
-              <span class="text-punch">✓</span> {t}
-            </span>
-          ))}
-        </div>
-
+        <a
+          href="/contact"
+          class="rounded-lg border-2 border-paper px-6 py-3 font-bold text-paper hover:bg-brand-deep"
+          >Talk to us</a
+        >
       </div>
     </div>
   </section>
-
 </Layout>
