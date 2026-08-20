@@ -235,7 +235,7 @@ const quickPicks = [
                   <div class="h-1.5 bg-punch"></div>
                   <div class="p-6 sm:p-8">
                     <div class="flex flex-wrap items-center gap-3">
-                      <span class="rounded-md bg-punch px-3 py-1 text-sm font-black uppercase tracking-widest text-ink">
+                      <span class="rounded-md border border-punch px-3 py-1 text-sm font-black uppercase tracking-widest text-punch">
                         TL;DR
                       </span>
                       <span class="text-xs font-bold uppercase tracking-widest text-blue-200">
@@ -354,6 +354,11 @@ const quickPicks = [
 </Layout>
 
 <style>
+  /* Force all text inside the TL;DR box to be fully visible on dark background */
+  .tldr-body,
+  .tldr-body * {
+    color: #ffffff;
+  }
   .tldr-body p {
     margin-top: 0.75rem;
     font-size: 1.1rem;
@@ -362,10 +367,10 @@ const quickPicks = [
     color: #ffffff;
   }
   .tldr-body strong {
-    color: #bef264;
+    color: #bef264 !important;
   }
   .tldr-body a {
-    color: #bef264;
+    color: #bef264 !important;
     font-weight: 700;
     text-decoration: underline;
     text-underline-offset: 2px;
@@ -375,8 +380,13 @@ const quickPicks = [
     display: grid;
     gap: 0.75rem;
   }
-  .tldr-body li span.text-neutral-700 {
-    color: #ffffff;
+  .tldr-body li span,
+  .tldr-body li span.text-neutral-700,
+  .tldr-body li span.text-neutral-600,
+  .tldr-body li span.text-neutral-800,
+  .tldr-body li span.text-neutral-900,
+  .tldr-body li span.text-ink {
+    color: #ffffff !important;
     font-weight: 500;
   }
 </style>
