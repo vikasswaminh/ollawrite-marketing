@@ -39,7 +39,7 @@ export const BLOG1_FULL_POST: BlogPost = {
   "category": "AI Tools & Strategy",
   "excerpt": "Tired of \"best AI writing tools\" lists that read like ads? Here's a real, tested breakdown of the AI writing tools worth your money in 2026 \u2014 and the ones that aren't.",
   "date": "Aug 20, 2026",
-  "readTime": "22 min read",
+  "readTime": "18 min read",
   "author": {
     "name": "OllaWrite Editorial",
     "role": "AI Research & Content Lead"

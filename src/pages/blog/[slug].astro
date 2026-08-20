@@ -11,8 +11,15 @@ export function getStaticPaths() {
 
 const { post } = Astro.props;
 
+const slugify = (s: string): string =>
+  s
+    .toLowerCase()
+    .replace(/[’'"]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
 // Render the lightweight markdown body into HTML blocks.
-const renderBody = (body: string): string => {
+const renderBody = (body: string): { html: string; headings: { id: string; text: string }[] } => {
   const escape = (s: string) =>
     s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -22,21 +29,22 @@ const renderBody = (body: string): string => {
         /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
         '<a href="$2" class="font-semibold text-brand underline underline-offset-2 hover:opacity-80">$1</a>'
       )
-      .replace(/\*\*(.+?)\*\*/g, "<strong class=\"font-bold text-ink\">$1</strong>")
+      .replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-ink">$1</strong>')
       .replace(/\*(.+?)\*/g, "<em>$1</em>");
 
   const li = (item: string) => {
     const text = item.replace(/^-\s*/, "");
-    return `<li class="flex gap-2.5 items-start"><span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand"></span><span class="text-neutral-700">${inline(
+    return `<li class="flex gap-3 items-start"><span class="mt-2.5 h-2 w-2 shrink-0 rounded-sm bg-punch ring-1 ring-ink"></span><span class="text-neutral-700">${inline(
       text
     )}</span></li>`;
   };
 
   const out: string[] = [];
+  const headings: { id: string; text: string }[] = [];
   let list: string[] = [];
   const flushList = () => {
     if (list.length) {
-      out.push(`<ul class="my-4 space-y-2.5 pl-2">${list.join("")}</ul>`);
+      out.push(`<ul class="my-6 space-y-3 pl-1">${list.join("")}</ul>`);
       list = [];
     }
   };
@@ -53,40 +61,63 @@ const renderBody = (body: string): string => {
 
       if (trimmed.startsWith("### ")) {
         out.push(
-          `<h3 class="mt-8 mb-3 text-xl font-bold text-ink sm:text-2xl">${inline(
+          `<h3 class="mt-10 mb-3 text-xl font-bold text-ink sm:text-2xl">${inline(
             trimmed.replace("### ", "")
           )}</h3>`
         );
       } else if (trimmed.startsWith("## ")) {
+        const text = trimmed.replace("## ", "");
+        const id = slugify(text);
+        headings.push({ id, text });
         out.push(
-          `<h2 class="mt-12 mb-4 text-2xl font-black tracking-tight text-ink sm:text-3xl border-b border-neutral-200 pb-3">${inline(
-            trimmed.replace("## ", "")
-          )}</h2>`
+          `<h2 id="${id}" class="group mt-16 mb-5 scroll-mt-24 text-2xl font-black tracking-tight text-ink sm:text-3xl border-l-4 border-punch pl-4"><a href="#${id}" class="hover:text-brand">${inline(
+            text
+          )}</a><a href="#${id}" aria-label="Direct link to this section" class="ml-2 align-middle text-sm font-bold text-brand opacity-0 transition-opacity group-hover:opacity-100">#</a></h2>`
         );
       } else if (trimmed.startsWith("Who should use it:")) {
         out.push(
-          `<div class="my-4 rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 text-sm text-emerald-900"><strong class="font-bold text-emerald-800">Who should use it:</strong> ${inline(
+          `<div class="my-5 rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 text-sm text-emerald-900"><strong class="font-bold text-emerald-800">Who should use it:</strong> ${inline(
             trimmed.replace(/^Who should use it:\s*/i, "")
           )}</div>`
         );
       } else if (trimmed.startsWith("Who should skip it:")) {
         out.push(
-          `<div class="my-4 rounded-xl border border-amber-200 bg-amber-50/70 p-4 text-sm text-amber-900"><strong class="font-bold text-amber-800">Who should skip it:</strong> ${inline(
+          `<div class="my-5 rounded-xl border border-amber-200 bg-amber-50/70 p-4 text-sm text-amber-900"><strong class="font-bold text-amber-800">Who should skip it:</strong> ${inline(
             trimmed.replace(/^Who should skip it:\s*/i, "")
           )}</div>`
         );
       } else if (trimmed) {
-        out.push(`<p class="mt-4 leading-relaxed text-neutral-700">${inline(trimmed)}</p>`);
+        out.push(`<p class="mt-5 text-[1.05rem] leading-8 text-neutral-700">${inline(trimmed)}</p>`);
       }
     });
     flushList();
   });
   flushList();
 
-  return out.join("");
+  return { html: out.join(""), headings };
 };
 
-const bodyHtml = renderBody(post.body);
+const { html: bodyHtml, headings } = renderBody(post.body);
+
+// TL;DR is the first section of the body when present; the rest are article sections.
+const hasTldr = headings.length > 0 && headings[0].text === "TL;DR";
+const articleHeadings = hasTldr ? headings.slice(1) : headings;
+
+// Split body: TL;DR block vs rest, so TL;DR can render inside its own styled card.
+let tldrBlock = "";
+let restHtml = bodyHtml;
+if (hasTldr) {
+  const tldrH2Start = bodyHtml.indexOf('<h2 id="tl-dr"');
+  const boundary = articleHeadings.length
+    ? bodyHtml.indexOf(`<h2 id="${articleHeadings[0].id}"`)
+    : bodyHtml.length;
+  tldrBlock = bodyHtml.slice(tldrH2Start, boundary);
+  restHtml = bodyHtml.slice(boundary);
+}
+
+const toc = hasTldr
+  ? [{ id: "tl-dr", text: "TL;DR Summary" }, ...articleHeadings]
+  : articleHeadings;
 ---
 
 <Layout title={`${post.title} — OllaWrite Journal`} description={post.excerpt}>
@@ -106,51 +137,141 @@ const bodyHtml = renderBody(post.body);
     <!-- Article header -->
     <div class="border-b border-ink bg-neutral-50">
       <div class="wrap py-12 lg:py-16">
-        <span
-          class="rounded-full border border-brand/30 bg-brand-tint px-2.5 py-0.5 text-xs font-bold text-brand"
-        >
-          {post.category}
-        </span>
+        <div class="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-widest text-brand">
+          <span class="rounded-full border border-brand/30 bg-brand-tint px-2.5 py-1">
+            {post.category}
+          </span>
+          <span class="text-neutral-400">•</span>
+          <span class="text-neutral-500">{post.date}</span>
+          <span class="text-neutral-400">•</span>
+          <span class="text-neutral-500">{post.readTime}</span>
+        </div>
         <h1
-          class="mt-4 max-w-3xl text-3xl font-black leading-[1.1] tracking-tight sm:text-4xl lg:text-5xl"
+          class="mt-5 max-w-4xl text-3xl font-black leading-[1.08] tracking-tight sm:text-4xl lg:text-[3.25rem]"
         >
           {post.title}
         </h1>
-        <div
-          class="mt-5 flex flex-wrap items-center gap-4 text-sm text-neutral-500"
-        >
-          <span class="font-bold text-neutral-700">{post.author.name}</span>
-          <span>·</span>
-          <span>{post.author.role}</span>
-          <span>·</span>
-          <span>{post.date}</span>
-          <span>·</span>
-          <span>{post.readTime}</span>
+        <p class="mt-5 max-w-3xl text-lg leading-relaxed text-neutral-600">
+          {post.excerpt}
+        </p>
+        <div class="mt-6 flex items-center gap-3 text-sm text-neutral-500">
+          <span class="grid h-10 w-10 place-items-center rounded-full bg-brand text-sm font-black text-paper">OW</span>
+          <div>
+            <p class="font-bold text-neutral-800">{post.author.name}</p>
+            <p class="text-xs">{post.author.role}</p>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Body -->
-    <div class="wrap max-w-3xl py-12 lg:py-16">
-      <div
-        class="space-y-5 text-base leading-relaxed text-neutral-700"
-        set:html={bodyHtml}
-      />
+    <!-- Body: sticky TOC sidebar + full-width content -->
+    <div class="wrap py-12 lg:py-16">
+      <div class="lg:flex lg:gap-12">
+        <!-- TOC sidebar -->
+        <aside class="mb-10 lg:mb-0 lg:w-72 lg:shrink-0">
+          <nav class="rounded-2xl border border-ink bg-neutral-50 p-5 lg:sticky lg:top-6">
+            <div class="flex items-center justify-between border-b border-neutral-200 pb-3">
+              <h2 class="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-ink">
+                <span aria-hidden="true">☰</span> Table of Contents
+              </h2>
+              <span class="rounded-full bg-punch px-2 py-0.5 text-[0.65rem] font-black text-ink ring-1 ring-ink">
+                {toc.length} Sections
+              </span>
+            </div>
+            <ol class="mt-3 max-h-[70vh] space-y-1 overflow-y-auto pr-1">
+              {
+                toc.map((h, i) => (
+                  <li>
+                    <a
+                      href={`#${h.id}`}
+                      class="group flex items-center gap-3 rounded-lg px-2 py-2 text-sm text-neutral-700 transition-colors hover:bg-brand-tint hover:text-brand"
+                    >
+                      <span class="w-6 shrink-0 font-black text-neutral-400 group-hover:text-brand">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span class="flex-1 font-semibold leading-snug">{h.text}</span>
+                      <span class="text-neutral-300 transition-transform group-hover:translate-x-0.5 group-hover:text-brand">→</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ol>
+          </nav>
+        </aside>
 
-      <!-- Verification card -->
-      <div class="mt-10 rounded-xl border border-neutral-200 bg-neutral-50 p-5">
-        <div class="flex items-center justify-between text-sm">
-          <span class="font-bold uppercase tracking-wider text-brand"
-            >Editorial Grounding Certificate</span
-          >
-          <span class="flex items-center gap-1.5 font-bold text-emerald-700">
-            ✓ Verified
-          </span>
+        <!-- Article content -->
+        <div class="min-w-0 flex-1 lg:max-w-[46rem]">
+          {
+            hasTldr && (
+              <div class="relative overflow-hidden rounded-2xl border border-brand/25 bg-gradient-to-br from-brand-tint via-white to-neutral-50 p-6 sm:p-8">
+                <span class="absolute -right-4 -top-4 rounded-bl-2xl bg-punch px-4 py-1.5 text-xs font-black uppercase tracking-widest text-ink ring-1 ring-ink">
+                  Quick Read
+                </span>
+                <div set:html={tldrBlock} />
+              </div>
+            )
+          }
+
+          <div set:html={restHtml} />
+
+          <!-- Verification card -->
+          <div class="mt-12 rounded-xl border border-neutral-200 bg-neutral-50 p-5">
+            <div class="flex items-center justify-between text-sm">
+              <span class="font-bold uppercase tracking-wider text-brand"
+                >Editorial Grounding Certificate</span
+              >
+              <span class="flex items-center gap-1.5 font-bold text-emerald-700">
+                ✓ Verified
+              </span>
+            </div>
+            <p class="mt-2 text-sm text-neutral-600">
+              This article was audited against public site architecture and verified
+              for factual consistency before publication clearance.
+            </p>
+          </div>
+
+          <!-- Email signup -->
+          <div class="mt-8 overflow-hidden rounded-2xl border border-ink bg-brand-deep">
+            <div class="h-1.5 bg-punch"></div>
+            <div class="p-6 sm:p-8">
+              <p class="text-xs font-black uppercase tracking-widest text-punch">
+                The OllaWrite Journal
+              </p>
+              <h2 class="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">
+                Get guides like this in your inbox
+              </h2>
+              <p class="mt-2 max-w-lg text-sm leading-relaxed text-blue-100">
+                One honest, tested deep-dive a week — AI writing tools, content
+                strategy, and what actually works. No fluff, no ads, unsubscribe
+                anytime.
+              </p>
+              <form
+                action="https://login.ollawrite.com/register"
+                method="get"
+                class="mt-5 flex flex-col gap-3 sm:flex-row"
+              >
+                <label for="journal-email" class="sr-only">Email address</label>
+                <input
+                  id="journal-email"
+                  type="email"
+                  name="email"
+                  required
+                  placeholder="you@company.com"
+                  class="w-full flex-1 rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder-blue-200 outline-none focus:border-punch focus:ring-2 focus:ring-punch/40"
+                />
+                <button
+                  type="submit"
+                  class="rounded-lg bg-punch px-6 py-3 text-sm font-black text-ink transition-transform hover:-translate-y-0.5"
+                >
+                  Sign me up →
+                </button>
+              </form>
+              <p class="mt-3 text-xs text-blue-200">
+                Free forever. We never share your email.
+              </p>
+            </div>
+          </div>
         </div>
-        <p class="mt-2 text-sm text-neutral-600">
-          This article was audited against public site architecture and verified
-          for factual consistency before publication clearance.
-        </p>
       </div>
     </div>
   </article>
