@@ -103,21 +103,42 @@ const { html: bodyHtml, headings } = renderBody(post.body);
 const hasTldr = headings.length > 0 && headings[0].text === "TL;DR";
 const articleHeadings = hasTldr ? headings.slice(1) : headings;
 
-// Split body: TL;DR block vs rest, so TL;DR can render inside its own styled card.
-let tldrBlock = "";
+// Split body: TL;DR summary vs rest. Only the summary paragraphs (up to the
+// OllaWrite plug paragraph) go inside the highlighted card; the intro
+// paragraphs that follow stay in the normal article flow.
+let tldrContent = "";
 let restHtml = bodyHtml;
 if (hasTldr) {
+  const h2Tag = bodyHtml.match(/<h2 id="tl-dr"[^>]*>.*?<\/h2>/);
   const tldrH2Start = bodyHtml.indexOf('<h2 id="tl-dr"');
+  const contentStart = tldrH2Start + (h2Tag ? h2Tag[0].length : 0);
   const boundary = articleHeadings.length
     ? bodyHtml.indexOf(`<h2 id="${articleHeadings[0].id}"`)
     : bodyHtml.length;
-  tldrBlock = bodyHtml.slice(tldrH2Start, boundary);
-  restHtml = bodyHtml.slice(boundary);
+  const rawTldr = bodyHtml.slice(contentStart, boundary);
+  const plugIdx = rawTldr.indexOf("ollawrite.com");
+  const cutIdx =
+    plugIdx > -1 ? rawTldr.indexOf("</p>", plugIdx) + "</p>".length : rawTldr.length;
+  tldrContent = rawTldr.slice(0, cutIdx);
+  restHtml = rawTldr.slice(cutIdx) + bodyHtml.slice(boundary);
 }
 
 const toc = hasTldr
   ? [{ id: "tl-dr", text: "TL;DR Summary" }, ...articleHeadings]
   : articleHeadings;
+
+const firstSectionId = articleHeadings.length ? articleHeadings[0].id : "top";
+
+const quickPicks = [
+  { tool: "ChatGPT", bestFor: "Everyday all-round writing", starting: "Free / $20 mo" },
+  { tool: "Claude", bestFor: "Long-form, natural voice", starting: "Free / $20 mo" },
+  { tool: "Gemini", bestFor: "Google Workspace users", starting: "Free / $20 mo" },
+  { tool: "Jasper", bestFor: "Marketing teams at scale", starting: "$39/mo" },
+  { tool: "Grammarly", bestFor: "Polishing & correctness", starting: "Free / $12 mo" },
+  { tool: "Surfer SEO", bestFor: "Content that ranks", starting: "$89/mo" },
+  { tool: "Sudowrite", bestFor: "Fiction & storytelling", starting: "$19/mo" },
+  { tool: "Rytr", bestFor: "Tight budgets", starting: "Free / $9 mo" },
+];
 ---
 
 <Layout title={`${post.title} — OllaWrite Journal`} description={post.excerpt}>
@@ -130,6 +151,12 @@ const toc = hasTldr
           class="flex items-center gap-1.5 text-sm font-bold text-neutral-600 hover:text-ink"
         >
           ← Back to Journal
+        </a>
+        <a
+          href={`#${firstSectionId}`}
+          class="flex items-center gap-1.5 text-sm font-bold text-brand hover:text-brand-deep"
+        >
+          Skip to the guide ↓
         </a>
       </div>
     </div>
@@ -166,7 +193,7 @@ const toc = hasTldr
 
     <!-- Body: sticky TOC sidebar + full-width content -->
     <div class="wrap py-12 lg:py-16">
-      <div class="lg:flex lg:gap-12">
+      <div class="lg:flex lg:gap-10">
         <!-- TOC sidebar -->
         <aside class="mb-10 lg:mb-0 lg:w-72 lg:shrink-0">
           <nav class="rounded-2xl border border-ink bg-neutral-50 p-5 lg:sticky lg:top-6">
@@ -200,34 +227,90 @@ const toc = hasTldr
         </aside>
 
         <!-- Article content -->
-        <div class="min-w-0 flex-1 lg:max-w-[46rem]">
+        <div class="min-w-0 flex-1 lg:max-w-[56rem]">
           {
             hasTldr && (
-              <div class="relative overflow-hidden rounded-2xl border border-brand/25 bg-gradient-to-br from-brand-tint via-white to-neutral-50 p-6 sm:p-8">
-                <span class="absolute -right-4 -top-4 rounded-bl-2xl bg-punch px-4 py-1.5 text-xs font-black uppercase tracking-widest text-ink ring-1 ring-ink">
-                  Quick Read
-                </span>
-                <div set:html={tldrBlock} />
+              <div>
+                <section id="tl-dr" class="relative scroll-mt-24 overflow-hidden rounded-2xl border border-ink bg-brand-deep shadow-[10px_10px_0_0_#bef264]">
+                  <div class="h-1.5 bg-punch"></div>
+                  <div class="p-6 sm:p-8">
+                    <div class="flex flex-wrap items-center gap-3">
+                      <span class="rounded-md bg-punch px-3 py-1 text-sm font-black uppercase tracking-widest text-ink">
+                        TL;DR
+                      </span>
+                      <span class="text-xs font-bold uppercase tracking-widest text-blue-200">
+                        Too long? Here's the whole article in 30 seconds
+                      </span>
+                    </div>
+                    <div class="tldr-body mt-4" set:html={tldrContent} />
+                  </div>
+                </section>
+
+                <!-- Quick Pick table -->
+                <div class="mt-8 overflow-hidden rounded-2xl border border-ink">
+                  <div class="flex items-center justify-between bg-neutral-900 px-5 py-3">
+                    <h3 class="text-sm font-black uppercase tracking-widest text-punch">
+                      ⚡ Quick Pick — The Shortlist
+                    </h3>
+                    <span class="text-[0.65rem] font-bold uppercase tracking-widest text-neutral-400">
+                      8 of 17 tools
+                    </span>
+                  </div>
+                  <div class="overflow-x-auto">
+                    <table class="w-full min-w-[34rem] text-left text-sm">
+                      <thead>
+                        <tr class="border-b border-neutral-200 bg-neutral-50 text-xs font-black uppercase tracking-wider text-neutral-500">
+                          <th class="px-5 py-3">Tool</th>
+                          <th class="px-5 py-3">Best for</th>
+                          <th class="px-5 py-3">Starting price</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          quickPicks.map((row, i) => (
+                            <tr class={i % 2 === 0 ? "bg-white" : "bg-neutral-50/60"}>
+                              <td class="px-5 py-3 font-black text-ink">{row.tool}</td>
+                              <td class="px-5 py-3 text-neutral-700">{row.bestFor}</td>
+                              <td class="px-5 py-3 font-semibold text-brand">{row.starting}</td>
+                            </tr>
+                          ))
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Jump to full guide -->
+                <a
+                  href={`#${firstSectionId}`}
+                  class="group mt-8 flex items-center justify-between gap-4 rounded-2xl border-2 border-dashed border-brand/50 bg-brand-tint px-6 py-5 transition-colors hover:border-brand hover:bg-brand/10"
+                >
+                  <div>
+                    <p class="text-base font-black text-ink sm:text-lg">
+                      Want the full breakdown? Read the complete guide
+                    </p>
+                    <p class="mt-1 text-sm text-neutral-600">
+                      All {articleHeadings.length} sections — every tool tested, every trade-off covered.
+                    </p>
+                  </div>
+                  <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand text-xl font-black text-paper transition-transform group-hover:translate-y-1">
+                    ↓
+                  </span>
+                </a>
               </div>
             )
           }
 
           <div set:html={restHtml} />
 
-          <!-- Verification card -->
-          <div class="mt-12 rounded-xl border border-neutral-200 bg-neutral-50 p-5">
-            <div class="flex items-center justify-between text-sm">
-              <span class="font-bold uppercase tracking-wider text-brand"
-                >Editorial Grounding Certificate</span
-              >
-              <span class="flex items-center gap-1.5 font-bold text-emerald-700">
-                ✓ Verified
-              </span>
-            </div>
-            <p class="mt-2 text-sm text-neutral-600">
-              This article was audited against public site architecture and verified
-              for factual consistency before publication clearance.
-            </p>
+          <!-- Back to top -->
+          <div class="mt-12 flex justify-center">
+            <a
+              href="#tl-dr"
+              class="rounded-full border border-ink bg-paper px-5 py-2 text-xs font-black uppercase tracking-widest text-ink transition-colors hover:bg-punch"
+            >
+              ↑ Back to top
+            </a>
           </div>
 
           <!-- Email signup -->
@@ -276,3 +359,29 @@ const toc = hasTldr
     </div>
   </article>
 </Layout>
+
+<style>
+  .tldr-body p {
+    margin-top: 0.75rem;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #dbeafe;
+  }
+  .tldr-body strong {
+    color: #fff;
+  }
+  .tldr-body a {
+    color: #bef264;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .tldr-body ul {
+    margin: 1rem 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .tldr-body li span.text-neutral-700 {
+    color: #dbeafe;
+  }
+</style>
