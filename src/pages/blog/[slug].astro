@@ -18,6 +18,10 @@ const renderBody = (body: string): string => {
 
   const inline = (s: string) =>
     escape(s)
+      .replace(
+        /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+        '<a href="$2" class="font-semibold text-brand underline underline-offset-2 hover:opacity-80">$1</a>'
+      )
       .replace(/\*\*(.+?)\*\*/g, "<strong class=\"font-bold text-ink\">$1</strong>")
       .replace(/\*(.+?)\*/g, "<em>$1</em>");
 
