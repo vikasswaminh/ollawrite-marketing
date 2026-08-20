@@ -525,31 +525,107 @@ const faqs = [
     </div>
   </section>
 
-  <!-- Closing CTA -->
-  <!-- The one full-saturation moment on the page. -->
-  <section class="bg-brand text-paper">
-    <div class="wrap py-16 text-center lg:py-24">
-      <h2 class="mx-auto max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">
-        See it against a site you already know well.
-      </h2>
-      <p class="mx-auto mt-5 max-w-xl text-brand-tint">
-        The fastest way to judge it is to point it at your own domain and see
-        whether the audit tells you anything you did not already know.
-      </p>
-      <div class="mt-8 flex flex-wrap justify-center gap-3">
-        <!-- Lime fill with BLACK label: ~13:1. The same lime as text on this
-             cobalt ground would be unreadable. -->
-        <a
-          href={APP}
-          class="rounded-lg border-2 border-punch bg-punch px-6 py-3 font-bold text-ink hover:brightness-95"
-          >Start writing free</a
+  <!-- Closing CTA — redesigned: split-screen, editorial -->
+  <section class="overflow-hidden">
+    <div class="lg:grid lg:grid-cols-2 lg:min-h-[480px]">
+
+      <!-- Left: Dark navy editorial panel -->
+      <div class="relative bg-brand-deep flex flex-col justify-between p-10 lg:p-16 overflow-hidden">
+
+        <!-- Giant bg text watermark -->
+        <p
+          aria-hidden="true"
+          class="pointer-events-none absolute -bottom-6 -left-4 select-none text-[11rem] font-black leading-none text-white/5 lg:text-[14rem]"
         >
-        <a
-          href="/contact"
-          class="rounded-lg border-2 border-paper px-6 py-3 font-bold text-paper hover:bg-brand-deep"
-          >Talk to us</a
-        >
+          Write.
+        </p>
+
+        <div class="relative z-10">
+          <!-- Label -->
+          <span class="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-punch">
+            <span class="block h-px w-8 bg-punch"></span>
+            Get started
+          </span>
+
+          <!-- Headline -->
+          <h2 class="mt-6 text-4xl font-black tracking-tight text-white leading-[1.05] sm:text-5xl lg:text-6xl">
+            See it against<br/>
+            a site you<br/>
+            <span class="text-punch">already know.</span>
+          </h2>
+
+          <p class="mt-6 max-w-sm text-blue-200 leading-relaxed text-sm">
+            The fastest way to judge OllaWrite is to point it at your own domain.
+            The audit will tell you something you didn't already know — or it's free.
+          </p>
+        </div>
+
+        <!-- Bottom: Social proof row -->
+        <div class="relative z-10 mt-12 flex flex-wrap gap-6">
+          {[
+            { val: "12×", label: "faster drafts" },
+            { val: "40+", label: "signals audited" },
+            { val: "4", label: "specialist agents" },
+          ].map((s) => (
+            <div>
+              <p class="text-2xl font-black text-punch">{s.val}</p>
+              <p class="text-xs font-bold uppercase tracking-widest text-blue-300">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Right: Black action panel -->
+      <div class="relative bg-neutral-900 flex flex-col justify-center p-10 lg:p-16">
+
+        <!-- Input mockup -->
+        <div class="rounded-xl border border-white/10 bg-white/5 px-5 py-4 flex items-center gap-3">
+          <span class="text-neutral-500 text-sm font-mono shrink-0">https://</span>
+          <span class="flex-1 text-white/30 text-sm font-mono">yourdomain.com</span>
+          <span class="shrink-0 rounded-md bg-punch px-3 py-1.5 text-xs font-black text-ink">
+            Audit →
+          </span>
+        </div>
+        <p class="mt-2 text-[0.7rem] text-neutral-600 font-medium tracking-wide pl-1">
+          No login needed for the audit preview.
+        </p>
+
+        <!-- Divider -->
+        <div class="my-8 flex items-center gap-4">
+          <span class="flex-1 h-px bg-white/10"></span>
+          <span class="text-xs text-neutral-600 font-bold uppercase tracking-widest">then</span>
+          <span class="flex-1 h-px bg-white/10"></span>
+        </div>
+
+        <!-- CTAs -->
+        <div class="flex flex-col gap-3">
+          <a
+            href={APP}
+            class="group flex items-center justify-between rounded-xl border-2 border-punch bg-punch px-6 py-4 font-black text-ink transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_#bef26440]"
+          >
+            <span>Start writing free</span>
+            <span class="text-lg transition-transform group-hover:translate-x-1">→</span>
+          </a>
+          <a
+            href="/contact"
+            class="group flex items-center justify-between rounded-xl border border-white/15 px-6 py-4 font-bold text-white/70 transition-all hover:border-white/30 hover:text-white"
+          >
+            <span>Talk to the team</span>
+            <span class="text-lg transition-transform group-hover:translate-x-1">→</span>
+          </a>
+        </div>
+
+        <!-- Trust badges -->
+        <div class="mt-8 flex flex-wrap gap-4">
+          {["No credit card", "Cancel anytime", "Your data stays yours"].map((t) => (
+            <span class="flex items-center gap-1.5 text-xs text-neutral-500 font-medium">
+              <span class="text-punch">✓</span> {t}
+            </span>
+          ))}
+        </div>
+
       </div>
     </div>
   </section>
+
 </Layout>
