@@ -165,90 +165,145 @@ const faqs = [
   title="OllaWrite — the AI content writer that reads your site first"
   description="OllaWrite audits your website, researches what ranks, then writes drafts grounded in what it found. Four specialist agents, including an editor that rejects thin work."
 >
-  <!-- Hero -->
-  <section class="border-b border-ink">
-    <div class="wrap grid items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
+  <!-- Hero — Terminal edition -->
+  <section class="relative overflow-hidden bg-neutral-950 border-b border-white/10">
+
+    <!-- Subtle grid bg -->
+    <div class="pointer-events-none absolute inset-0"
+         style="background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:48px 48px">
+    </div>
+
+    <!-- Lime glow blob top-right -->
+    <div class="pointer-events-none absolute -top-32 right-0 h-96 w-96 rounded-full"
+         style="background:radial-gradient(circle,#bef26418 0%,transparent 70%)">
+    </div>
+
+    <div class="wrap relative z-10 grid items-center gap-12 py-20 lg:grid-cols-2 lg:py-28">
+
+      <!-- Left: headline -->
       <div>
-        <p class="eyebrow">AI content writer</p>
-        <h1
-          class="mt-4 text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl"
-        >
-          Content that starts with your <span class="swipe">actual website</span
-          >.
+        <span class="inline-flex items-center gap-2 rounded-full border border-punch/30 bg-punch/10 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-punch">
+          <span class="h-1.5 w-1.5 rounded-full bg-punch animate-pulse"></span>
+          AI content writer
+        </span>
+
+        <h1 class="mt-6 text-5xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl">
+          Your site,<br/>
+          already<br/>
+          <span class="text-punch">read.</span>
         </h1>
-        <p class="mt-6 max-w-xl text-lg text-neutral-700">
-          Most AI writing tools start from a prompt and invent the rest.
-          OllaWrite reads your site first — the pages, the structure, what
-          search sees — then writes from what is really there.
+
+        <p class="mt-6 max-w-md text-base leading-relaxed text-neutral-400">
+          Most AI tools start from a prompt and invent the rest.
+          OllaWrite reads your actual site first — pages, structure,
+          what search sees — then writes from what's really there.
         </p>
+
         <div class="mt-8 flex flex-wrap gap-3">
           <a
             href={APP}
-            class="rounded-lg border-2 border-brand bg-brand px-6 py-3 font-bold text-paper hover:border-brand-deep hover:bg-brand-deep"
-            >Start writing free</a
+            class="group inline-flex items-center gap-2 rounded-lg border-2 border-punch bg-punch px-6 py-3 font-black text-ink transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_#bef26450]"
           >
+            Start writing free
+            <span class="transition-transform group-hover:translate-x-0.5">→</span>
+          </a>
           <a
             href="#how"
-            class="rounded-lg border-2 border-ink bg-paper px-6 py-3 font-bold text-ink hover:bg-neutral-100"
-            >See how it works</a
+            class="inline-flex items-center gap-2 rounded-lg border border-white/15 px-6 py-3 font-bold text-white/70 transition-all hover:border-white/30 hover:text-white"
           >
+            See how it works
+          </a>
         </div>
-        <p class="mt-4 text-sm text-neutral-500">
+
+        <p class="mt-4 text-xs text-neutral-600 font-medium tracking-wide">
           No credit card required · Audit your first site in minutes
         </p>
       </div>
 
-      <!-- Audit mock -->
-      <div class="card overflow-hidden shadow-lg">
-        <div
-          class="flex items-center justify-between border-b border-ink bg-neutral-50 px-5 py-3"
-        >
-          <span class="text-sm font-bold">Site audit</span>
-          <span
-            class="rounded-full border border-emerald-300 bg-paper px-2.5 py-0.5 text-xs font-bold text-emerald-700"
-            >Complete</span
-          >
+      <!-- Right: Terminal window -->
+      <div class="rounded-xl border border-white/10 bg-neutral-900 shadow-[0_32px_80px_#00000080] overflow-hidden">
+
+        <!-- Terminal title bar -->
+        <div class="flex items-center gap-2 border-b border-white/8 bg-neutral-800/80 px-4 py-3">
+          <span class="h-3 w-3 rounded-full bg-red-500/80"></span>
+          <span class="h-3 w-3 rounded-full bg-yellow-500/80"></span>
+          <span class="h-3 w-3 rounded-full bg-green-500/80"></span>
+          <span class="ml-3 flex-1 text-center text-xs text-neutral-500 font-mono">ollawrite — audit</span>
         </div>
-        <div class="space-y-4 p-5">
-          <div class="flex items-baseline justify-between">
-            <span class="text-sm text-neutral-600">example.com</span>
-            <span class="text-3xl font-black text-brand">B+</span>
-          </div>
-          {
-            /* The strongest score gets the lime bar — as a FILL, never as text. */
-            [
-              ["Discoverability", "92", true],
-              ["Content quality", "78", false],
-              ["Structured data", "45", false],
-            ].map(([label, score, best]) => (
-              <div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-neutral-700">{label}</span>
-                  <span class="font-bold">{score}</span>
-                </div>
-                <div class="mt-1.5 h-2 rounded-full bg-neutral-200">
-                  <div
-                    class={`h-2 rounded-full ${best ? "bg-punch" : "bg-brand"}`}
-                    style={`width:${score}%`}
-                  />
-                </div>
-              </div>
-            ))
-          }
-          <div class="rounded-lg border border-brand/20 bg-brand-tint p-3">
-            <p class="text-xs font-bold uppercase tracking-wider text-brand">
-              Top recommendation
+
+        <!-- Terminal body -->
+        <div class="p-6 font-mono text-sm space-y-1 min-h-[320px]">
+
+          <!-- Command line -->
+          <p class="text-neutral-500">
+            <span class="text-punch">~</span>
+            <span class="text-neutral-600"> $ </span>
+            <span class="text-white">ollawrite audit yourdomain.com</span>
+          </p>
+
+          <!-- Output lines — staggered fade-in via CSS animation -->
+          <div class="mt-3 space-y-2 terminal-lines">
+            <p class="terminal-line terminal-line-1 text-neutral-500">Connecting to yourdomain.com...</p>
+            <p class="terminal-line terminal-line-2"><span class="text-punch">✓</span> <span class="text-neutral-300">Sitemap found — <span class="text-white">47 pages</span> indexed</span></p>
+            <p class="terminal-line terminal-line-3"><span class="text-punch">✓</span> <span class="text-neutral-300">robots.txt read — crawl allowed</span></p>
+            <p class="terminal-line terminal-line-4"><span class="text-punch">✓</span> <span class="text-neutral-300">Scoring SEO signals across all pages...</span></p>
+            <p class="terminal-line terminal-line-5"><span class="text-punch">✓</span> <span class="text-neutral-300">Structured data — <span class="text-yellow-400">3 missing schemas</span></span></p>
+            <p class="terminal-line terminal-line-6"><span class="text-punch">✓</span> <span class="text-neutral-300">Content quality pass complete</span></p>
+            <p class="terminal-line terminal-line-7"><span class="text-punch">✓</span> <span class="text-neutral-300">Reading top-ranking competitors...</span></p>
+            <p class="terminal-line terminal-line-8 mt-4 border-t border-white/8 pt-4">
+              <span class="text-white font-black">Audit complete.</span>
+              <span class="text-neutral-500"> Grade: </span>
+              <span class="text-punch font-black text-lg">B+</span>
             </p>
-            <p class="mt-1 text-sm text-neutral-700">
-              Add Article schema — basic eligibility for AI answer surfaces.
+            <p class="terminal-line terminal-line-9 text-neutral-500">→ 3 critical fixes · 8 opportunities · brief ready</p>
+            <p class="terminal-line terminal-line-10 mt-2">
+              <span class="text-neutral-600">Ready to draft? </span>
+              <span class="text-punch">ollawrite draft --brief=audit</span>
+              <span class="terminal-cursor inline-block w-2 h-4 bg-punch ml-0.5 align-middle"></span>
             </p>
           </div>
         </div>
       </div>
+
     </div>
   </section>
 
+  <style is:global>
+    /* Staggered terminal line reveal */
+    .terminal-line {
+      opacity: 0;
+      transform: translateY(4px);
+      animation: termLine 0.3s ease forwards;
+    }
+    .terminal-line-1  { animation-delay: 0.4s; }
+    .terminal-line-2  { animation-delay: 0.9s; }
+    .terminal-line-3  { animation-delay: 1.4s; }
+    .terminal-line-4  { animation-delay: 1.9s; }
+    .terminal-line-5  { animation-delay: 2.4s; }
+    .terminal-line-6  { animation-delay: 2.9s; }
+    .terminal-line-7  { animation-delay: 3.3s; }
+    .terminal-line-8  { animation-delay: 3.8s; }
+    .terminal-line-9  { animation-delay: 4.1s; }
+    .terminal-line-10 { animation-delay: 4.5s; }
+
+    @keyframes termLine {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Blinking cursor */
+    .terminal-cursor {
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+  </style>
+
+
+
   <!-- Stats -->
+
   <section class="border-b border-ink bg-brand-tint">
     <div class="wrap grid grid-cols-2 gap-8 py-10 lg:grid-cols-4">
       {
