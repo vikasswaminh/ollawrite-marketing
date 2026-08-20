@@ -458,36 +458,69 @@ const faqs = [
     </div>
   </section>
 
-  <!-- FAQ -->
-  <section id="faq" class="border-b border-ink scroll-mt-16">
-    <div class="wrap py-16 lg:py-24">
-      <p class="eyebrow">FAQ</p>
-      <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-        Questions worth asking.
-      </h2>
-      <div class="mt-10 max-w-3xl divide-y divide-neutral-200 border-y border-neutral-200">
-        {
-          faqs.map((f) => (
-            <details class="group py-5">
-              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">
-                {f.q}
-                <span
-                  class="shrink-0 text-2xl leading-none text-brand group-open:hidden"
-                  aria-hidden="true"
-                >
-                  +
-                </span>
-                <span
-                  class="hidden shrink-0 text-2xl leading-none text-brand group-open:block"
-                  aria-hidden="true"
-                >
-                  −
-                </span>
-              </summary>
-              <p class="mt-3 max-w-2xl text-neutral-700">{f.a}</p>
-            </details>
-          ))
-        }
+  <!-- FAQ — redesigned: two-column editorial, always-visible answers -->
+  <section id="faq" class="border-b border-ink scroll-mt-16 overflow-hidden">
+
+    <!-- Top bar -->
+    <div class="border-b border-ink bg-neutral-900">
+      <div class="wrap flex items-center justify-between py-4">
+        <p class="text-xs font-black uppercase tracking-[0.25em] text-punch">FAQ</p>
+        <span class="text-xs text-neutral-500 uppercase tracking-widest font-bold">{faqs.length} questions</span>
+      </div>
+    </div>
+
+    <div class="wrap py-0">
+      <div class="lg:grid lg:grid-cols-[300px_1fr]">
+
+        <!-- Left: sticky header -->
+        <div class="relative border-r border-ink">
+          <div class="sticky top-24 p-8 lg:p-10">
+            <!-- Giant watermark -->
+            <p
+              aria-hidden="true"
+              class="select-none font-black text-[7rem] leading-none text-neutral-100 -mx-2"
+            >
+              ?
+            </p>
+            <h2 class="mt-4 text-2xl font-black tracking-tight lg:text-3xl">
+              Questions<br/>worth<br/>asking.
+            </h2>
+            <p class="mt-4 text-sm text-neutral-600 leading-relaxed max-w-[18ch]">
+              Still not answered? We're one message away.
+            </p>
+            <a
+              href="/contact"
+              class="mt-6 inline-flex items-center gap-2 rounded-full border-2 border-ink bg-paper px-5 py-2 text-xs font-black uppercase tracking-widest text-ink shadow-[3px_3px_0_0_#bef264] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0_0_#bef264]"
+            >
+              Ask us →
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Q&As always visible -->
+        <div class="divide-y divide-neutral-200">
+          {
+            faqs.map((f, i) => (
+              <div class={`group px-8 py-10 lg:px-12 lg:py-12 transition-colors hover:bg-neutral-50 ${i === 0 ? "border-t-0" : ""}`}>
+                <div class="flex gap-6">
+                  <!-- Number -->
+                  <span class="shrink-0 mt-1 text-xs font-black tabular-nums text-punch bg-neutral-900 rounded-full w-7 h-7 flex items-center justify-center">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3 class="text-lg font-black text-ink leading-snug lg:text-xl">
+                      {f.q}
+                    </h3>
+                    <p class="mt-3 text-neutral-600 leading-relaxed text-[0.95rem]">
+                      {f.a}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+
       </div>
     </div>
   </section>
