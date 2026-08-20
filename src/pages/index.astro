@@ -386,22 +386,62 @@ const faqs = [
     </div>
   </section>
 
-  <!-- Testimonials -->
-  <section class="border-b border-ink">
-    <div class="wrap py-16 lg:py-24">
-      <p class="eyebrow">What people say</p>
-      <div class="mt-10 grid gap-6 lg:grid-cols-3">
+  <!-- Testimonials — redesigned: dark stage, oversized quotes, staggered heights -->
+  <section class="border-b border-ink bg-brand-deep overflow-hidden">
+    <div class="wrap py-20 lg:py-28">
+
+      <!-- Header -->
+      <div class="flex items-end gap-6 mb-16">
+        <div>
+          <p class="text-xs font-black uppercase tracking-[0.2em] text-punch mb-3">What people say</p>
+          <h2 class="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl leading-none">
+            Real words.<br/><span class="text-punch">Zero spin.</span>
+          </h2>
+        </div>
+        <!-- Decorative rule -->
+        <div class="hidden lg:block flex-1 h-px bg-white/10 mb-3"></div>
+        <span class="hidden lg:block text-white/10 font-black text-8xl leading-none select-none mb-[-12px]">"</span>
+      </div>
+
+      <!-- Cards grid — staggered vertical offsets -->
+      <div class="grid gap-0 lg:grid-cols-3">
         {
-          testimonials.map((t) => (
-            <figure class="card flex h-full flex-col p-6">
-              <blockquote class="grow text-neutral-700">“{t.quote}”</blockquote>
-              <figcaption class="mt-5 border-t border-neutral-200 pt-4 text-sm font-bold">
-                {t.role}
+          testimonials.map((t, i) => (
+            <figure
+              class={`relative flex flex-col border border-white/10 p-8 sm:p-10 transition-colors hover:border-punch/40 hover:bg-white/[0.03] ${
+                i === 1 ? "lg:mt-10 lg:mb-[-40px]" : i === 2 ? "lg:mt-5" : ""
+              } ${i === 0 ? "border-l-2 border-l-punch" : i === 1 ? "border-l-2 border-l-white/30" : "border-l-2 border-l-punch/40"}`}
+            >
+              {/* Oversized decorative quote */}
+              <span
+                aria-hidden="true"
+                class="absolute top-6 right-8 text-[6rem] leading-none font-black select-none text-white/5"
+              >
+                "
+              </span>
+
+              {/* Index number */}
+              <span class="mb-6 text-xs font-black uppercase tracking-[0.2em] text-white/25 tabular-nums">
+                0{i + 1}
+              </span>
+
+              {/* Quote */}
+              <blockquote class="grow text-lg sm:text-xl font-medium leading-relaxed text-white/90 relative z-10">
+                "{t.quote}"
+              </blockquote>
+
+              {/* Attribution */}
+              <figcaption class="mt-8 flex items-center gap-3">
+                <span class={`h-px flex-1 ${i === 0 ? "bg-punch" : "bg-white/15"}`} />
+                <span class="text-xs font-bold uppercase tracking-widest text-white/50">
+                  {t.role}
+                </span>
               </figcaption>
             </figure>
           ))
         }
       </div>
+
     </div>
   </section>
 
