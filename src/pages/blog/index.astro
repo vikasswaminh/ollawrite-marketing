@@ -69,7 +69,7 @@ const secondaryPosts = BLOG_POSTS.slice(1);
     <div class="wrap py-12">
       <!-- Featured -->
       <article
-        class="card blog-card mb-10 overflow-hidden p-6 shadow-[4px_4px_0_0_#bef264] sm:p-8"
+        class="card blog-card mb-10 overflow-hidden p-6 shadow-[4px_4px_0_0_#1d4ed8] sm:p-8"
         data-category={featuredPost.category}
         data-search={`${featuredPost.title} ${featuredPost.excerpt}`.toLowerCase()}
       >
@@ -81,7 +81,7 @@ const secondaryPosts = BLOG_POSTS.slice(1);
               >
                 {featuredPost.category}
               </span>
-              <span class="rounded-full bg-punch px-2 py-0.5 text-[0.65rem] font-black uppercase text-ink ring-1 ring-ink">
+              <span class="rounded-full bg-brand px-2.5 py-0.5 text-[0.65rem] font-bold uppercase text-white ring-1 ring-ink">
                 Latest Dispatch
               </span>
             </div>
@@ -146,7 +146,7 @@ const secondaryPosts = BLOG_POSTS.slice(1);
         {
           secondaryPosts.map((post) => (
             <article
-              class="card blog-card flex flex-col justify-between p-6 transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#bef264]"
+              class="card blog-card flex flex-col justify-between p-6 transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#1d4ed8]"
               data-category={post.category}
               data-search={`${post.title} ${post.excerpt}`.toLowerCase()}
             >
