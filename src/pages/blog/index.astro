@@ -4,11 +4,11 @@ import { BLOG_POSTS } from "../../data/blog";
 
 const categories = [
   "All",
+  "AI Writing & Strategy",
   "AI Tools & Strategy",
   "Product & Research",
   "Engineering",
   "SEO & Strategy",
-  "Editorial",
 ];
 
 const featuredPost = BLOG_POSTS[0];
@@ -44,7 +44,7 @@ const secondaryPosts = BLOG_POSTS.slice(1);
                   data-category={cat}
                   aria-pressed={i === 0 ? "true" : "false"}
                   class:list={[
-                    "blog-filter rounded-full border px-3 py-1 text-xs font-bold transition-colors",
+                    "blog-filter rounded-full border px-3.5 py-1 text-xs font-bold transition-colors",
                     i === 0
                       ? "border-brand bg-brand text-white"
                       : "border-neutral-300 bg-paper text-neutral-700 hover:border-neutral-400",
@@ -69,17 +69,22 @@ const secondaryPosts = BLOG_POSTS.slice(1);
     <div class="wrap py-12">
       <!-- Featured -->
       <article
-        class="card blog-card mb-8 overflow-hidden p-6 shadow-sm sm:p-8"
+        class="card blog-card mb-10 overflow-hidden p-6 shadow-[4px_4px_0_0_#bef264] sm:p-8"
         data-category={featuredPost.category}
         data-search={`${featuredPost.title} ${featuredPost.excerpt}`.toLowerCase()}
       >
         <div class="grid gap-8 lg:grid-cols-[2fr_1fr]">
           <div>
-            <span
-              class="rounded-full border border-brand/30 bg-brand-tint px-2.5 py-0.5 text-xs font-bold text-brand"
-            >
-              {featuredPost.category}
-            </span>
+            <div class="flex items-center gap-2">
+              <span
+                class="rounded-full border border-brand/30 bg-brand-tint px-3 py-0.5 text-xs font-bold text-brand"
+              >
+                {featuredPost.category}
+              </span>
+              <span class="rounded-full bg-punch px-2 py-0.5 text-[0.65rem] font-black uppercase text-ink ring-1 ring-ink">
+                Latest Dispatch
+              </span>
+            </div>
             <h2
               class="mt-3 text-2xl font-black leading-snug tracking-tight sm:text-3xl"
             >
@@ -90,11 +95,11 @@ const secondaryPosts = BLOG_POSTS.slice(1);
                 {featuredPost.title}
               </a>
             </h2>
-            <p class="mt-3 text-neutral-600">{featuredPost.excerpt}</p>
-            <div class="mt-4 flex items-center gap-3 text-sm text-neutral-500">
+            <p class="mt-3 text-neutral-600 leading-relaxed">{featuredPost.excerpt}</p>
+            <div class="mt-5 flex items-center gap-3 text-sm text-neutral-500">
               <span class="font-bold text-ink">{featuredPost.author.name}</span>
               <span>·</span>
-              <span>{featuredPost.date}</span>
+              <span class="font-semibold text-brand">{featuredPost.date}</span>
               <span>·</span>
               <span>{featuredPost.readTime}</span>
             </div>
@@ -105,32 +110,32 @@ const secondaryPosts = BLOG_POSTS.slice(1);
             <div>
               <span
                 class="text-xs font-bold uppercase tracking-widest text-brand"
-                >Featured</span
+                >Key Takeaways</span
               >
               <ul class="mt-3 space-y-2 text-sm text-neutral-700">
                 <li class="flex items-start gap-2">
-                  <span class="mt-0.5 text-brand">✓</span>
-                  <span>17 AI writing tools tested &amp; compared</span>
+                  <span class="mt-0.5 font-bold text-brand">✓</span>
+                  <span>5-tier comparison matrix: prompt to multi-agent</span>
                 </li>
                 <li class="flex items-start gap-2">
-                  <span class="mt-0.5 text-brand">✓</span>
-                  <span>Honest verdicts — who should use &amp; skip each tool</span>
+                  <span class="mt-0.5 font-bold text-brand">✓</span>
+                  <span>The 5-step pipeline: research, brief, draft, critique</span>
                 </li>
                 <li class="flex items-start gap-2">
-                  <span class="mt-0.5 text-brand">✓</span>
-                  <span>How to humanize AI-written content</span>
+                  <span class="mt-0.5 font-bold text-brand">✓</span>
+                  <span>The 80/20 hybrid editorial workflow</span>
                 </li>
                 <li class="flex items-start gap-2">
-                  <span class="mt-0.5 text-brand">✓</span>
-                  <span>6-question FAQ for quick answers</span>
+                  <span class="mt-0.5 font-bold text-brand">✓</span>
+                  <span>6-point buyer's evaluation checklist</span>
                 </li>
               </ul>
             </div>
             <a
               href={`/blog/${featuredPost.slug}`}
-              class="mt-4 inline-block rounded-lg border-2 border-brand bg-brand px-5 py-2 text-center text-sm font-bold text-white transition-colors hover:border-brand-deep hover:bg-brand-deep"
+              class="mt-5 inline-flex items-center justify-center gap-2 rounded-lg border-2 border-brand bg-brand px-5 py-2.5 text-center text-sm font-bold text-white transition-all hover:border-brand-deep hover:bg-brand-deep hover:shadow-md"
             >
-              Read dispatch →
+              Read more →
             </a>
           </div>
         </div>
@@ -141,15 +146,20 @@ const secondaryPosts = BLOG_POSTS.slice(1);
         {
           secondaryPosts.map((post) => (
             <article
-              class="card blog-card flex flex-col p-6"
+              class="card blog-card flex flex-col justify-between p-6 transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#bef264]"
               data-category={post.category}
               data-search={`${post.title} ${post.excerpt}`.toLowerCase()}
             >
               <div>
-                <span class="text-xs font-bold uppercase tracking-wider text-neutral-500">
-                  {post.category}
-                </span>
-                <h3 class="mt-2 text-lg font-bold leading-snug">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold uppercase tracking-wider text-neutral-500">
+                    {post.category}
+                  </span>
+                  <span class="text-xs font-medium text-neutral-400">
+                    {post.date}
+                  </span>
+                </div>
+                <h3 class="mt-2.5 text-lg font-bold leading-snug">
                   <a
                     href={`/blog/${post.slug}`}
                     class="transition-colors hover:text-brand"
@@ -157,15 +167,20 @@ const secondaryPosts = BLOG_POSTS.slice(1);
                     {post.title}
                   </a>
                 </h3>
-                <p class="mt-2 text-sm text-neutral-600 line-clamp-3">
+                <p class="mt-2 text-sm text-neutral-600 line-clamp-3 leading-relaxed">
                   {post.excerpt}
                 </p>
               </div>
-              <div class="mt-5 flex items-center justify-between border-t border-neutral-200 pt-4 text-xs text-neutral-500">
+              <div class="mt-6 flex items-center justify-between border-t border-neutral-200 pt-4 text-xs text-neutral-500">
                 <span class="font-bold text-neutral-700">
-                  {post.author.name}
+                  {post.readTime}
                 </span>
-                <span>{post.readTime}</span>
+                <a
+                  href={`/blog/${post.slug}`}
+                  class="inline-flex items-center gap-1 font-bold text-brand hover:text-brand-deep hover:underline"
+                >
+                  Read more →
+                </a>
               </div>
             </article>
           ))

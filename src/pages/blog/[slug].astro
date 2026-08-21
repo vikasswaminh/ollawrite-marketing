@@ -39,6 +39,54 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
     )}</span></li>`;
   };
 
+  const parseTable = (tableBlock: string) => {
+    const lines = tableBlock.trim().split("\n").filter((l) => l.trim().startsWith("|"));
+    if (lines.length < 2) return "";
+    const headers = lines[0]
+      .split("|")
+      .map((s) => s.trim())
+      .filter((_, i, arr) => i > 0 && i < arr.length - 1);
+    const rows = lines
+      .slice(2)
+      .map((line) =>
+        line
+          .split("|")
+          .map((s) => s.trim())
+          .filter((_, i, arr) => i > 0 && i < arr.length - 1)
+      );
+
+    const ths = headers
+      .map((h) => `<th class="px-5 py-3 font-black text-ink">${inline(h)}</th>`)
+      .join("");
+    const trs = rows
+      .map((row, idx) => {
+        const tds = row
+          .map((cell, cIdx) => {
+            const isFirst = cIdx === 0;
+            return `<td class="px-5 py-3.5 ${isFirst ? "font-black text-ink" : "text-neutral-700"}">${inline(cell)}</td>`;
+          })
+          .join("");
+        const bg = idx % 2 === 0 ? "bg-white" : "bg-neutral-50/70";
+        return `<tr class="${bg} transition-colors hover:bg-brand-tint/30">${tds}</tr>`;
+      })
+      .join("");
+
+    return `<div class="table-container my-8 overflow-hidden rounded-2xl border border-ink shadow-[4px_4px_0_0_#bef264]">
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[34rem] text-left text-sm">
+          <thead>
+            <tr class="border-b-2 border-ink bg-neutral-50 text-xs font-black uppercase tracking-wider text-neutral-600">
+              ${ths}
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-neutral-200">
+            ${trs}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+  };
+
   const out: string[] = [];
   const headings: { id: string; text: string }[] = [];
   let list: string[] = [];
@@ -50,6 +98,13 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
   };
 
   body.split("\n\n").forEach((block) => {
+    const trimmedBlock = block.trim();
+    if (trimmedBlock.startsWith("|") && trimmedBlock.includes("\n|")) {
+      flushList();
+      out.push(parseTable(trimmedBlock));
+      return;
+    }
+
     const lines = block.split("\n");
     lines.forEach((line) => {
       const trimmed = line.trim();
@@ -129,6 +184,7 @@ const toc = hasTldr
 
 const firstSectionId = articleHeadings.length ? articleHeadings[0].id : "top";
 
+const showQuickPicks = post.slug === "best-ai-writing-tools-in-2026";
 const quickPicks = [
   { tool: "ChatGPT", bestFor: "Everyday all-round writing", starting: "Free / $20 mo" },
   { tool: "Claude", bestFor: "Long-form, natural voice", starting: "Free / $20 mo" },
@@ -246,39 +302,43 @@ const quickPicks = [
                   </div>
                 </section>
 
-                <!-- Quick Pick table -->
-                <div class="mt-8 overflow-hidden rounded-2xl border border-ink">
-                  <div class="flex items-center justify-between bg-neutral-900 px-5 py-3">
-                    <h3 class="text-sm font-black uppercase tracking-widest text-punch">
-                      ⚡ Quick Pick — The Shortlist
-                    </h3>
-                    <span class="text-[0.65rem] font-bold uppercase tracking-widest text-neutral-400">
-                      8 of 17 tools
-                    </span>
-                  </div>
-                  <div class="overflow-x-auto">
-                    <table class="w-full min-w-[34rem] text-left text-sm">
-                      <thead>
-                        <tr class="border-b border-neutral-200 bg-neutral-50 text-xs font-black uppercase tracking-wider text-neutral-500">
-                          <th class="px-5 py-3">Tool</th>
-                          <th class="px-5 py-3">Best for</th>
-                          <th class="px-5 py-3">Starting price</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {
-                          quickPicks.map((row, i) => (
-                            <tr class={i % 2 === 0 ? "bg-white" : "bg-neutral-50/60"}>
-                              <td class="px-5 py-3 font-black text-ink">{row.tool}</td>
-                              <td class="px-5 py-3 text-neutral-700">{row.bestFor}</td>
-                              <td class="px-5 py-3 font-semibold text-brand">{row.starting}</td>
+                {/* Quick Pick table only for BLOG1 */}
+                {
+                  showQuickPicks && (
+                    <div class="mt-8 overflow-hidden rounded-2xl border border-ink">
+                      <div class="flex items-center justify-between bg-neutral-900 px-5 py-3">
+                        <h3 class="text-sm font-black uppercase tracking-widest text-punch">
+                          ⚡ Quick Pick — The Shortlist
+                        </h3>
+                        <span class="text-[0.65rem] font-bold uppercase tracking-widest text-neutral-400">
+                          8 of 17 tools
+                        </span>
+                      </div>
+                      <div class="overflow-x-auto">
+                        <table class="w-full min-w-[34rem] text-left text-sm">
+                          <thead>
+                            <tr class="border-b border-neutral-200 bg-neutral-50 text-xs font-black uppercase tracking-wider text-neutral-500">
+                              <th class="px-5 py-3">Tool</th>
+                              <th class="px-5 py-3">Best for</th>
+                              <th class="px-5 py-3">Starting price</th>
                             </tr>
-                          ))
-                        }
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                          </thead>
+                          <tbody>
+                            {
+                              quickPicks.map((row, i) => (
+                                <tr class={i % 2 === 0 ? "bg-white" : "bg-neutral-50/60"}>
+                                  <td class="px-5 py-3 font-black text-ink">{row.tool}</td>
+                                  <td class="px-5 py-3 text-neutral-700">{row.bestFor}</td>
+                                  <td class="px-5 py-3 font-semibold text-brand">{row.starting}</td>
+                                </tr>
+                              ))
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )
+                }
 
                 <!-- Read more: jump to full guide -->
                 <div class="mt-6 flex justify-center">
@@ -296,10 +356,36 @@ const quickPicks = [
 
           <div set:html={restHtml} />
 
+          <!-- Bottom quick action bar: direct link to TL;DR -->
+          {
+            hasTldr && (
+              <div class="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-ink bg-neutral-50 p-5 shadow-[4px_4px_0_0_#bef264]">
+                <div class="flex items-center gap-2 text-sm font-bold text-neutral-700">
+                  <span class="grid h-6 w-6 place-items-center rounded-full bg-punch text-xs font-black text-ink ring-1 ring-ink">⚡</span>
+                  <span>Finished reading? Need a quick recap?</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <a
+                    href="#tl-dr"
+                    class="inline-flex items-center gap-1.5 rounded-lg border border-ink bg-punch px-4 py-2 text-xs font-black uppercase tracking-wider text-ink shadow-[2px_2px_0_0_#0f172a] transition-all hover:-translate-y-0.5"
+                  >
+                    ↑ Jump back to 30-sec TL;DR
+                  </a>
+                  <a
+                    href="https://login.ollawrite.com"
+                    class="inline-flex items-center gap-1.5 rounded-lg border-2 border-brand bg-brand px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-colors hover:bg-brand-deep"
+                  >
+                    Audit your site free →
+                  </a>
+                </div>
+              </div>
+            )
+          }
+
           <!-- Back to top -->
-          <div class="mt-12 flex justify-center">
+          <div class="mt-8 flex justify-center">
             <a
-              href="#tl-dr"
+              href="#main"
               class="rounded-full border border-ink bg-paper px-5 py-2 text-xs font-black uppercase tracking-widest text-ink transition-colors hover:bg-punch"
             >
               ↑ Back to top
