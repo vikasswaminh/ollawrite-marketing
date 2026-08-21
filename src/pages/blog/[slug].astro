@@ -186,14 +186,10 @@ const firstSectionId = articleHeadings.length ? articleHeadings[0].id : "top";
 
 const showQuickPicks = post.slug === "best-ai-writing-tools-in-2026";
 const quickPicks = [
-  { tool: "ChatGPT", bestFor: "Everyday all-round writing", starting: "Free / $20 mo" },
-  { tool: "Claude", bestFor: "Long-form, natural voice", starting: "Free / $20 mo" },
-  { tool: "Gemini", bestFor: "Google Workspace users", starting: "Free / $20 mo" },
-  { tool: "Jasper", bestFor: "Marketing teams at scale", starting: "$39/mo" },
-  { tool: "Grammarly", bestFor: "Polishing & correctness", starting: "Free / $12 mo" },
-  { tool: "Surfer SEO", bestFor: "Content that ranks", starting: "$89/mo" },
-  { tool: "Sudowrite", bestFor: "Fiction & storytelling", starting: "$19/mo" },
-  { tool: "Rytr", bestFor: "Tight budgets", starting: "Free / $9 mo" },
+  { tool: "AI Assistant", bestFor: "Conversational drafting, code review & legal redlines", starting: "Reactive / Chat" },
+  { tool: "Contextual Assistant", bestFor: "Workspace document synthesis & file ingestion", starting: "Reactive / Workspace" },
+  { tool: "Advisory Agent", bestFor: "24/7 background audit, pipeline & anomaly monitoring", starting: "Proactive / Scheduled" },
+  { tool: "Autonomous Agent", bestFor: "Multi-step tool execution with human approval gate", starting: "Proactive / Real Tools" },
 ];
 ---
 
@@ -308,19 +304,19 @@ const quickPicks = [
                     <div class="mt-8 overflow-hidden rounded-2xl border border-ink shadow-[4px_4px_0_0_#1d4ed8]">
                       <div class="flex items-center justify-between bg-neutral-900 px-5 py-3">
                         <h3 class="text-sm font-black uppercase tracking-widest text-blue-300">
-                          ⚡ Quick Pick — The Shortlist
+                          ⚡ Architecture Matrix — The 4 Tiers
                         </h3>
                         <span class="text-[0.65rem] font-bold uppercase tracking-widest text-neutral-400">
-                          8 tools
+                          4 tiers
                         </span>
                       </div>
                       <div class="overflow-x-auto">
                         <table class="w-full min-w-[34rem] text-left text-sm">
                           <thead>
                             <tr class="border-b border-neutral-200 bg-neutral-50 text-xs font-black uppercase tracking-wider text-neutral-500">
-                              <th class="px-5 py-3">Tool</th>
+                              <th class="px-5 py-3">Architecture</th>
                               <th class="px-5 py-3">Best for</th>
-                              <th class="px-5 py-3">Starting price</th>
+                              <th class="px-5 py-3">Execution Model</th>
                             </tr>
                           </thead>
                           <tbody>
