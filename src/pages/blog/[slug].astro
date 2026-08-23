@@ -116,18 +116,18 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
 
       if (trimmed.startsWith("### ")) {
         out.push(
-          `<h3 class="mt-10 mb-3 text-xl font-bold text-ink sm:text-2xl">${inline(
+          `<div class="mt-8 mb-4 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm hover:border-brand/50 transition-colors"><h3 class="text-lg font-bold text-ink sm:text-xl flex items-center gap-2"><span class="text-brand">▪</span> ${inline(
             trimmed.replace("### ", "")
-          )}</h3>`
+          )}</h3></div>`
         );
       } else if (trimmed.startsWith("## ")) {
         const text = trimmed.replace("## ", "");
         const id = slugify(text);
         headings.push({ id, text });
         out.push(
-          `<h2 id="${id}" class="group mt-16 mb-5 scroll-mt-24 text-2xl font-black tracking-tight text-ink sm:text-3xl border-l-4 border-brand pl-4"><a href="#${id}" class="hover:text-brand">${inline(
+          `<h2 id="${id}" class="group mt-16 mb-5 scroll-mt-24 text-2xl font-black tracking-tight text-ink sm:text-3xl border-l-4 border-brand pl-4 flex items-center justify-between"><a href="#${id}" class="hover:text-brand">${inline(
             text
-          )}</a><a href="#${id}" aria-label="Direct link to this section" class="ml-2 align-middle text-sm font-bold text-brand opacity-0 transition-opacity group-hover:opacity-100">#</a></h2>`
+          )}</a><a href="#${id}" aria-label="Direct link to this section" class="text-sm font-bold text-brand opacity-0 transition-opacity group-hover:opacity-100">#</a></h2>`
         );
       } else if (trimmed.startsWith("Who should use it:")) {
         out.push(
@@ -140,6 +140,12 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
           `<div class="my-5 rounded-xl border border-amber-200 bg-amber-50/70 p-4 text-sm text-amber-900"><strong class="font-bold text-amber-800">Who should skip it:</strong> ${inline(
             trimmed.replace(/^Who should skip it:\s*/i, "")
           )}</div>`
+        );
+      } else if (trimmed.startsWith("1. ") || trimmed.startsWith("2. ") || trimmed.startsWith("3. ") || trimmed.startsWith("4. ") || trimmed.startsWith("5. ")) {
+        const num = trimmed.substring(0, 3);
+        const rest = trimmed.substring(3);
+        out.push(
+          `<div class="my-4 rounded-xl border border-ink/20 bg-neutral-50 p-4 text-sm text-neutral-800 shadow-sm"><strong class="font-bold text-brand text-base mr-2">${num}</strong>${inline(rest)}</div>`
         );
       } else if (trimmed) {
         out.push(`<p class="mt-5 text-[1.05rem] leading-8 text-neutral-700">${inline(trimmed)}</p>`);
@@ -158,9 +164,7 @@ const { html: bodyHtml, headings } = renderBody(post.body);
 const hasTldr = headings.length > 0 && headings[0].text === "TL;DR";
 const articleHeadings = hasTldr ? headings.slice(1) : headings;
 
-// Split body: TL;DR summary vs rest. Only the summary paragraphs (up to the
-// OllaWrite plug paragraph) go inside the highlighted card; the intro
-// paragraphs that follow stay in the normal article flow.
+// Split body: TL;DR summary vs rest.
 let tldrContent = "";
 let restHtml = bodyHtml;
 if (hasTldr) {
@@ -184,36 +188,80 @@ const toc = hasTldr
 
 const firstSectionId = articleHeadings.length ? articleHeadings[0].id : "top";
 
+const isAiContentGenerator = post.slug === "ai-content-generator-complete-guide";
 const isBestAiWritingTools = post.slug === "best-ai-writing-tools-in-2026";
 const isAiAgentsVsAssistants = post.slug === "ai-agents-vs-ai-assistants";
 
-const showQuickPicks = isBestAiWritingTools || isAiAgentsVsAssistants;
+const showQuickPicks = isAiContentGenerator || isBestAiWritingTools || isAiAgentsVsAssistants;
 
-const quickPickConfig = isBestAiWritingTools
+const quickPickConfig = isAiContentGenerator
+  ? {
+      title: "⚡ The 5 AI Content Generator Architectures — Comparison Matrix",
+      badge: "5 Architectures",
+      headers: ["Generator Category", "Core Mechanism", "Best Fit", "Interactive Action"],
+      rows: [
+        {
+          c1: "General Reasoning Models",
+          c2: "Next-token prediction + Instruction tuning (Claude, ChatGPT)",
+          c3: "Versatile essays, outlining, reasoning & drafts",
+          actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
+          actionText: "Open Chapter →",
+        },
+        {
+          c1: "Marketing Workflow Platforms",
+          c2: "Prompt templates + Multi-channel governance (Jasper, Copy.ai)",
+          c3: "High-volume ad copy, emails & campaign assets",
+          actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
+          actionText: "Open Chapter →",
+        },
+        {
+          c1: "SEO-Native Ranking Platforms",
+          c2: "Live SERP scraping + Search intent scoring (Surfer, Frase)",
+          c3: "Competitive search ranking & content briefs",
+          actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
+          actionText: "Open Chapter →",
+        },
+        {
+          c1: "Niche Creative Specialists",
+          c2: "Genre heuristics + Narrative continuity (Sudowrite)",
+          c3: "Fiction manuscripts, plotting & creative scenes",
+          actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
+          actionText: "Open Chapter →",
+        },
+        {
+          c1: "Site-Grounded Multi-Agent",
+          c2: "Live sitemap crawling + Critic verification (OllaWrite)",
+          c3: "Verifiable, factual, site-anchored publishing",
+          actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
+          actionText: "Open Chapter →",
+        },
+      ],
+    }
+  : isBestAiWritingTools
   ? {
       title: "⚡ Quick Pick — The Shortlist",
       badge: "8 Tools",
-      headers: ["Tool", "Best for", "Category / Focus"],
+      headers: ["Tool", "Best for", "Category / Focus", "Interactive Action"],
       rows: [
-        { c1: "ChatGPT", c2: "Versatile research, outlining & drafting", c3: "General Model" },
-        { c1: "Claude", c2: "Natural long-form flow & nuanced tone", c3: "General Model" },
-        { c1: "Google Gemini", c2: "Google Workspace & Docs integration", c3: "Ecosystem" },
-        { c1: "Writesonic", c2: "High-volume SEO content at scale", c3: "SEO Drafting" },
-        { c1: "Grammarly", c2: "Real-time grammar, clarity & polish", c3: "Editing" },
-        { c1: "Surfer SEO", c2: "SERP-driven on-page ranking scoring", c3: "SEO Ranking" },
-        { c1: "Notion AI", c2: "Workspace-integrated drafting & notes", c3: "Productivity" },
-        { c1: "Sudowrite", c2: "Fiction, plot brainstorming & scenes", c3: "Creative" },
+        { c1: "ChatGPT", c2: "Versatile research, outlining & drafting", c3: "General Model", actionUrl: "#chatgpt-still-the-default", actionText: "Open →" },
+        { c1: "Claude", c2: "Natural long-form flow & nuanced tone", c3: "General Model", actionUrl: "#claude-natural-long-form-writing", actionText: "Open →" },
+        { c1: "Google Gemini", c2: "Google Workspace & Docs integration", c3: "Ecosystem", actionUrl: "#google-gemini-best-for-google-workspace", actionText: "Open →" },
+        { c1: "Writesonic", c2: "High-volume SEO content at scale", c3: "SEO Drafting", actionUrl: "#writesonic-seo-focused-content", actionText: "Open →" },
+        { c1: "Grammarly", c2: "Real-time grammar, clarity & polish", c3: "Editing", actionUrl: "#grammarly-best-for-editing-and-polish", actionText: "Open →" },
+        { c1: "Surfer SEO", c2: "SERP-driven on-page ranking scoring", c3: "SEO Ranking", actionUrl: "#surfer-seo-for-search-rankings", actionText: "Open →" },
+        { c1: "Notion AI", c2: "Workspace-integrated drafting & notes", c3: "Productivity", actionUrl: "#notion-ai-writing-inside-your-workspace", actionText: "Open →" },
+        { c1: "Sudowrite", c2: "Fiction, plot brainstorming & scenes", c3: "Creative", actionUrl: "#sudowrite-for-fiction-writers", actionText: "Open →" },
       ],
     }
   : {
       title: "⚡ Architecture Matrix — The 4 Tiers",
       badge: "4 Tiers",
-      headers: ["Architecture", "Best for", "Execution Model"],
+      headers: ["Architecture", "Best for", "Execution Model", "Interactive Action"],
       rows: [
-        { c1: "AI Assistant", c2: "Conversational drafting, code review & legal redlines", c3: "Reactive / Chat" },
-        { c1: "Contextual Assistant", c2: "Workspace document synthesis & file ingestion", c3: "Reactive / Workspace" },
-        { c1: "Advisory Agent", c2: "24/7 background audit, pipeline & anomaly monitoring", c3: "Proactive / Scheduled" },
-        { c1: "Autonomous Agent", c2: "Multi-step tool execution with human approval gate", c3: "Proactive / Real Tools" },
+        { c1: "AI Assistant", c2: "Conversational drafting, code review & legal redlines", c3: "Reactive / Chat", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open →" },
+        { c1: "Contextual Assistant", c2: "Workspace document synthesis & file ingestion", c3: "Reactive / Workspace", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open →" },
+        { c1: "Advisory Agent", c2: "24/7 background audit, pipeline & anomaly monitoring", c3: "Proactive / Scheduled", actionUrl: "#under-the-hood-the-5-step-pipeline", actionText: "Open →" },
+        { c1: "Autonomous Agent", c2: "Multi-step tool execution with human approval gate", c3: "Proactive / Real Tools", actionUrl: "#under-the-hood-the-5-step-pipeline", actionText: "Open →" },
       ],
     };
 ---
@@ -323,13 +371,13 @@ const quickPickConfig = isBestAiWritingTools
                   </div>
                 </section>
 
-                {/* Quick Pick table */}
+                {/* Quick Pick / Architecture Comparison Matrix Table */}
                 {
                   showQuickPicks && (
                     <div class="mt-8 overflow-hidden rounded-2xl border border-ink shadow-[4px_4px_0_0_#1d4ed8]">
                       <div class="flex items-center justify-between bg-neutral-900 px-5 py-3">
-                        <h3 class="text-sm font-black uppercase tracking-widest text-blue-300">
-                          {quickPickConfig.title}
+                        <h3 class="text-sm font-black uppercase tracking-widest text-blue-300 flex items-center gap-2">
+                          <span>⚡</span> {quickPickConfig.title}
                         </h3>
                         <span class="text-[0.65rem] font-bold uppercase tracking-widest text-neutral-400">
                           {quickPickConfig.badge}
@@ -342,15 +390,24 @@ const quickPickConfig = isBestAiWritingTools
                               <th class="px-5 py-3">{quickPickConfig.headers[0]}</th>
                               <th class="px-5 py-3">{quickPickConfig.headers[1]}</th>
                               <th class="px-5 py-3">{quickPickConfig.headers[2]}</th>
+                              <th class="px-5 py-3 text-right">{quickPickConfig.headers[3]}</th>
                             </tr>
                           </thead>
                           <tbody>
                             {
                               quickPickConfig.rows.map((row, i) => (
-                                <tr class={i % 2 === 0 ? "bg-white" : "bg-neutral-50/60"}>
-                                  <td class="px-5 py-3 font-black text-ink">{row.c1}</td>
-                                  <td class="px-5 py-3 text-neutral-700">{row.c2}</td>
-                                  <td class="px-5 py-3 font-semibold text-brand">{row.c3}</td>
+                                <tr class={`transition-colors hover:bg-blue-50/50 ${i % 2 === 0 ? "bg-white" : "bg-neutral-50/60"}`}>
+                                  <td class="px-5 py-3.5 font-black text-ink">{row.c1}</td>
+                                  <td class="px-5 py-3.5 text-neutral-700 text-xs">{row.c2}</td>
+                                  <td class="px-5 py-3.5 font-semibold text-brand text-xs">{row.c3}</td>
+                                  <td class="px-5 py-3.5 text-right">
+                                    <a
+                                      href={row.actionUrl}
+                                      class="inline-flex items-center gap-1 rounded-md border border-brand bg-brand-tint px-2.5 py-1 text-xs font-black text-brand transition-all hover:bg-brand hover:text-white shadow-sm"
+                                    >
+                                      {row.actionText}
+                                    </a>
+                                  </td>
                                 </tr>
                               ))
                             }
@@ -361,7 +418,7 @@ const quickPickConfig = isBestAiWritingTools
                   )
                 }
 
-                {/* Interactive Chapter Box Grid */}
+                {/* Interactive Chapter Box Grid inspired by 24observe */}
                 <div class="mt-8 overflow-hidden rounded-2xl border border-ink bg-neutral-50 p-5 shadow-[4px_4px_0_0_#1d4ed8]">
                   <div class="flex items-center justify-between border-b border-neutral-200 pb-3">
                     <h3 class="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-ink">
