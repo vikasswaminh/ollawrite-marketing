@@ -361,8 +361,8 @@ const quickPickConfig = isAiContentGenerator
 
         <!-- Article content -->
         <div class="min-w-0 flex-1 lg:max-w-[56rem]">
-          <!-- 1. TABLE OF CONTENTS IN TOP (AS REQUESTED) -->
-          <section id="table-of-contents-top" class="mb-10 scroll-mt-24">
+          <!-- 1. TABLE OF CONTENTS: CHAPTER MODULES (TOP) -->
+          <section id="table-of-contents-top" class="mb-8 scroll-mt-24">
             <!-- Interactive Chapter Box Grid inspired by 24observe -->
             <div class="overflow-hidden rounded-2xl border border-ink bg-neutral-50 p-5 shadow-[4px_4px_0_0_#1d4ed8]">
               <div class="flex items-center justify-between border-b border-neutral-200 pb-3">
@@ -396,59 +396,12 @@ const quickPickConfig = isAiContentGenerator
                 }
               </div>
             </div>
-
-            <!-- Quick Pick / Architecture Comparison Matrix Table with Interactive Jumps -->
-            {
-              showQuickPicks && (
-                <div class="mt-6 overflow-hidden rounded-2xl border border-ink shadow-[4px_4px_0_0_#1d4ed8]">
-                  <div class="flex items-center justify-between bg-neutral-900 px-5 py-3">
-                    <h3 class="text-sm font-black uppercase tracking-widest text-blue-300 flex items-center gap-2">
-                      <span>⚡</span> {quickPickConfig.title}
-                    </h3>
-                    <span class="text-[0.65rem] font-bold uppercase tracking-widest text-neutral-400">
-                      {quickPickConfig.badge}
-                    </span>
-                  </div>
-                  <div class="overflow-x-auto">
-                    <table class="w-full min-w-[34rem] text-left text-sm">
-                      <thead>
-                        <tr class="border-b border-neutral-200 bg-neutral-50 text-xs font-black uppercase tracking-wider text-neutral-500">
-                          <th class="px-5 py-3">{quickPickConfig.headers[0]}</th>
-                          <th class="px-5 py-3">{quickPickConfig.headers[1]}</th>
-                          <th class="px-5 py-3">{quickPickConfig.headers[2]}</th>
-                          <th class="px-5 py-3 text-right">{quickPickConfig.headers[3]}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {
-                          quickPickConfig.rows.map((row, i) => (
-                            <tr class={`transition-colors hover:bg-blue-50/50 ${i % 2 === 0 ? "bg-white" : "bg-neutral-50/60"}`}>
-                              <td class="px-5 py-3.5 font-black text-ink">{row.c1}</td>
-                              <td class="px-5 py-3.5 text-neutral-700 text-xs">{row.c2}</td>
-                              <td class="px-5 py-3.5 font-semibold text-brand text-xs">{row.c3}</td>
-                              <td class="px-5 py-3.5 text-right">
-                                <a
-                                  href={row.actionUrl}
-                                  class="inline-flex items-center gap-1 rounded-md border border-brand bg-brand-tint px-2.5 py-1 text-xs font-black text-brand transition-all hover:bg-brand hover:text-white shadow-sm"
-                                >
-                                  {row.actionText}
-                                </a>
-                              </td>
-                            </tr>
-                          ))
-                        }
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )
-            }
           </section>
 
-          <!-- 2. THEN TL;DR SUMMARY (AS REQUESTED) -->
+          <!-- 2. TL;DR SUMMARY (BEFORE THE MATRIX TABLE) -->
           {
             hasTldr && (
-              <section id="tl-dr" class="relative mb-12 scroll-mt-24 overflow-hidden rounded-2xl border border-ink bg-brand-deep shadow-[8px_8px_0_0_#1d4ed8]">
+              <section id="tl-dr" class="relative mb-8 scroll-mt-24 overflow-hidden rounded-2xl border border-ink bg-brand-deep shadow-[8px_8px_0_0_#1d4ed8]">
                 <div class="h-1.5 bg-blue-500"></div>
                 <div class="p-6 sm:p-8">
                   <div class="flex flex-wrap items-center gap-3">
@@ -465,7 +418,54 @@ const quickPickConfig = isAiContentGenerator
             )
           }
 
-          <!-- 3. LATER: REMAINING CONTENT DIRECTLY -->
+          <!-- 3. COMPARISON MATRIX TABLE (AFTER TL;DR) -->
+          {
+            showQuickPicks && (
+              <section class="mb-10 overflow-hidden rounded-2xl border border-ink shadow-[4px_4px_0_0_#1d4ed8]">
+                <div class="flex items-center justify-between bg-neutral-900 px-5 py-3">
+                  <h3 class="text-sm font-black uppercase tracking-widest text-blue-300 flex items-center gap-2">
+                    <span>⚡</span> {quickPickConfig.title}
+                  </h3>
+                  <span class="text-[0.65rem] font-bold uppercase tracking-widest text-neutral-400">
+                    {quickPickConfig.badge}
+                  </span>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full min-w-[34rem] text-left text-sm">
+                    <thead>
+                      <tr class="border-b border-neutral-200 bg-neutral-50 text-xs font-black uppercase tracking-wider text-neutral-500">
+                        <th class="px-5 py-3">{quickPickConfig.headers[0]}</th>
+                        <th class="px-5 py-3">{quickPickConfig.headers[1]}</th>
+                        <th class="px-5 py-3">{quickPickConfig.headers[2]}</th>
+                        <th class="px-5 py-3 text-right">{quickPickConfig.headers[3]}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        quickPickConfig.rows.map((row, i) => (
+                          <tr class={`transition-colors hover:bg-blue-50/50 ${i % 2 === 0 ? "bg-white" : "bg-neutral-50/60"}`}>
+                            <td class="px-5 py-3.5 font-black text-ink">{row.c1}</td>
+                            <td class="px-5 py-3.5 text-neutral-700 text-xs">{row.c2}</td>
+                            <td class="px-5 py-3.5 font-semibold text-brand text-xs">{row.c3}</td>
+                            <td class="px-5 py-3.5 text-right">
+                              <a
+                                href={row.actionUrl}
+                                class="inline-flex items-center gap-1 rounded-md border border-brand bg-brand-tint px-2.5 py-1 text-xs font-black text-brand transition-all hover:bg-brand hover:text-white shadow-sm"
+                              >
+                                {row.actionText}
+                              </a>
+                            </td>
+                          </tr>
+                        ))
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            )
+          }
+
+          <!-- 4. REMAINING CONTENT DIRECTLY -->
           <div set:html={restHtml} />
 
           <!-- Bottom quick action bar: direct link to TOC & TL;DR -->
