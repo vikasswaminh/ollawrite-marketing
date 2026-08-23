@@ -14,7 +14,7 @@ const { post } = Astro.props;
 const slugify = (s: string): string =>
   s
     .toLowerCase()
-    .replace(/[’'"]/g, "")
+    .replace(/['"“”‘’]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
@@ -184,13 +184,38 @@ const toc = hasTldr
 
 const firstSectionId = articleHeadings.length ? articleHeadings[0].id : "top";
 
-const showQuickPicks = post.slug === "best-ai-writing-tools-in-2026";
-const quickPicks = [
-  { tool: "AI Assistant", bestFor: "Conversational drafting, code review & legal redlines", starting: "Reactive / Chat" },
-  { tool: "Contextual Assistant", bestFor: "Workspace document synthesis & file ingestion", starting: "Reactive / Workspace" },
-  { tool: "Advisory Agent", bestFor: "24/7 background audit, pipeline & anomaly monitoring", starting: "Proactive / Scheduled" },
-  { tool: "Autonomous Agent", bestFor: "Multi-step tool execution with human approval gate", starting: "Proactive / Real Tools" },
-];
+const isBestAiWritingTools = post.slug === "best-ai-writing-tools-in-2026";
+const isAiAgentsVsAssistants = post.slug === "ai-agents-vs-ai-assistants";
+
+const showQuickPicks = isBestAiWritingTools || isAiAgentsVsAssistants;
+
+const quickPickConfig = isBestAiWritingTools
+  ? {
+      title: "⚡ Quick Pick — The Shortlist",
+      badge: "8 Tools",
+      headers: ["Tool", "Best for", "Category / Focus"],
+      rows: [
+        { c1: "ChatGPT", c2: "Versatile research, outlining & drafting", c3: "General Model" },
+        { c1: "Claude", c2: "Natural long-form flow & nuanced tone", c3: "General Model" },
+        { c1: "Google Gemini", c2: "Google Workspace & Docs integration", c3: "Ecosystem" },
+        { c1: "Writesonic", c2: "High-volume SEO content at scale", c3: "SEO Drafting" },
+        { c1: "Grammarly", c2: "Real-time grammar, clarity & polish", c3: "Editing" },
+        { c1: "Surfer SEO", c2: "SERP-driven on-page ranking scoring", c3: "SEO Ranking" },
+        { c1: "Notion AI", c2: "Workspace-integrated drafting & notes", c3: "Productivity" },
+        { c1: "Sudowrite", c2: "Fiction, plot brainstorming & scenes", c3: "Creative" },
+      ],
+    }
+  : {
+      title: "⚡ Architecture Matrix — The 4 Tiers",
+      badge: "4 Tiers",
+      headers: ["Architecture", "Best for", "Execution Model"],
+      rows: [
+        { c1: "AI Assistant", c2: "Conversational drafting, code review & legal redlines", c3: "Reactive / Chat" },
+        { c1: "Contextual Assistant", c2: "Workspace document synthesis & file ingestion", c3: "Reactive / Workspace" },
+        { c1: "Advisory Agent", c2: "24/7 background audit, pipeline & anomaly monitoring", c3: "Proactive / Scheduled" },
+        { c1: "Autonomous Agent", c2: "Multi-step tool execution with human approval gate", c3: "Proactive / Real Tools" },
+      ],
+    };
 ---
 
 <Layout title={`${post.title} — OllaWrite Journal`} description={post.excerpt}>
@@ -298,34 +323,34 @@ const quickPicks = [
                   </div>
                 </section>
 
-                {/* Quick Pick table only for BLOG1 */}
+                {/* Quick Pick table */}
                 {
                   showQuickPicks && (
                     <div class="mt-8 overflow-hidden rounded-2xl border border-ink shadow-[4px_4px_0_0_#1d4ed8]">
                       <div class="flex items-center justify-between bg-neutral-900 px-5 py-3">
                         <h3 class="text-sm font-black uppercase tracking-widest text-blue-300">
-                          ⚡ Architecture Matrix — The 4 Tiers
+                          {quickPickConfig.title}
                         </h3>
                         <span class="text-[0.65rem] font-bold uppercase tracking-widest text-neutral-400">
-                          4 tiers
+                          {quickPickConfig.badge}
                         </span>
                       </div>
                       <div class="overflow-x-auto">
                         <table class="w-full min-w-[34rem] text-left text-sm">
                           <thead>
                             <tr class="border-b border-neutral-200 bg-neutral-50 text-xs font-black uppercase tracking-wider text-neutral-500">
-                              <th class="px-5 py-3">Architecture</th>
-                              <th class="px-5 py-3">Best for</th>
-                              <th class="px-5 py-3">Execution Model</th>
+                              <th class="px-5 py-3">{quickPickConfig.headers[0]}</th>
+                              <th class="px-5 py-3">{quickPickConfig.headers[1]}</th>
+                              <th class="px-5 py-3">{quickPickConfig.headers[2]}</th>
                             </tr>
                           </thead>
                           <tbody>
                             {
-                              quickPicks.map((row, i) => (
+                              quickPickConfig.rows.map((row, i) => (
                                 <tr class={i % 2 === 0 ? "bg-white" : "bg-neutral-50/60"}>
-                                  <td class="px-5 py-3 font-black text-ink">{row.tool}</td>
-                                  <td class="px-5 py-3 text-neutral-700">{row.bestFor}</td>
-                                  <td class="px-5 py-3 font-semibold text-brand">{row.starting}</td>
+                                  <td class="px-5 py-3 font-black text-ink">{row.c1}</td>
+                                  <td class="px-5 py-3 text-neutral-700">{row.c2}</td>
+                                  <td class="px-5 py-3 font-semibold text-brand">{row.c3}</td>
                                 </tr>
                               ))
                             }
@@ -483,4 +508,3 @@ const quickPicks = [
     font-weight: 500;
   }
 </style>
-
