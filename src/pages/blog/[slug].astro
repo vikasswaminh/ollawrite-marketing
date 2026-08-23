@@ -182,11 +182,14 @@ if (hasTldr) {
   restHtml = rawTldr.slice(cutIdx) + bodyHtml.slice(boundary);
 }
 
-const toc = hasTldr
-  ? [{ id: "tl-dr", text: "TL;DR Summary" }, ...articleHeadings]
-  : articleHeadings;
+// Full TOC including Table of Contents top link, TL;DR, and all article headings
+const toc = [
+  { id: "table-of-contents-top", text: "Table of Contents" },
+  ...(hasTldr ? [{ id: "tl-dr", text: "TL;DR Summary" }] : []),
+  ...articleHeadings
+];
 
-const firstSectionId = articleHeadings.length ? articleHeadings[0].id : "top";
+const firstSectionId = "table-of-contents-top";
 
 const isAiContentGenerator = post.slug === "ai-content-generator-complete-guide";
 const isBestAiWritingTools = post.slug === "best-ai-writing-tools-in-2026";
@@ -267,6 +270,13 @@ const quickPickConfig = isAiContentGenerator
 ---
 
 <Layout title={`${post.title} — OllaWrite Journal`} description={post.excerpt}>
+  <!-- Top Reading Progress Bar (Unique feature) -->
+  <div
+    id="reading-progress-bar"
+    class="fixed top-0 left-0 h-1.5 bg-gradient-to-r from-brand via-blue-400 to-brand-deep z-50 transition-all duration-75"
+    style="width: 0%;"
+  ></div>
+
   <article class="bg-paper text-ink">
     <!-- Top bar -->
     <div class="border-b border-ink">
@@ -278,10 +288,10 @@ const quickPickConfig = isAiContentGenerator
           ← Back to Journal
         </a>
         <a
-          href={`#${firstSectionId}`}
+          href="#table-of-contents-top"
           class="flex items-center gap-1.5 text-sm font-bold text-brand hover:text-brand-deep"
         >
-          Skip to the guide ↓
+          Skip to Table of Contents ↓
         </a>
       </div>
     </div>
@@ -353,135 +363,203 @@ const quickPickConfig = isAiContentGenerator
 
         <!-- Article content -->
         <div class="min-w-0 flex-1 lg:max-w-[56rem]">
-          {
-            hasTldr && (
-              <div>
-                <section id="tl-dr" class="relative scroll-mt-24 overflow-hidden rounded-2xl border border-ink bg-brand-deep shadow-[8px_8px_0_0_#1d4ed8]">
-                  <div class="h-1.5 bg-blue-500"></div>
-                  <div class="p-6 sm:p-8">
-                    <div class="flex flex-wrap items-center gap-3">
-                      <span class="rounded-md border border-blue-400/40 bg-blue-500/20 px-3 py-1 text-sm font-black uppercase tracking-widest text-blue-300">
-                        TL;DR
-                      </span>
-                      <span class="text-xs font-bold uppercase tracking-widest text-blue-200">
-                        Too long? Here's the whole article in 30 seconds
-                      </span>
-                    </div>
-                    <div class="mt-4 border-l-4 border-blue-400 pl-5 tldr-body" set:html={tldrContent} />
-                  </div>
-                </section>
-
-                {/* Quick Pick / Architecture Comparison Matrix Table */}
+          <!-- 1. TABLE OF CONTENTS IN TOP (AS REQUESTED) -->
+          <section id="table-of-contents-top" class="mb-10 scroll-mt-24">
+            <!-- Interactive Chapter Box Grid inspired by 24observe -->
+            <div class="overflow-hidden rounded-2xl border border-ink bg-neutral-50 p-5 shadow-[4px_4px_0_0_#1d4ed8]">
+              <div class="flex items-center justify-between border-b border-neutral-200 pb-3">
+                <h3 class="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-ink">
+                  <span class="text-brand">☰</span> Table of Contents — Chapter Modules
+                </h3>
+                <span class="rounded-full bg-brand px-2.5 py-0.5 text-[0.65rem] font-bold text-white ring-1 ring-ink">
+                  {articleHeadings.length} Chapters
+                </span>
+              </div>
+              <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {
-                  showQuickPicks && (
-                    <div class="mt-8 overflow-hidden rounded-2xl border border-ink shadow-[4px_4px_0_0_#1d4ed8]">
-                      <div class="flex items-center justify-between bg-neutral-900 px-5 py-3">
-                        <h3 class="text-sm font-black uppercase tracking-widest text-blue-300 flex items-center gap-2">
-                          <span>⚡</span> {quickPickConfig.title}
-                        </h3>
-                        <span class="text-[0.65rem] font-bold uppercase tracking-widest text-neutral-400">
-                          {quickPickConfig.badge}
+                  articleHeadings.map((h, i) => (
+                    <a
+                      href={`#${h.id}`}
+                      class="group relative flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-3.5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-brand hover:bg-blue-50/60 hover:shadow-[3px_3px_0_0_#1d4ed8]"
+                    >
+                      <div class="flex items-center justify-between">
+                        <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-100 text-xs font-black text-brand transition-colors group-hover:bg-brand group-hover:text-white">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span class="text-xs font-bold text-neutral-400 transition-colors group-hover:text-brand">
+                          Open →
                         </span>
                       </div>
-                      <div class="overflow-x-auto">
-                        <table class="w-full min-w-[34rem] text-left text-sm">
-                          <thead>
-                            <tr class="border-b border-neutral-200 bg-neutral-50 text-xs font-black uppercase tracking-wider text-neutral-500">
-                              <th class="px-5 py-3">{quickPickConfig.headers[0]}</th>
-                              <th class="px-5 py-3">{quickPickConfig.headers[1]}</th>
-                              <th class="px-5 py-3">{quickPickConfig.headers[2]}</th>
-                              <th class="px-5 py-3 text-right">{quickPickConfig.headers[3]}</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {
-                              quickPickConfig.rows.map((row, i) => (
-                                <tr class={`transition-colors hover:bg-blue-50/50 ${i % 2 === 0 ? "bg-white" : "bg-neutral-50/60"}`}>
-                                  <td class="px-5 py-3.5 font-black text-ink">{row.c1}</td>
-                                  <td class="px-5 py-3.5 text-neutral-700 text-xs">{row.c2}</td>
-                                  <td class="px-5 py-3.5 font-semibold text-brand text-xs">{row.c3}</td>
-                                  <td class="px-5 py-3.5 text-right">
-                                    <a
-                                      href={row.actionUrl}
-                                      class="inline-flex items-center gap-1 rounded-md border border-brand bg-brand-tint px-2.5 py-1 text-xs font-black text-brand transition-all hover:bg-brand hover:text-white shadow-sm"
-                                    >
-                                      {row.actionText}
-                                    </a>
-                                  </td>
-                                </tr>
-                              ))
-                            }
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  )
+                      <span class="mt-2.5 text-xs font-bold text-ink leading-snug transition-colors group-hover:text-brand">
+                        {h.text}
+                      </span>
+                    </a>
+                  ))
                 }
+              </div>
+            </div>
 
-                {/* Interactive Chapter Box Grid inspired by 24observe */}
-                <div class="mt-8 overflow-hidden rounded-2xl border border-ink bg-neutral-50 p-5 shadow-[4px_4px_0_0_#1d4ed8]">
-                  <div class="flex items-center justify-between border-b border-neutral-200 pb-3">
-                    <h3 class="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-ink">
-                      <span class="text-brand">☰</span> Table of Contents — Chapter Modules
+            <!-- Quick Pick / Architecture Comparison Matrix Table with Interactive Jumps -->
+            {
+              showQuickPicks && (
+                <div class="mt-6 overflow-hidden rounded-2xl border border-ink shadow-[4px_4px_0_0_#1d4ed8]">
+                  <div class="flex items-center justify-between bg-neutral-900 px-5 py-3">
+                    <h3 class="text-sm font-black uppercase tracking-widest text-blue-300 flex items-center gap-2">
+                      <span>⚡</span> {quickPickConfig.title}
                     </h3>
-                    <span class="rounded-full bg-brand px-2.5 py-0.5 text-[0.65rem] font-bold text-white ring-1 ring-ink">
-                      {articleHeadings.length} Chapters
+                    <span class="text-[0.65rem] font-bold uppercase tracking-widest text-neutral-400">
+                      {quickPickConfig.badge}
                     </span>
                   </div>
-                  <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {
-                      articleHeadings.map((h, i) => (
-                        <a
-                          href={`#${h.id}`}
-                          class="group relative flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-3.5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-brand hover:bg-blue-50/60 hover:shadow-[3px_3px_0_0_#1d4ed8]"
-                        >
-                          <div class="flex items-center justify-between">
-                            <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-100 text-xs font-black text-brand transition-colors group-hover:bg-brand group-hover:text-white">
-                              {String(i + 1).padStart(2, "0")}
-                            </span>
-                            <span class="text-xs font-bold text-neutral-400 transition-colors group-hover:text-brand">
-                              Open →
-                            </span>
-                          </div>
-                          <span class="mt-2.5 text-xs font-bold text-ink leading-snug transition-colors group-hover:text-brand">
-                            {h.text}
-                          </span>
-                        </a>
-                      ))
-                    }
+                  <div class="overflow-x-auto">
+                    <table class="w-full min-w-[34rem] text-left text-sm">
+                      <thead>
+                        <tr class="border-b border-neutral-200 bg-neutral-50 text-xs font-black uppercase tracking-wider text-neutral-500">
+                          <th class="px-5 py-3">{quickPickConfig.headers[0]}</th>
+                          <th class="px-5 py-3">{quickPickConfig.headers[1]}</th>
+                          <th class="px-5 py-3">{quickPickConfig.headers[2]}</th>
+                          <th class="px-5 py-3 text-right">{quickPickConfig.headers[3]}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          quickPickConfig.rows.map((row, i) => (
+                            <tr class={`transition-colors hover:bg-blue-50/50 ${i % 2 === 0 ? "bg-white" : "bg-neutral-50/60"}`}>
+                              <td class="px-5 py-3.5 font-black text-ink">{row.c1}</td>
+                              <td class="px-5 py-3.5 text-neutral-700 text-xs">{row.c2}</td>
+                              <td class="px-5 py-3.5 font-semibold text-brand text-xs">{row.c3}</td>
+                              <td class="px-5 py-3.5 text-right">
+                                <a
+                                  href={row.actionUrl}
+                                  class="inline-flex items-center gap-1 rounded-md border border-brand bg-brand-tint px-2.5 py-1 text-xs font-black text-brand transition-all hover:bg-brand hover:text-white shadow-sm"
+                                >
+                                  {row.actionText}
+                                </a>
+                              </td>
+                            </tr>
+                          ))
+                        }
+                      </tbody>
+                    </table>
                   </div>
+                </div>
+              )
+            }
+          </section>
+
+          <!-- 2. AFTER THAT: TL;DR SUMMARY (AS REQUESTED) -->
+          {
+            hasTldr && (
+              <section id="tl-dr" class="relative mb-12 scroll-mt-24 overflow-hidden rounded-2xl border border-ink bg-brand-deep shadow-[8px_8px_0_0_#1d4ed8]">
+                <div class="h-1.5 bg-blue-500"></div>
+                <div class="p-6 sm:p-8">
+                  <div class="flex flex-wrap items-center gap-3">
+                    <span class="rounded-md border border-blue-400/40 bg-blue-500/20 px-3 py-1 text-sm font-black uppercase tracking-widest text-blue-300">
+                      TL;DR
+                    </span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-blue-200">
+                      Too long? Here's the whole article in 30 seconds
+                    </span>
+                  </div>
+                  <div class="mt-4 border-l-4 border-blue-400 pl-5 tldr-body" set:html={tldrContent} />
+                </div>
+              </section>
+            )
+          }
+
+          <!-- 3. UNIQUE INTERACTIVE FEATURE: Quick Role-Based Architecture Matcher -->
+          {
+            isAiContentGenerator && (
+              <div class="mb-12 overflow-hidden rounded-2xl border border-ink bg-gradient-to-br from-blue-50/80 via-white to-indigo-50/50 p-6 shadow-[4px_4px_0_0_#1d4ed8]">
+                <div class="flex items-center justify-between border-b border-neutral-200 pb-3">
+                  <h3 class="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-brand">
+                    <span>🎯</span> Quick Role Matcher — Find Your Ideal Generator
+                  </h3>
+                  <span class="text-[0.65rem] font-bold text-neutral-400 uppercase">Interactive</span>
+                </div>
+                <p class="mt-3 text-xs text-neutral-600">Select your current content situation to jump straight to the right architecture:</p>
+                <div class="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+                  <a
+                    href="#the-main-types-of-ai-content-generators-youll-actually-run-into"
+                    class="flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-3 transition-all hover:-translate-y-1 hover:border-brand hover:bg-brand-tint"
+                  >
+                    <span class="text-xs font-bold text-ink">Solo Writer / Blogger</span>
+                    <span class="mt-2 text-[0.7rem] font-black text-brand">Claude / ChatGPT →</span>
+                  </a>
+                  <a
+                    href="#the-main-types-of-ai-content-generators-youll-actually-run-into"
+                    class="flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-3 transition-all hover:-translate-y-1 hover:border-brand hover:bg-brand-tint"
+                  >
+                    <span class="text-xs font-bold text-ink">Marketing Team & Ads</span>
+                    <span class="mt-2 text-[0.7rem] font-black text-brand">Brand Platforms →</span>
+                  </a>
+                  <a
+                    href="#the-main-types-of-ai-content-generators-youll-actually-run-into"
+                    class="flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-3 transition-all hover:-translate-y-1 hover:border-brand hover:bg-brand-tint"
+                  >
+                    <span class="text-xs font-bold text-ink">SEO / Search Chasers</span>
+                    <span class="mt-2 text-[0.7rem] font-black text-brand">SERP Scorers →</span>
+                  </a>
+                  <a
+                    href="#the-main-types-of-ai-content-generators-youll-actually-run-into"
+                    class="flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-3 transition-all hover:-translate-y-1 hover:border-brand hover:bg-brand-tint"
+                  >
+                    <span class="text-xs font-bold text-ink">Fiction / Creative</span>
+                    <span class="mt-2 text-[0.7rem] font-black text-brand">Sudowrite →</span>
+                  </a>
+                  <a
+                    href="#the-main-types-of-ai-content-generators-youll-actually-run-into"
+                    class="flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-3 transition-all hover:-translate-y-1 hover:border-brand hover:bg-brand-tint"
+                  >
+                    <span class="text-xs font-bold text-ink">Live Domain Grounding</span>
+                    <span class="mt-2 text-[0.7rem] font-black text-brand">OllaWrite Pipelines →</span>
+                  </a>
+                  <a
+                    href="#how-to-choose-the-best-ai-content-generator"
+                    class="flex flex-col justify-between rounded-xl border border-brand bg-brand text-white p-3 transition-all hover:-translate-y-1 hover:bg-brand-deep"
+                  >
+                    <span class="text-xs font-bold text-white">Full Selection Guide</span>
+                    <span class="mt-2 text-[0.7rem] font-black text-blue-200">View Guide →</span>
+                  </a>
                 </div>
               </div>
             )
           }
 
+          <!-- 4. REMAINING CONTENT -->
           <div set:html={restHtml} />
 
-          <!-- Bottom quick action bar: direct link to TL;DR -->
-          {
-            hasTldr && (
-              <div class="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-ink bg-neutral-50 p-5 shadow-[4px_4px_0_0_#1d4ed8]">
-                <div class="flex items-center gap-2 text-sm font-bold text-neutral-700">
-                  <span class="grid h-6 w-6 place-items-center rounded-full bg-brand text-xs font-black text-white ring-1 ring-ink">⚡</span>
-                  <span>Finished reading? Need a quick recap?</span>
-                </div>
-                <div class="flex items-center gap-3">
+          <!-- Bottom quick action bar: direct link to TOC & TL;DR -->
+          <div class="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-ink bg-neutral-50 p-5 shadow-[4px_4px_0_0_#1d4ed8]">
+            <div class="flex items-center gap-2 text-sm font-bold text-neutral-700">
+              <span class="grid h-6 w-6 place-items-center rounded-full bg-brand text-xs font-black text-white ring-1 ring-ink">⚡</span>
+              <span>Finished reading? Need to review chapters or summary?</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <a
+                href="#table-of-contents-top"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-neutral-300 bg-white px-3.5 py-2 text-xs font-bold text-neutral-800 transition-all hover:border-brand hover:text-brand"
+              >
+                ↑ Table of Contents
+              </a>
+              {
+                hasTldr && (
                   <a
                     href="#tl-dr"
                     class="inline-flex items-center gap-1.5 rounded-lg border border-ink bg-brand px-4 py-2 text-xs font-black uppercase tracking-wider text-white shadow-[2px_2px_0_0_#0f172a] transition-all hover:-translate-y-0.5 hover:bg-brand-deep"
                   >
-                    ↑ Jump back to 30-sec TL;DR
+                    ↑ 30-sec TL;DR
                   </a>
-                  <a
-                    href="https://login.ollawrite.com"
-                    class="inline-flex items-center gap-1.5 rounded-lg border-2 border-brand bg-brand px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-colors hover:bg-brand-deep"
-                  >
-                    Audit your site free →
-                  </a>
-                </div>
-              </div>
-            )
-          }
+                )
+              }
+              <a
+                href="https://login.ollawrite.com"
+                class="inline-flex items-center gap-1.5 rounded-lg border-2 border-brand bg-brand px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-colors hover:bg-brand-deep"
+              >
+                Audit your site free →
+              </a>
+            </div>
+          </div>
 
           <!-- Back to top -->
           <div class="mt-8 flex justify-center">
@@ -531,6 +609,20 @@ const quickPickConfig = isAiContentGenerator
       </div>
     </div>
   </article>
+
+  <!-- Script for Reading Progress Bar -->
+  <script>
+    const progressBar = document.getElementById("reading-progress-bar");
+    const updateProgress = () => {
+      const scrollTotal = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollTotal > 0 && progressBar) {
+        const scrolled = (window.scrollY / scrollTotal) * 100;
+        progressBar.style.width = Math.min(100, Math.max(0, scrolled)) + "%";
+      }
+    };
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    updateProgress();
+  </script>
 </Layout>
 
 <style is:global>
