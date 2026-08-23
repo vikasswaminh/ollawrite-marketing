@@ -27,14 +27,14 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
     escape(s)
       .replace(
         /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
-        '<a href="$2" class="font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent underline underline-offset-2 hover:opacity-80 transition-opacity">$1</a>'
+        '<a href="$2" class="font-bold text-indigo-600 underline underline-offset-4 decoration-indigo-300 hover:decoration-indigo-600 hover:text-indigo-800 transition-all">$1</a>'
       )
       .replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>')
       .replace(/\*(.+?)\*/g, '<em class="text-slate-800 font-medium">$1</em>');
 
   const li = (item: string) => {
     const text = item.replace(/^-\s*/, "");
-    return `<li class="flex gap-3 items-start"><span class="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 shadow-sm"></span><span class="text-slate-700 leading-relaxed font-normal">${inline(
+    return `<li class="flex gap-3.5 items-start"><span class="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 shadow-sm ring-4 ring-indigo-50"></span><span class="text-slate-700 leading-relaxed font-normal">${inline(
       text
     )}</span></li>`;
   };
@@ -56,26 +56,26 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
       );
 
     const ths = headers
-      .map((h) => `<th class="px-5 py-3.5 font-black text-slate-900">${inline(h)}</th>`)
+      .map((h) => `<th class="px-5 py-4 font-black text-slate-900">${inline(h)}</th>`)
       .join("");
     const trs = rows
       .map((row, idx) => {
         const tds = row
           .map((cell, cIdx) => {
             const isFirst = cIdx === 0;
-            return `<td class="px-5 py-3.5 ${isFirst ? "font-bold text-slate-900" : "text-slate-700"}">${inline(cell)}</td>`;
+            return `<td class="px-5 py-4 ${isFirst ? "font-bold text-slate-900" : "text-slate-700"}">${inline(cell)}</td>`;
           })
           .join("");
-        const bg = idx % 2 === 0 ? "bg-white" : "bg-slate-50/70";
+        const bg = idx % 2 === 0 ? "bg-white" : "bg-slate-50/60";
         return `<tr class="${bg} transition-colors hover:bg-indigo-50/50">${tds}</tr>`;
       })
       .join("");
 
-    return `<div class="table-container my-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_30px_rgba(79,70,229,0.06)]">
+    return `<div class="table-container my-10 overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_12px_36px_rgba(79,70,229,0.06)]">
       <div class="overflow-x-auto">
         <table class="w-full min-w-[34rem] text-left text-sm">
           <thead>
-            <tr class="border-b-2 border-indigo-100 bg-slate-50 text-xs font-black uppercase tracking-wider text-slate-700">
+            <tr class="border-b-2 border-indigo-100 bg-slate-50/90 text-xs font-black uppercase tracking-wider text-slate-800">
               ${ths}
             </tr>
           </thead>
@@ -92,7 +92,7 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
   let list: string[] = [];
   const flushList = () => {
     if (list.length) {
-      out.push(`<ul class="my-6 space-y-3 pl-1">${list.join("")}</ul>`);
+      out.push(`<ul class="my-6 space-y-3.5 pl-1">${list.join("")}</ul>`);
       list = [];
     }
   };
@@ -116,7 +116,7 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
 
       if (trimmed.startsWith("### ")) {
         out.push(
-          `<div class="mt-8 mb-4 rounded-2xl border border-indigo-100 bg-gradient-to-r from-white via-indigo-50/30 to-white p-5 shadow-sm hover:border-indigo-300 transition-colors"><h3 class="text-lg font-bold text-slate-900 sm:text-xl flex items-center gap-2.5"><span class="flex h-3 w-3 rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 shadow-sm"></span> ${inline(
+          `<div class="mt-9 mb-5 rounded-2xl border border-indigo-100 bg-gradient-to-r from-white via-indigo-50/40 to-white p-5 shadow-sm hover:border-indigo-300 transition-all"><h3 class="text-lg font-bold text-slate-900 sm:text-xl flex items-center gap-3"><span class="flex h-3.5 w-3.5 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 shadow-sm"></span> ${inline(
             trimmed.replace("### ", "")
           )}</h3></div>`
         );
@@ -125,19 +125,19 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
         const id = slugify(text);
         headings.push({ id, text });
         out.push(
-          `<h2 id="${id}" class="group mt-16 mb-5 scroll-mt-24 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl border-l-4 border-indigo-600 pl-4 flex items-center justify-between"><a href="#${id}" class="hover:text-indigo-600 transition-colors">${inline(
+          `<h2 id="${id}" class="group mt-16 mb-6 scroll-mt-24 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl border-l-4 border-indigo-600 pl-4 flex items-center justify-between"><a href="#${id}" class="hover:text-indigo-600 transition-colors">${inline(
             text
           )}</a><a href="#${id}" aria-label="Direct link to this section" class="text-sm font-bold text-indigo-600 opacity-0 transition-opacity group-hover:opacity-100">#</a></h2>`
         );
       } else if (trimmed.startsWith("Who should use it:")) {
         out.push(
-          `<div class="my-5 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50/90 to-teal-50/50 p-4 text-sm text-emerald-950 shadow-sm"><strong class="font-bold text-emerald-800 flex items-center gap-1.5 mb-1"><span>✓</span> Who should use it:</strong> ${inline(
+          `<div class="my-6 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50/90 to-teal-50/60 p-5 text-sm text-emerald-950 shadow-sm"><strong class="font-black text-emerald-800 flex items-center gap-2 mb-1 text-base"><span>✓</span> Who should use it:</strong> ${inline(
             trimmed.replace(/^Who should use it:\s*/i, "")
           )}</div>`
         );
       } else if (trimmed.startsWith("Who should skip it:")) {
         out.push(
-          `<div class="my-5 rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50/90 to-orange-50/50 p-4 text-sm text-amber-950 shadow-sm"><strong class="font-bold text-amber-800 flex items-center gap-1.5 mb-1"><span>✕</span> Who should skip it:</strong> ${inline(
+          `<div class="my-6 rounded-2xl border border-rose-200 bg-gradient-to-r from-rose-50/90 to-orange-50/60 p-5 text-sm text-rose-950 shadow-sm"><strong class="font-black text-rose-800 flex items-center gap-2 mb-1 text-base"><span>✕</span> Who should skip it:</strong> ${inline(
             trimmed.replace(/^Who should skip it:\s*/i, "")
           )}</div>`
         );
@@ -145,10 +145,10 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
         const num = trimmed.substring(0, 3);
         const rest = trimmed.substring(3);
         out.push(
-          `<div class="my-4 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-800 shadow-sm hover:border-indigo-300 transition-colors flex items-start gap-3.5"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-xs font-black text-white shadow-sm">${num.replace('.', '').trim()}</span><div class="leading-relaxed">${inline(rest)}</div></div>`
+          `<div class="my-4 rounded-2xl border border-slate-200/90 bg-white p-4.5 text-sm text-slate-800 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-4"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-xs font-black text-white shadow-sm">${num.replace('.', '').trim()}</span><div class="leading-relaxed font-medium">${inline(rest)}</div></div>`
         );
       } else if (trimmed) {
-        out.push(`<p class="mt-5 text-[1.05rem] leading-8 text-slate-700 font-normal">${inline(trimmed)}</p>`);
+        out.push(`<p class="mt-5 text-[1.06rem] leading-8 text-slate-700 font-normal">${inline(trimmed)}</p>`);
       }
     });
     flushList();
@@ -264,10 +264,10 @@ const quickPickConfig = isAiContentGenerator
 ---
 
 <Layout title={`${post.title} — OllaWrite Journal`} description={post.excerpt}>
-  <!-- Top Reading Progress Bar with Multi-color Glow -->
+  <!-- Top Reading Progress Bar with Neon Glow -->
   <div
     id="reading-progress-bar"
-    class="fixed top-0 left-0 h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 z-50 transition-all duration-75 shadow-[0_2px_10px_rgba(59,130,246,0.5)]"
+    class="fixed top-0 left-0 h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 z-50 transition-all duration-75 shadow-[0_2px_12px_rgba(59,130,246,0.6)]"
     style="width: 0%;"
   ></div>
 
@@ -280,7 +280,7 @@ const quickPickConfig = isAiContentGenerator
   </div>
 
   <article class="bg-[#ffffff] text-slate-900 min-h-screen">
-    <!-- Top bar -->
+    <!-- Top sticky bar -->
     <div class="border-b border-slate-200/80 bg-white/90 backdrop-blur-md sticky top-16 z-30 shadow-sm">
       <div class="wrap flex items-center justify-between py-3.5">
         <a
@@ -298,17 +298,21 @@ const quickPickConfig = isAiContentGenerator
       </div>
     </div>
 
-    <!-- Article header -->
-    <div class="border-b border-slate-200/80 bg-gradient-to-b from-slate-50 via-indigo-50/30 to-white">
-      <div class="wrap py-12 lg:py-16">
+    <!-- Hero Header with Ambient Background Glow -->
+    <div class="relative border-b border-slate-200/80 bg-gradient-to-b from-slate-50 via-indigo-50/30 to-white overflow-hidden">
+      <!-- Decorative ambient gradient circles -->
+      <div class="pointer-events-none absolute -top-24 right-1/4 h-96 w-96 rounded-full bg-blue-400/10 blur-3xl"></div>
+      <div class="pointer-events-none absolute top-10 left-10 h-72 w-72 rounded-full bg-indigo-500/10 blur-2xl"></div>
+
+      <div class="wrap relative py-12 lg:py-16">
         <div class="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-widest text-indigo-600">
           <span class="rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-3.5 py-1 text-white shadow-sm font-black">
             {post.category}
           </span>
           <span class="text-slate-300">•</span>
-          <span class="text-slate-500 font-semibold">{post.date}</span>
+          <span class="text-slate-600 font-bold">{post.date}</span>
           <span class="text-slate-300">•</span>
-          <span class="text-slate-500 font-semibold">{post.readTime}</span>
+          <span class="text-slate-600 font-bold">{post.readTime}</span>
         </div>
         <h1
           class="mt-5 max-w-4xl text-3xl font-black leading-[1.12] tracking-tight sm:text-4xl lg:text-[3.25rem] text-slate-900"
@@ -319,10 +323,10 @@ const quickPickConfig = isAiContentGenerator
           {post.excerpt}
         </p>
         <div class="mt-6 flex items-center gap-3 text-sm text-slate-500">
-          <span class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-sm font-black text-white shadow-md">OW</span>
+          <span class="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-sm font-black text-white shadow-md ring-2 ring-indigo-100">OW</span>
           <div>
-            <p class="font-bold text-slate-900">{post.author.name}</p>
-            <p class="text-xs text-slate-500 font-medium">{post.author.role}</p>
+            <p class="font-black text-slate-900">{post.author.name}</p>
+            <p class="text-xs text-slate-500 font-semibold">{post.author.role}</p>
           </div>
         </div>
       </div>
@@ -405,17 +409,17 @@ const quickPickConfig = isAiContentGenerator
                   articleHeadings.map((h, i) => (
                     <a
                       href={`#${h.id}`}
-                      class="group relative flex flex-col justify-between rounded-xl border border-slate-200/90 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-indigo-500 hover:bg-gradient-to-br hover:from-white hover:to-indigo-50/40 hover:shadow-md"
+                      class="group relative flex flex-col justify-between rounded-xl border border-slate-200/90 bg-white p-4.5 shadow-sm transition-all duration-200 hover:-translate-y-1.5 hover:border-indigo-500 hover:bg-gradient-to-br hover:from-white hover:to-indigo-50/40 hover:shadow-lg"
                     >
                       <div class="flex items-center justify-between">
-                        <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 text-xs font-black text-white shadow-sm transition-transform group-hover:scale-110">
+                        <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-xs font-black text-white shadow-sm transition-transform group-hover:scale-110">
                           {String(i + 1).padStart(2, "0")}
                         </span>
-                        <span class="text-xs font-bold text-slate-400 transition-colors group-hover:text-indigo-600">
+                        <span class="text-xs font-black text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-0.5 rounded-lg group-hover:bg-indigo-600 group-hover:text-white transition-all">
                           Open →
                         </span>
                       </div>
-                      <span class="mt-3 text-xs font-bold text-slate-900 leading-snug transition-colors group-hover:text-indigo-600">
+                      <span class="mt-3.5 text-xs font-bold text-slate-900 leading-snug transition-colors group-hover:text-indigo-600">
                         {h.text}
                       </span>
                     </a>
