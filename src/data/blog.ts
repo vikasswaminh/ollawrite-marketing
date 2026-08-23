@@ -38,7 +38,7 @@ export const BLOG1_FULL_POST: BlogPost = {
   title: "Best AI Writing Tools in 2026: The Honest, No-Fluff Guide Nobody Else Will Give You",
   category: "AI Tools & Strategy",
   excerpt: "Tired of \"best AI writing tools\" lists that read like ads? Here's a real, tested breakdown of the AI writing tools worth your money in 2026 — and the ones that aren't.",
-  date: "Aug 20, 2026",
+  date: "20-08-2026",
   readTime: "22 min read",
   author: {
     name: "OllaWrite Editorial",
