@@ -121,7 +121,7 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
           )}</h3></div>`
         );
       } else if (trimmed.startsWith("## ")) {
-        const text = trimmed.replace("## ", "");
+        const text = trimmed.replace("## ", "").trim();
         const id = slugify(text);
         headings.push({ id, text });
         out.push(
@@ -182,14 +182,15 @@ if (hasTldr) {
   restHtml = rawTldr.slice(cutIdx) + bodyHtml.slice(boundary);
 }
 
-// Exactly 14 Article Chapters in the TOC Sidebar
+// Exactly the Article Chapters in the TOC Sidebar
 const toc = articleHeadings;
 
 const isAiContentGenerator = post.slug === "ai-content-generator-complete-guide";
 const isBestAiWritingTools = post.slug === "best-ai-writing-tools-in-2026";
+const isWhatIsAiContentWriter = post.slug === "what-is-an-ai-content-writer";
 const isAiAgentsVsAssistants = post.slug === "ai-agents-vs-ai-assistants";
 
-const showQuickPicks = isAiContentGenerator || isBestAiWritingTools || isAiAgentsVsAssistants;
+const showQuickPicks = isAiContentGenerator || isBestAiWritingTools || isWhatIsAiContentWriter || isAiAgentsVsAssistants;
 
 const quickPickConfig = isAiContentGenerator
   ? {
@@ -248,6 +249,19 @@ const quickPickConfig = isAiContentGenerator
         { c1: "Surfer SEO", c2: "SERP-driven on-page ranking scoring", c3: "SEO Ranking", actionUrl: "#surfer-seo-for-search-rankings", actionText: "Open →" },
         { c1: "Notion AI", c2: "Workspace-integrated drafting & notes", c3: "Productivity", actionUrl: "#notion-ai-writing-inside-your-workspace", actionText: "Open →" },
         { c1: "Sudowrite", c2: "Fiction, plot brainstorming & scenes", c3: "Creative", actionUrl: "#sudowrite-for-fiction-writers", actionText: "Open →" },
+      ],
+    }
+  : isWhatIsAiContentWriter
+  ? {
+      title: "The 5 AI Content Writer Tiers — Architecture Matrix",
+      badge: "5 Tiers",
+      headers: ["Writer Category", "Core Engine", "Best Fit", "Interactive Action"],
+      rows: [
+        { c1: "Raw Prompt Generators", c2: "Direct LLM API without research or citation pass", c3: "Quick informal drafts & rough brainstorms", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open →" },
+        { c1: "Template Marketing Tools", c2: "Multi-channel prompt templates & brand governance", c3: "Social ad copy, emails & campaign blurbs", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open →" },
+        { c1: "SEO Scoring Platforms", c2: "Live SERP scraping & keyword density scoring", c3: "Search intent briefs & ranking optimization", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open →" },
+        { c1: "Contextual Workspace Assistants", c2: "Document ingestion inside existing notes & CMS", c3: "Internal docs & meeting synthesis", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open →" },
+        { c1: "Site-Grounded Multi-Agent", c2: "Autonomous crawler + factual critic gate", c3: "Verifiable, authoritative web publishing", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open →" },
       ],
     }
   : {
@@ -335,7 +349,7 @@ const quickPickConfig = isAiContentGenerator
     <!-- Body: sticky TOC sidebar + full-width content -->
     <div class="wrap py-12 lg:py-16">
       <div class="lg:flex lg:gap-10">
-        <!-- VIBRANT ELECTRIC GRADIENT TOC SIDEBAR WITH 14 CHAPTERS -->
+        <!-- VIBRANT ELECTRIC GRADIENT TOC SIDEBAR WITH CHAPTERS -->
         <aside class="mb-10 lg:mb-0 lg:w-76 lg:shrink-0">
           <nav class="rounded-2xl border-2 border-indigo-100 bg-white p-4 shadow-[0_12px_36px_rgba(79,70,229,0.08)] lg:sticky lg:top-28">
             <!-- Sidebar Header Banner with Electric Gradient -->
@@ -614,7 +628,7 @@ const quickPickConfig = isAiContentGenerator
     window.addEventListener("scroll", updateProgress, { passive: true });
     updateProgress();
 
-    // 2. Active Sidebar TOC Spy (14 Chapters)
+    // 2. Active Sidebar TOC Spy
     const headings = document.querySelectorAll("article h2[id]");
     const tocLinks = document.querySelectorAll(".toc-sidebar-link");
 
