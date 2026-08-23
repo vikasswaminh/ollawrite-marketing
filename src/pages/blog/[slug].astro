@@ -182,14 +182,12 @@ if (hasTldr) {
   restHtml = rawTldr.slice(cutIdx) + bodyHtml.slice(boundary);
 }
 
-// Full TOC including Table of Contents top link, TL;DR, and all article headings
+// Full TOC for the sidebar
 const toc = [
   { id: "table-of-contents-top", text: "Table of Contents" },
   ...(hasTldr ? [{ id: "tl-dr", text: "TL;DR Summary" }] : []),
   ...articleHeadings
 ];
-
-const firstSectionId = "table-of-contents-top";
 
 const isAiContentGenerator = post.slug === "ai-content-generator-complete-guide";
 const isBestAiWritingTools = post.slug === "best-ai-writing-tools-in-2026";
@@ -270,7 +268,7 @@ const quickPickConfig = isAiContentGenerator
 ---
 
 <Layout title={`${post.title} — OllaWrite Journal`} description={post.excerpt}>
-  <!-- Top Reading Progress Bar (Unique feature) -->
+  <!-- Top Reading Progress Bar -->
   <div
     id="reading-progress-bar"
     class="fixed top-0 left-0 h-1.5 bg-gradient-to-r from-brand via-blue-400 to-brand-deep z-50 transition-all duration-75"
@@ -447,7 +445,7 @@ const quickPickConfig = isAiContentGenerator
             }
           </section>
 
-          <!-- 2. AFTER THAT: TL;DR SUMMARY (AS REQUESTED) -->
+          <!-- 2. THEN TL;DR SUMMARY (AS REQUESTED) -->
           {
             hasTldr && (
               <section id="tl-dr" class="relative mb-12 scroll-mt-24 overflow-hidden rounded-2xl border border-ink bg-brand-deep shadow-[8px_8px_0_0_#1d4ed8]">
@@ -467,66 +465,7 @@ const quickPickConfig = isAiContentGenerator
             )
           }
 
-          <!-- 3. UNIQUE INTERACTIVE FEATURE: Quick Role-Based Architecture Matcher -->
-          {
-            isAiContentGenerator && (
-              <div class="mb-12 overflow-hidden rounded-2xl border border-ink bg-gradient-to-br from-blue-50/80 via-white to-indigo-50/50 p-6 shadow-[4px_4px_0_0_#1d4ed8]">
-                <div class="flex items-center justify-between border-b border-neutral-200 pb-3">
-                  <h3 class="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-brand">
-                    <span>🎯</span> Quick Role Matcher — Find Your Ideal Generator
-                  </h3>
-                  <span class="text-[0.65rem] font-bold text-neutral-400 uppercase">Interactive</span>
-                </div>
-                <p class="mt-3 text-xs text-neutral-600">Select your current content situation to jump straight to the right architecture:</p>
-                <div class="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-                  <a
-                    href="#the-main-types-of-ai-content-generators-youll-actually-run-into"
-                    class="flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-3 transition-all hover:-translate-y-1 hover:border-brand hover:bg-brand-tint"
-                  >
-                    <span class="text-xs font-bold text-ink">Solo Writer / Blogger</span>
-                    <span class="mt-2 text-[0.7rem] font-black text-brand">Claude / ChatGPT →</span>
-                  </a>
-                  <a
-                    href="#the-main-types-of-ai-content-generators-youll-actually-run-into"
-                    class="flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-3 transition-all hover:-translate-y-1 hover:border-brand hover:bg-brand-tint"
-                  >
-                    <span class="text-xs font-bold text-ink">Marketing Team & Ads</span>
-                    <span class="mt-2 text-[0.7rem] font-black text-brand">Brand Platforms →</span>
-                  </a>
-                  <a
-                    href="#the-main-types-of-ai-content-generators-youll-actually-run-into"
-                    class="flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-3 transition-all hover:-translate-y-1 hover:border-brand hover:bg-brand-tint"
-                  >
-                    <span class="text-xs font-bold text-ink">SEO / Search Chasers</span>
-                    <span class="mt-2 text-[0.7rem] font-black text-brand">SERP Scorers →</span>
-                  </a>
-                  <a
-                    href="#the-main-types-of-ai-content-generators-youll-actually-run-into"
-                    class="flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-3 transition-all hover:-translate-y-1 hover:border-brand hover:bg-brand-tint"
-                  >
-                    <span class="text-xs font-bold text-ink">Fiction / Creative</span>
-                    <span class="mt-2 text-[0.7rem] font-black text-brand">Sudowrite →</span>
-                  </a>
-                  <a
-                    href="#the-main-types-of-ai-content-generators-youll-actually-run-into"
-                    class="flex flex-col justify-between rounded-xl border border-neutral-200 bg-white p-3 transition-all hover:-translate-y-1 hover:border-brand hover:bg-brand-tint"
-                  >
-                    <span class="text-xs font-bold text-ink">Live Domain Grounding</span>
-                    <span class="mt-2 text-[0.7rem] font-black text-brand">OllaWrite Pipelines →</span>
-                  </a>
-                  <a
-                    href="#how-to-choose-the-best-ai-content-generator"
-                    class="flex flex-col justify-between rounded-xl border border-brand bg-brand text-white p-3 transition-all hover:-translate-y-1 hover:bg-brand-deep"
-                  >
-                    <span class="text-xs font-bold text-white">Full Selection Guide</span>
-                    <span class="mt-2 text-[0.7rem] font-black text-blue-200">View Guide →</span>
-                  </a>
-                </div>
-              </div>
-            )
-          }
-
-          <!-- 4. REMAINING CONTENT -->
+          <!-- 3. LATER: REMAINING CONTENT DIRECTLY -->
           <div set:html={restHtml} />
 
           <!-- Bottom quick action bar: direct link to TOC & TL;DR -->
