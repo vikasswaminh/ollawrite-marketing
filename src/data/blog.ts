@@ -212,7 +212,7 @@ export const BLOG1_FULL_POST: BlogPost = {
   slug: "best-ai-writing-tools-in-2026",
   title: "Best AI Writing Tools in 2026: The Honest, No-Fluff Guide Nobody Else Will Give You",
   category: "AI Tools & Strategy",
-  excerpt: "Tired of "best AI writing tools" lists that read like ads? Here's a real, tested breakdown of the top AI writing tools worth your money in 2026 — concise, tested, and no fluff.",
+  excerpt: "Tired of \"best AI writing tools\" lists that read like ads? Here's a real, tested breakdown of the top AI writing tools worth your money in 2026 — concise, tested, and no fluff.",
   date: "20-08-2026",
   readTime: "8 min read",
   author: {
