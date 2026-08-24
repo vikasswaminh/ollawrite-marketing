@@ -232,14 +232,14 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
 
       
       if (inKeyPoints) {
-        if (trimmed.startsWith("## ")) {
-          flushKeyPoints();
-        } else if (trimmed.startsWith("- ")) {
+        if (trimmed.startsWith("- ")) {
           keyPointsList.push(li(trimmed));
           return;
+        } else if (trimmed.startsWith("## ")) {
+          flushKeyPoints();
         } else if (trimmed) {
-          keyPointsList.push(`<li class="leading-relaxed">${inline(trimmed)}</li>`);
-          return;
+          // If we hit regular paragraph text, flush key points and process normally
+          flushKeyPoints();
         }
       }
 
