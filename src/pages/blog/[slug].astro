@@ -148,16 +148,18 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
   const flushWrappingUp = () => {
     if (inWrappingUp && wrappingUpParagraphs.length > 0) {
       wrappingUpHtml = `
-        <div id="wrapping-up" class="my-12 scroll-mt-24 overflow-hidden rounded-3xl border-2 border-indigo-300 bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-8 sm:p-12 text-slate-900 shadow-[0_12px_40px_rgba(79,70,229,0.08)] text-center">
-          <div class="h-1.5 w-16 mx-auto rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 mb-6"></div>
-          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center justify-center gap-2.5">
-            <span class="text-indigo-600">⚡</span> Wrapping Up
+        <div id="wrapping-up" class="my-12 scroll-mt-24 overflow-hidden rounded-3xl border-2 border-indigo-500 bg-gradient-to-br from-indigo-100/95 via-purple-100/80 to-pink-100/80 p-8 sm:p-12 text-slate-900 shadow-xl ring-4 ring-indigo-200/60 text-center">
+          <div class="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1 text-xs font-black uppercase tracking-wider text-white shadow-sm mb-4">
+            <span class="text-amber-300">⚡</span> Key Takeaway
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black text-indigo-950 tracking-tight">
+            Wrapping Up
           </h2>
-          <div class="mt-4 max-w-2xl mx-auto text-slate-700 text-base sm:text-[1.05rem] leading-relaxed space-y-4 font-normal">
+          <div class="mt-4 max-w-2xl mx-auto text-slate-800 text-base sm:text-[1.05rem] leading-relaxed space-y-4 font-medium">
             ${wrappingUpParagraphs.map((p) => `<p>${inline(p)}</p>`).join("")}
           </div>
           <div class="mt-8 flex justify-center">
-            <a href="https://www.ollawrite.com" class="group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-8 py-4 text-sm sm:text-base font-bold text-white shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-105 transition-all">
+            <a href="https://www.ollawrite.com" class="group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-8 py-4 text-sm sm:text-base font-bold text-white shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:scale-105 transition-all">
               <span>Start free with OllaWrite</span>
               <span class="group-hover:translate-x-1 transition-transform">→</span>
             </a>
