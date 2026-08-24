@@ -103,6 +103,27 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
   let currentFaq: { q: string; a: string[] } | null = null;
 
   let inWrappingUp = false;
+  let inKeyPoints = false;
+  let keyPointsList: string[] = [];
+  let keyPointsHtml = "";
+  const flushKeyPoints = () => {
+    if (inKeyPoints && keyPointsList.length > 0) {
+      keyPointsHtml = `
+        <section id="key-points" class="relative my-6 scroll-mt-32 rounded-2xl border-2 border-blue-400 bg-gradient-to-br from-blue-50/90 via-sky-50/80 to-blue-50/80 p-5 sm:p-6 text-slate-900 shadow-xs">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="flex h-5 w-5 items-center justify-center rounded-lg bg-blue-600 text-white text-[10px] font-black shadow-xs">⚡</span>
+            <h3 class="text-base font-bold tracking-tight text-blue-950">Key Points</h3>
+          </div>
+          <ul class="space-y-3 text-slate-700 text-[0.98rem] leading-relaxed">
+            ${keyPointsList.join("")}
+          </ul>
+        </section>
+      `;
+      keyPointsList = [];
+      inKeyPoints = false;
+    }
+  };
+
   let wrappingUpParagraphs: string[] = [];
 
   let faqHtml = "";
@@ -183,6 +204,16 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
     lines.forEach((line) => {
       const trimmed = line.trim();
 
+      
+      if (trimmed.startsWith("## Key Points") || trimmed.startsWith("## Key Takeaways")) {
+        flushList();
+        if (inFaq) flushFaq();
+        if (inWrappingUp) flushWrappingUp();
+        inKeyPoints = true;
+        headings.push({ id: "key-points", text: "Key Points" });
+        return;
+      }
+
       if (trimmed.startsWith("## Frequently Asked Questions")) {
         flushList();
         if (inWrappingUp) flushWrappingUp();
@@ -197,6 +228,19 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
         inWrappingUp = true;
         headings.push({ id: "wrapping-up", text: "Wrapping Up" });
         return;
+      }
+
+      
+      if (inKeyPoints) {
+        if (trimmed.startsWith("## ")) {
+          flushKeyPoints();
+        } else if (trimmed.startsWith("- ")) {
+          keyPointsList.push(li(trimmed));
+          return;
+        } else if (trimmed) {
+          keyPointsList.push(`<li class="leading-relaxed">${inline(trimmed)}</li>`);
+          return;
+        }
       }
 
       if (inFaq) {
@@ -276,10 +320,11 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
   if (inFaq) flushFaq();
   if (inWrappingUp) flushWrappingUp();
 
-  return { html: out.join(""), faqHtml, wrappingUpHtml, headings };
+  flushKeyPoints();
+  return { html: out.join(""), faqHtml, wrappingUpHtml, keyPointsHtml, headings };
 };
 
-const { html: bodyHtml, faqHtml, wrappingUpHtml, headings } = renderBody(post.body);
+const { html: bodyHtml, faqHtml, wrappingUpHtml, keyPointsHtml, headings } = renderBody(post.body);
 
 // TL;DR is the first section of the body when present; the rest are article sections.
 const hasTldr = headings.length > 0 && headings[0].text === "TL;DR";
@@ -519,6 +564,7 @@ const quickPickConfig = isAiContentGenerator
               </section>
             )
           }
+          {keyPointsHtml && <div set:html={keyPointsHtml} class="mb-6" />}
 
           <!-- ONE LIGHT-BACKGROUND CONTAINER BOX FOR OVERALL CONTENT -->
           <div class="article-content-box my-6 rounded-3xl border border-slate-300 bg-[#f8fafc]/90 p-6 sm:p-8 shadow-sm backdrop-blur-sm">
