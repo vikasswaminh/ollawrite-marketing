@@ -147,16 +147,16 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
   const flushWrappingUp = () => {
     if (inWrappingUp && wrappingUpParagraphs.length > 0) {
       out.push(`
-        <div id="wrapping-up" class="my-8 scroll-mt-24 rounded-2xl border border-indigo-200/80 bg-gradient-to-br from-indigo-50/60 via-slate-50/40 to-blue-50/50 p-6 sm:p-8 text-slate-900 shadow-sm text-center">
-          <div class="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-white px-3.5 py-1 text-[0.75rem] font-bold text-indigo-700 shadow-xs mb-3">
+        <div id="wrapping-up" class="my-10 scroll-mt-24 rounded-3xl border-2 border-indigo-300 bg-gradient-to-br from-indigo-50/90 via-purple-50/50 to-blue-50/70 p-7 sm:p-9 text-slate-900 shadow-[0_10px_35px_rgba(79,70,229,0.10)] text-center">
+          <div class="inline-flex items-center gap-1.5 rounded-full border border-indigo-300/80 bg-white/90 px-4 py-1 text-xs font-black uppercase tracking-wider text-indigo-700 shadow-xs mb-3.5">
             <span class="text-indigo-600">⚡</span> OllaWrite Editorial Verification
           </div>
-          <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Wrapping Up</h2>
-          <div class="mt-3 max-w-xl mx-auto text-slate-600 text-sm sm:text-base leading-relaxed space-y-3 font-normal">
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Wrapping Up</h2>
+          <div class="mt-3.5 max-w-2xl mx-auto text-slate-600 text-sm sm:text-base leading-relaxed space-y-3 font-normal">
             ${wrappingUpParagraphs.map((p) => `<p>${inline(p)}</p>`).join("")}
           </div>
-          <div class="mt-6 flex justify-center">
-            <a href="https://www.ollawrite.com" class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-sm font-bold text-white shadow-md hover:from-blue-700 hover:to-indigo-700 hover:scale-105 transition-all">
+          <div class="mt-7 flex justify-center">
+            <a href="https://www.ollawrite.com" class="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-7 py-3 text-sm font-bold text-white shadow-lg hover:shadow-indigo-500/30 hover:scale-105 transition-all">
               Start free with OllaWrite →
             </a>
           </div>
@@ -501,21 +501,21 @@ const quickPickConfig = isAiContentGenerator
 
         <!-- Article content -->
         <div class="min-w-0 flex-1 lg:max-w-[56rem]">
-          <!-- TL;DR SUMMARY: Lightly Highlighted Box -->
+          <!-- TL;DR SUMMARY: Highlighted Light Box -->
           {
             hasTldr && (
-              <section id="tl-dr" class="relative mb-8 scroll-mt-32 overflow-hidden rounded-2xl border border-indigo-200/90 bg-gradient-to-br from-indigo-50/60 via-slate-50/40 to-purple-50/50 text-slate-900 shadow-sm">
-                <div class="h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600"></div>
-                <div class="p-6 sm:p-7">
-                  <div class="flex items-center gap-2.5 mb-2">
-                    <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-600 text-white text-xs font-black shadow-xs">
+              <section id="tl-dr" class="relative mb-8 scroll-mt-32 overflow-hidden rounded-3xl border-2 border-indigo-300 bg-gradient-to-br from-indigo-50/90 via-purple-50/50 to-blue-50/70 text-slate-900 shadow-[0_10px_35px_rgba(79,70,229,0.10)]">
+                <div class="h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600"></div>
+                <div class="p-6 sm:p-8">
+                  <div class="flex items-center gap-2.5 mb-2.5">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white text-xs font-black shadow-xs">
                       ⚡
                     </span>
-                    <h3 class="text-base font-black tracking-tight text-indigo-950">
+                    <h3 class="text-base sm:text-lg font-black tracking-tight text-indigo-950">
                       TL;DR
                     </h3>
                   </div>
-                  <div class="mt-3 border-l-4 border-indigo-500 pl-4.5 tldr-body" set:html={tldrContent} />
+                  <div class="mt-3 border-l-4 border-indigo-600 pl-5 tldr-body" set:html={tldrContent} />
                 </div>
               </section>
             )
@@ -573,28 +573,6 @@ const quickPickConfig = isAiContentGenerator
             <div set:html={restHtml} />
           </div>
 
-          <!-- Bottom quick action bar: direct link to Home & Register -->
-          <div class="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div class="flex items-center gap-3 text-sm font-semibold text-slate-700">
-              <span class="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-xs font-black text-white shadow-sm">⚡</span>
-              <span>Ready to transform your content workflow with site-grounded AI?</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <a
-                href="https://www.ollawrite.com"
-                class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-700 transition-all hover:border-indigo-400 hover:text-indigo-700 hover:bg-white shadow-sm"
-              >
-                OllaWrite Home →
-              </a>
-              <a
-                href="https://login.ollawrite.com/register"
-                class="inline-flex items-center gap-1.5 rounded-xl border border-slate-900 bg-slate-900 px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-all hover:bg-slate-800 shadow-sm"
-              >
-                Audit your site free →
-              </a>
-            </div>
-          </div>
-
           <!-- Floating Action Control Pill -->
           <div class="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full border border-slate-300 bg-white/95 p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.12)] backdrop-blur-md">
             <a
@@ -612,41 +590,6 @@ const quickPickConfig = isAiContentGenerator
             >
               🔗
             </button>
-          </div>
-
-          <!-- Email signup -->
-          <div class="mt-10 overflow-hidden rounded-2xl border border-slate-900/10 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 p-6 text-white shadow-xl">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p class="text-[0.7rem] font-black uppercase tracking-widest text-cyan-300">
-                  The OllaWrite Journal
-                </p>
-                <h3 class="mt-1 text-base font-bold text-white sm:text-lg">
-                  Get weekly AI writing deep-dives in your inbox
-                </h3>
-              </div>
-              <form
-                action="https://login.ollawrite.com/register"
-                method="get"
-                class="flex items-center gap-2"
-              >
-                <label for="journal-email" class="sr-only">Email address</label>
-                <input
-                  id="journal-email"
-                  type="email"
-                  name="email"
-                  required
-                  placeholder="you@company.com"
-                  class="w-48 sm:w-56 rounded-xl border border-white/20 bg-white/10 px-3.5 py-2.5 text-xs text-white placeholder-indigo-200/70 outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 backdrop-blur-sm"
-                />
-                <button
-                  type="submit"
-                  class="whitespace-nowrap rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-xs font-bold text-white transition-all hover:scale-105 shadow-sm"
-                >
-                  Sign up →
-                </button>
-              </form>
-            </div>
           </div>
         </div>
       </div>
