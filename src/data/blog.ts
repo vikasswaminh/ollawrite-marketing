@@ -163,12 +163,50 @@ export const BLOG8_FULL_POST: BlogPost = {
 };
 
 export const BLOG_POSTS: BlogPost[] = [
-  BLOG7_FULL_POST,
-  BLOG8_FULL_POST,
   BLOG4_FULL_POST,
   BLOG1_FULL_POST,
   BLOG2_FULL_POST,
-  ...meta
+  BLOG7_FULL_POST,
+  BLOG8_FULL_POST,
+  {
+    slug: "why-site-first-ai-writing-replaces-prompt-guessing",
+    title: "Why Site-First AI Writing Replaces Prompt Guessing in Enterprise Content",
+    category: "AI Tools & Strategy",
+    excerpt: "Most AI writing tools start from a blank prompt. Here is why crawling live sitemaps and grounding claims in real documentation changes the economics of content production.",
+    date: "14-08-2026",
+    readTime: "6 min read",
+    author: {
+      name: "OllaWrite Editorial",
+      role: "AI Architecture",
+    },
+    body: articleBody("Most AI writing tools start from a blank prompt. Here is why crawling live sitemaps and grounding claims in real documentation changes the economics of content production."),
+  },
+  {
+    slug: "four-agents-one-job-each",
+    title: "Four Agents, One Job Each: Inside OllaWrite's Autonomous Content Pipeline",
+    category: "Engineering",
+    excerpt: "A deep dive into how our Auditor, Briefing, Drafter, and Editor Critic agents collaborate with human editors to ship verified technical content.",
+    date: "10-08-2026",
+    readTime: "7 min read",
+    author: {
+      name: "OllaWrite Editorial",
+      role: "Platform Engineering",
+    },
+    body: articleBody("A deep dive into how our Auditor, Briefing, Drafter, and Editor Critic agents collaborate with human editors to ship verified technical content."),
+  },
+  {
+    slug: "the-editor-critic-ship-verdict",
+    title: "The Editor Critic: Why We Built an AI Agent That Rejects Content",
+    category: "AI Tools & Strategy",
+    excerpt: "Why the hardest part of AI writing is not generating copy, but killing hallucinations before they publish. The architecture of our verification agent.",
+    date: "06-08-2026",
+    readTime: "5 min read",
+    author: {
+      name: "OllaWrite Editorial",
+      role: "Editorial Systems",
+    },
+    body: articleBody("Why the hardest part of AI writing is not generating copy, but killing hallucinations before they publish. The architecture of our verification agent."),
+  },
 ];
 
 export const getPostBySlug = (slug: string): BlogPost | undefined =>
