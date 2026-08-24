@@ -18,8 +18,8 @@ const slugify = (s: string): string =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-// Render markdown body with well-defined black border boxes for points & red highlighted mistake boxes
-const renderBody = (body: string) => {
+// Parse markdown into distinct sections where EVERY chapter and special section is in its own box
+const parseBlog = (body: string) => {
   const escape = (s: string) =>
     s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -32,327 +32,338 @@ const renderBody = (body: string) => {
       .replace(/\*\*([^\*]+)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>')
       .replace(/\*([^\*]+)\*/g, '<em class="text-slate-800 font-medium italic">$1</em>');
 
-  const out: string[] = [];
-  const headings: { id: string; text: string }[] = [];
-  let list: string[] = [];
-  let orderedList: string[] = [];
+  const parseTable = (tableBlock: string) => {
+    const lines = tableBlock.trim().split("\n").filter((l) => l.trim().startsWith("|"));
+    if (lines.length < 2) return "";
+    const headers = lines[0]
+      .split("|")
+      .map((s) => s.trim())
+      .filter((_, i, arr) => i > 0 && i < arr.length - 1);
+    const rows = lines
+      .slice(2)
+      .map((line) =>
+        line
+          .split("|")
+          .map((s) => s.trim())
+          .filter((_, i, arr) => i > 0 && i < arr.length - 1)
+      );
 
-  let inMistakes = false;
-  let mistakesList: string[] = [];
+    const ths = headers
+      .map((h) => `<th class="px-5 py-3.5 font-bold text-slate-900 border-b border-slate-200">${inline(h)}</th>`)
+      .join("");
+    const trs = rows
+      .map((row, idx) => {
+        const tds = row
+          .map((cell, cIdx) => {
+            const isFirst = cIdx === 0;
+            return `<td class="px-5 py-3.5 ${isFirst ? "font-bold text-slate-900" : "text-slate-700"}">${inline(cell)}</td>`;
+          })
+          .join("");
+        const bg = idx % 2 === 0 ? "bg-white" : "bg-slate-50/70";
+        return `<tr class="${bg} transition-colors hover:bg-blue-50/40">${tds}</tr>`;
+      })
+      .join("");
 
-  const flushMistakes = () => {
-    if (inMistakes && mistakesList.length > 0) {
-      out.push(`<ul class="my-6 space-y-4 list-none p-0">${mistakesList.join("")}</ul>`);
-      mistakesList = [];
-      inMistakes = false;
-    }
+    return `<div class="table-container my-6 overflow-hidden rounded-2xl border-2 border-slate-900 bg-white shadow-xs">
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[34rem] text-left text-sm">
+          <thead>
+            <tr class="bg-blue-50 text-xs font-black uppercase tracking-wider text-blue-950">
+              ${ths}
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            ${trs}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
   };
 
-  const flushList = () => {
-    if (inMistakes) {
-      flushMistakes();
+  const headings: { id: string; text: string }[] = [];
+  
+  let tldrHtml = "";
+  let keyPointsHtml = "";
+  let faqHtml = "";
+  let wrappingUpHtml = "";
+  let mistakesHtml = "";
+  const chapterBoxes: { id: string; title: string; html: string }[] = [];
+
+  // Split by ## sections
+  const sections = body.split(/(?=\n## )|^## /g).filter(Boolean);
+
+  sections.forEach((sec) => {
+    const raw = sec.trim();
+    if (!raw) return;
+
+    const lines = raw.split("\n");
+    const firstLine = lines[0].replace(/^##\s*/, "").trim();
+    const restLines = lines.slice(1).join("\n").trim();
+
+    // 1. TL;DR Section
+    if (firstLine === "TL;DR") {
+      headings.push({ id: "tldr", text: "TL;DR Summary" });
+      const paragraphs = restLines.split(/\n\n+/).map(p => `<p class="text-[1.08rem] leading-relaxed text-slate-800 mb-3 last:mb-0">${inline(p.trim())}</p>`).join("");
+      tldrHtml = `
+        <section id="tldr" class="my-8 scroll-mt-28 rounded-2xl border-2 border-blue-400 border-l-8 border-l-blue-600 bg-gradient-to-br from-blue-50/90 via-sky-50/80 to-blue-50/80 p-6 sm:p-8 text-slate-900 shadow-md">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-600 text-white text-xs font-black shadow-xs">⚡</span>
+            <h3 class="text-xl font-black tracking-tight text-blue-950">TL;DR Summary</h3>
+          </div>
+          <div class="space-y-3">${paragraphs}</div>
+        </section>
+      `;
       return;
     }
-    if (list.length > 0) {
-      out.push(`<ul class="my-6 space-y-3.5 list-none p-0">${list.join("")}</ul>`);
-      list = [];
-    }
-    if (orderedList.length > 0) {
-      out.push(`<ol class="my-6 space-y-3.5 list-none p-0">${orderedList.join("")}</ol>`);
-      orderedList = [];
-    }
-  };
 
-  let inFaq = false;
-  let faqItems: { q: string; a: string[] }[] = [];
-  let currentFaq: { q: string; a: string[] } | null = null;
+    // 2. Key Points / Key Takeaways Section
+    if (firstLine === "Key Points" || firstLine === "Key Takeaways") {
+      headings.push({ id: "key-takeaways", text: "Key Takeaways" });
+      const items = restLines.split("\n").filter(l => l.trim().startsWith("- "));
+      const itemsHtml = items.map(item => {
+        const text = item.replace(/^-\s*/, "").trim();
+        return `<li class="rounded-xl border-2 border-slate-900 bg-white p-4 sm:p-5 shadow-xs flex gap-3.5 items-start">
+          <span class="text-blue-600 font-black text-xl leading-none flex-shrink-0 mt-0.5">•</span>
+          <div class="text-slate-800 text-[1.02rem] leading-relaxed">${inline(text)}</div>
+        </li>`;
+      }).join("");
 
-  let inWrappingUp = false;
-  let wrappingUpParagraphs: string[] = [];
-
-  let inKeyPoints = false;
-  let keyPointsList: string[] = [];
-  let keyPointsHtml = "";
-
-  const flushKeyPoints = () => {
-    if (inKeyPoints && keyPointsList.length > 0) {
       keyPointsHtml = `
-        <section id="key-takeaways" class="my-8 scroll-mt-28 rounded-2xl border-2 border-slate-900 bg-[#f8fafc] p-6 sm:p-8 text-slate-900 shadow-md">
-          <h3 class="text-xl font-black text-blue-600 mb-6 flex items-center gap-2">
-            Key Takeaways
-          </h3>
-          <ul class="space-y-4 list-none p-0 m-0">
-            ${keyPointsList.join("")}
-          </ul>
+        <section id="key-takeaways" class="my-8 scroll-mt-28 rounded-2xl border-2 border-blue-300 bg-blue-50/40 p-6 sm:p-8 text-slate-900 shadow-md">
+          <div class="flex items-center gap-2 mb-5">
+            <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-600 text-white text-xs font-black shadow-xs">📌</span>
+            <h3 class="text-xl font-black text-blue-950">Key Takeaways</h3>
+          </div>
+          <ul class="space-y-4 list-none p-0 m-0">${itemsHtml}</ul>
         </section>
       `;
-      keyPointsList = [];
-      inKeyPoints = false;
+      return;
     }
-  };
 
-  let faqHtml = "";
-  const flushFaq = () => {
-    if (currentFaq) {
-      faqItems.push(currentFaq);
-      currentFaq = null;
-    }
-    if (faqItems.length > 0) {
-      const itemsHtml = faqItems
-        .map(
-          (item) => `
-        <details class="faq-item group border-2 border-slate-900 rounded-xl bg-white p-5 transition-all hover:border-blue-600 open:border-blue-600 open:bg-blue-50/20 shadow-sm">
-          <summary class="flex cursor-pointer list-none items-center justify-between font-bold text-slate-900 hover:text-blue-700 transition-colors">
-            <span class="text-base sm:text-lg pr-4 font-bold">${inline(item.q)}</span>
-            <span class="faq-toggle-badge inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 border border-blue-200 text-blue-600 font-bold transition-transform group-open:bg-blue-600 group-open:text-white">
-              <span class="group-open:hidden text-lg">+</span>
-              <span class="hidden group-open:inline text-lg">−</span>
-            </span>
-          </summary>
-          <div class="mt-4 pt-3 border-t border-slate-200 space-y-3 text-slate-600 leading-relaxed text-[1.02rem] font-normal">
-            ${item.a.map((p) => `<p>${inline(p)}</p>`).join("")}
-          </div>
-        </details>`
-        )
-        .join("");
+    // 3. Frequently Asked Questions Section
+    if (firstLine.includes("Frequently Asked Questions")) {
+      headings.push({ id: "faq", text: "Frequently Asked Questions" });
+      const faqBlocks = restLines.split(/(?=\n### )|^### /g).filter(Boolean);
+      const faqItemsHtml = faqBlocks.map(block => {
+        const bLines = block.trim().split("\n");
+        const q = bLines[0].replace(/^###\s*/, "").trim();
+        const a = bLines.slice(1).join("\n").trim().split(/\n\n+/).map(p => `<p class="text-slate-700 leading-relaxed text-[1.02rem] mb-2 last:mb-0">${inline(p.trim())}</p>`).join("");
+        return `
+          <details class="faq-item group border-2 border-slate-900 rounded-xl bg-white p-5 transition-all hover:border-blue-600 open:border-blue-600 open:bg-blue-50/20 shadow-xs">
+            <summary class="flex cursor-pointer list-none items-center justify-between font-bold text-slate-900 hover:text-blue-700 transition-colors">
+              <span class="text-base sm:text-lg pr-4 font-black text-slate-900">${inline(q)}</span>
+              <span class="faq-toggle-badge inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 border border-blue-200 text-blue-600 font-bold transition-transform group-open:bg-blue-600 group-open:text-white">
+                <span class="group-open:hidden text-lg">+</span>
+                <span class="hidden group-open:inline text-lg">−</span>
+              </span>
+            </summary>
+            <div class="mt-4 pt-3 border-t border-slate-200 space-y-2 font-normal">
+              ${a}
+            </div>
+          </details>
+        `;
+      }).join("");
 
       faqHtml = `
-        <section id="faq" class="my-10 scroll-mt-28">
-          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mb-6 border-l-4 border-blue-600 pl-4">
-            Frequently Asked Questions
-          </h2>
-          <div class="space-y-4">
-            ${itemsHtml}
+        <section id="faq" class="my-10 scroll-mt-28 rounded-3xl border-2 border-slate-900 bg-slate-50/60 p-6 sm:p-10 shadow-sm">
+          <div class="flex items-center gap-3 mb-6 border-b border-slate-200 pb-4">
+            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white text-sm font-black shadow-xs">❓</span>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900">Frequently Asked Questions</h2>
           </div>
+          <div class="space-y-4">${faqItemsHtml}</div>
         </section>
       `;
+      return;
     }
-  };
 
-  let wrappingUpHtml = "";
-  const flushWrappingUp = () => {
-    if (wrappingUpParagraphs.length > 0) {
+    // 4. Wrapping Up Section (Highlighted in Blue)
+    if (
+      firstLine.startsWith("Wrapping Up") ||
+      firstLine.startsWith("Final Verdict") ||
+      firstLine.startsWith("Final Thoughts")
+    ) {
+      headings.push({ id: "wrapping-it-up", text: "Wrapping It Up" });
+      const paragraphs = restLines.split(/\n\n+/).map(p => `<p class="text-slate-700 text-[1.08rem] leading-relaxed mb-4 last:mb-0">${inline(p.trim())}</p>`).join("");
       wrappingUpHtml = `
-        <section id="wrapping-it-up" class="my-10 scroll-mt-28 rounded-2xl border-2 border-slate-900 bg-gradient-to-br from-blue-50/70 via-sky-50/50 to-blue-50/70 p-8 sm:p-10 text-center shadow-md">
-          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mb-4">Wrapping It Up</h2>
-          <div class="space-y-4 max-w-3xl mx-auto text-slate-700 text-[1.08rem] leading-relaxed mb-8">
-            ${wrappingUpParagraphs.map((p) => `<p>${inline(p)}</p>`).join("")}
-          </div>
+        <section id="wrapping-it-up" class="my-10 scroll-mt-28 rounded-3xl border-2 border-blue-400 bg-gradient-to-br from-blue-50/80 via-sky-50/60 to-blue-50/80 p-8 sm:p-12 text-center shadow-lg">
+          <div class="inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-blue-600 text-white text-lg font-black mb-4 shadow-md">✓</div>
+          <h2 class="text-2xl sm:text-4xl font-black text-slate-900 mb-4 tracking-tight">Wrapping It Up</h2>
+          <div class="space-y-4 max-w-3xl mx-auto mb-8">${paragraphs}</div>
           <div class="flex justify-center">
-            <a href="https://www.ollawrite.com" class="inline-flex items-center justify-center font-bold px-8 py-4 text-base rounded-xl bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all hover:scale-105">
+            <a href="https://www.ollawrite.com" class="inline-flex items-center justify-center font-black px-10 py-4.5 text-base sm:text-lg rounded-xl bg-blue-600 text-white hover:bg-blue-700 shadow-xl shadow-blue-500/30 transition-all hover:scale-105">
               Start free with OllaWrite →
             </a>
           </div>
         </section>
       `;
+      return;
     }
-  };
 
-  const blocks = body.split("\n\n");
-  blocks.forEach((block) => {
-    const lines = block.split("\n");
-    lines.forEach((line) => {
-      const trimmed = line.trim();
+    // 5. Mistakes Section (Red highlighted sub-titles in boxes)
+    if (firstLine.toLowerCase().includes("mistake")) {
+      const id = slugify(firstLine);
+      headings.push({ id, text: firstLine });
+      const linesArr = restLines.split("\n");
+      const introParas: string[] = [];
+      const mistakeItems: string[] = [];
 
-      if (trimmed.startsWith("## Frequently Asked Questions")) {
-        flushList();
-        if (inWrappingUp) flushWrappingUp();
-        if (inKeyPoints) flushKeyPoints();
-        inFaq = true;
-        headings.push({ id: "faq", text: "Frequently Asked Questions" });
-        return;
-      }
-
-      if (
-        trimmed.startsWith("## Wrapping Up") ||
-        trimmed.startsWith("## Final Verdict") ||
-        trimmed.startsWith("## Final Thoughts")
-      ) {
-        flushList();
-        if (inFaq) flushFaq();
-        if (inKeyPoints) flushKeyPoints();
-        inWrappingUp = true;
-        headings.push({ id: "wrapping-it-up", text: "Wrapping It Up" });
-        return;
-      }
-
-      if (trimmed.startsWith("## Key Points") || trimmed.startsWith("## Key Takeaways")) {
-        flushList();
-        if (inFaq) flushFaq();
-        if (inWrappingUp) flushWrappingUp();
-        inKeyPoints = true;
-        headings.push({ id: "key-takeaways", text: "Key Takeaways" });
-        return;
-      }
-
-      if (
-        trimmed.toLowerCase().includes("mistake") &&
-        trimmed.startsWith("## ")
-      ) {
-        flushList();
-        if (inFaq) flushFaq();
-        if (inWrappingUp) flushWrappingUp();
-        if (inKeyPoints) flushKeyPoints();
-        inMistakes = true;
-        const text = trimmed.replace("## ", "").trim();
-        const id = slugify(text);
-        headings.push({ id, text });
-        out.push(
-          `<h2 id="${id}" class="text-2xl sm:text-3xl font-black text-slate-900 mt-12 mb-6 scroll-mt-28 border-l-4 border-red-600 pl-4"><a href="#${id}" class="hover:text-red-600 transition-colors">${inline(text)}</a></h2>`
-        );
-        return;
-      }
-
-      if (inKeyPoints) {
-        if (trimmed.startsWith("- ")) {
-          const text = trimmed.replace(/^-\s*/, "");
-          keyPointsList.push(
-            `<li class="rounded-xl border-2 border-slate-900 bg-white p-4 sm:p-5 shadow-xs flex gap-3.5 items-start"><span class="text-blue-600 font-black text-xl leading-none flex-shrink-0 mt-0.5">•</span><div class="text-slate-800 text-[1.02rem] leading-relaxed">${inline(text)}</div></li>`
-          );
-          return;
-        } else if (trimmed.startsWith("## ")) {
-          flushKeyPoints();
-        } else if (trimmed) {
-          flushKeyPoints();
-        }
-      }
-
-      if (inMistakes) {
+      linesArr.forEach(l => {
+        const trimmed = l.trim();
         if (trimmed.startsWith("- ")) {
           const rawItem = trimmed.replace(/^-\s*/, "");
-          // Check for bold title format: **Mistake X: Title**: Description
           const boldMatch = rawItem.match(/^\*\*(.*?)\*\*:\s*(.*)$/);
           if (boldMatch) {
             const mTitle = boldMatch[1];
             const mDesc = boldMatch[2];
-            mistakesList.push(
-              `<li class="rounded-xl border-2 border-slate-900 bg-red-50/30 p-5 sm:p-6 shadow-sm transition-all hover:border-red-600 flex flex-col gap-2.5">
+            mistakeItems.push(`
+              <li class="rounded-xl border-2 border-slate-900 bg-red-50/30 p-5 sm:p-6 shadow-sm transition-all hover:border-red-600 flex flex-col gap-2.5">
                 <div class="flex items-center gap-2.5">
                   <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600 font-black text-xs">✕</span>
                   <span class="text-red-600 font-black text-base sm:text-lg tracking-tight">${inline(mTitle)}</span>
                 </div>
                 <p class="text-slate-700 text-[1.02rem] leading-relaxed pl-8 m-0 font-normal">${inline(mDesc)}</p>
-              </li>`
-            );
+              </li>
+            `);
           } else {
-            mistakesList.push(
-              `<li class="rounded-xl border-2 border-slate-900 bg-red-50/30 p-5 sm:p-6 shadow-sm flex gap-3.5 items-start">
+            mistakeItems.push(`
+              <li class="rounded-xl border-2 border-slate-900 bg-red-50/30 p-5 sm:p-6 shadow-sm flex gap-3.5 items-start">
                 <span class="text-red-600 font-black text-xl leading-none flex-shrink-0 mt-0.5">•</span>
                 <div class="text-slate-700 text-[1.02rem] leading-relaxed">${inline(rawItem)}</div>
-              </li>`
-            );
+              </li>
+            `);
           }
-          return;
-        } else if (trimmed.startsWith("## ")) {
-          flushMistakes();
-        }
-      }
-
-      if (inFaq) {
-        if (trimmed.startsWith("### ")) {
-          if (currentFaq) faqItems.push(currentFaq);
-          currentFaq = { q: trimmed.replace("### ", "").trim(), a: [] };
-          return;
-        }
-        if (trimmed.startsWith("## ")) {
-          flushFaq();
-        } else if (currentFaq && trimmed) {
-          currentFaq.a.push(trimmed);
-          return;
-        }
-      }
-
-      if (inWrappingUp) {
-        if (trimmed.startsWith("## ")) {
-          flushWrappingUp();
         } else if (trimmed) {
-          wrappingUpParagraphs.push(trimmed);
+          introParas.push(`<p class="text-slate-700 text-[1.12rem] leading-relaxed mb-4">${inline(trimmed)}</p>`);
+        }
+      });
+
+      mistakesHtml = `
+        <section id="${id}" class="my-8 scroll-mt-28 rounded-3xl border-2 border-slate-900 bg-white p-6 sm:p-10 shadow-sm">
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mb-6 border-l-4 border-red-600 pl-4 flex items-center justify-between">
+            <span>${inline(firstLine)}</span>
+            <span class="text-xs uppercase tracking-wider font-black px-3 py-1 bg-red-100 text-red-700 rounded-full border border-red-200">Critical Pitfalls</span>
+          </h2>
+          ${introParas.join("")}
+          <ul class="space-y-4 list-none p-0 m-0 mt-6">${mistakeItems.join("")}</ul>
+        </section>
+      `;
+      return;
+    }
+
+    // 6. Regular Chapter Boxes: EVERY DIFFERENT CONTENT GETS A SEPARATE BOX
+    const id = slugify(firstLine);
+    headings.push({ id, text: firstLine });
+
+    // Parse sub-content within this chapter
+    const innerBlocks = restLines.split(/\n\n+/);
+    const innerHtml: string[] = [];
+    let listArr: string[] = [];
+    let ordArr: string[] = [];
+
+    const flushInnerList = () => {
+      if (listArr.length > 0) {
+        innerHtml.push(`<ul class="my-6 space-y-3.5 list-none p-0">${listArr.join("")}</ul>`);
+        listArr = [];
+      }
+      if (ordArr.length > 0) {
+        innerHtml.push(`<ol class="my-6 space-y-3.5 list-none p-0">${ordArr.join("")}</ol>`);
+        ordArr = [];
+      }
+    };
+
+    innerBlocks.forEach(blk => {
+      const bLines = blk.split("\n");
+      bLines.forEach(l => {
+        const trimmed = l.trim();
+        if (trimmed.startsWith("### ")) {
+          flushInnerList();
+          const subTitle = trimmed.replace("### ", "").trim();
+          const subId = slugify(subTitle);
+          innerHtml.push(`
+            <div id="${subId}" class="my-6 rounded-2xl border-2 border-slate-900 bg-slate-50/50 p-5 sm:p-6 shadow-xs">
+              <h3 class="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2 mb-2">
+                <span class="text-blue-600 font-black">▸</span> ${inline(subTitle)}
+              </h3>
+            </div>
+          `);
           return;
         }
-      }
 
-      if (trimmed.startsWith("- ")) {
-        const text = trimmed.replace(/^-\s*/, "");
-        list.push(
-          `<li class="rounded-xl border-2 border-slate-900 bg-white p-4 sm:p-4.5 shadow-xs flex gap-3.5 items-start"><span class="text-blue-600 font-black text-lg leading-none flex-shrink-0 mt-0.5">•</span><span class="text-slate-700 text-[1.02rem] leading-relaxed font-normal">${inline(text)}</span></li>`
-        );
-        return;
-      }
+        if (trimmed.startsWith("- ")) {
+          const itemText = trimmed.replace(/^-\s*/, "").trim();
+          listArr.push(`
+            <li class="rounded-xl border-2 border-slate-900 bg-white p-4 sm:p-4.5 shadow-xs flex gap-3.5 items-start">
+              <span class="text-blue-600 font-black text-lg leading-none flex-shrink-0 mt-0.5">•</span>
+              <span class="text-slate-700 text-[1.02rem] leading-relaxed font-normal">${inline(itemText)}</span>
+            </li>
+          `);
+          return;
+        }
 
-      if (/^\d+\.\s/.test(trimmed)) {
-        const text = trimmed.replace(/^\d+\.\s*/, "");
-        orderedList.push(
-          `<li class="rounded-xl border-2 border-slate-900 bg-white p-4 sm:p-4.5 shadow-xs flex gap-3.5 items-start"><span class="font-black text-blue-600 text-[1.02rem] flex-shrink-0">${orderedList.length + 1}.</span><span class="text-slate-700 text-[1.02rem] leading-relaxed font-normal">${inline(text)}</span></li>`
-        );
-        return;
-      }
+        if (/^\d+\.\s/.test(trimmed)) {
+          const itemText = trimmed.replace(/^\d+\.\s*/, "").trim();
+          ordArr.push(`
+            <li class="rounded-xl border-2 border-slate-900 bg-white p-4 sm:p-4.5 shadow-xs flex gap-3.5 items-start">
+              <span class="font-black text-blue-600 text-[1.02rem] flex-shrink-0">${ordArr.length + 1}.</span>
+              <span class="text-slate-700 text-[1.02rem] leading-relaxed font-normal">${inline(itemText)}</span>
+            </li>
+          `);
+          return;
+        }
 
-      flushList();
+        flushInnerList();
 
-      if (trimmed.startsWith("### ")) {
-        const text = trimmed.replace("### ", "").trim();
-        const id = slugify(text);
-        out.push(
-          `<h3 id="${id}" class="text-xl sm:text-2xl font-black text-slate-900 mt-8 mb-4 scroll-mt-28"><a href="#${id}" class="hover:text-blue-600 transition-colors">${inline(text)}</a></h3>`
-        );
-      } else if (trimmed.startsWith("## ")) {
-        const text = trimmed.replace("## ", "").trim();
-        const id = slugify(text);
-        headings.push({ id, text });
-        out.push(
-          `<h2 id="${id}" class="text-2xl sm:text-3xl font-black text-slate-900 mt-12 mb-6 scroll-mt-28 border-l-4 border-blue-600 pl-4"><a href="#${id}" class="hover:text-blue-600 transition-colors">${inline(text)}</a></h2>`
-        );
-      } else if (trimmed) {
-        out.push(
-          `<p class="text-slate-700 text-[1.12rem] leading-relaxed mb-6 font-normal">${inline(trimmed)}</p>`
-        );
-      }
+        if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
+          innerHtml.push(parseTable(blk));
+        } else if (trimmed) {
+          innerHtml.push(`<p class="text-slate-700 text-[1.12rem] leading-relaxed mb-5 font-normal">${inline(trimmed)}</p>`);
+        }
+      });
+    });
+
+    flushInnerList();
+
+    chapterBoxes.push({
+      id,
+      title: firstLine,
+      html: `
+        <section id="${id}" class="chapter-box my-8 scroll-mt-28 rounded-3xl border-2 border-slate-900 bg-white p-6 sm:p-10 shadow-sm">
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mb-6 border-l-4 border-blue-600 pl-4">
+            <a href="#${id}" class="hover:text-blue-600 transition-colors">${inline(firstLine)}</a>
+          </h2>
+          <div class="chapter-content">${innerHtml.join("")}</div>
+        </section>
+      `
     });
   });
 
-  flushList();
-  if (inFaq) flushFaq();
-  if (inWrappingUp) flushWrappingUp();
-  flushKeyPoints();
-
-  return { html: out.join(""), faqHtml, wrappingUpHtml, keyPointsHtml, headings };
+  return {
+    tldrHtml,
+    keyPointsHtml,
+    faqHtml,
+    wrappingUpHtml,
+    mistakesHtml,
+    chapterBoxes,
+    headings,
+  };
 };
 
-const { html: bodyHtml, faqHtml, wrappingUpHtml, keyPointsHtml, headings } = renderBody(post.body);
+const {
+  tldrHtml,
+  keyPointsHtml,
+  faqHtml,
+  wrappingUpHtml,
+  mistakesHtml,
+  chapterBoxes,
+  headings,
+} = parseBlog(post.body);
 
-// TL;DR extraction
-const hasTldr = headings.length > 0 && headings[0].text === "TL;DR";
-const articleHeadings = headings.filter(h => h.text !== "TL;DR" && h.text !== "Key Takeaways" && h.text !== "Key Points");
-
-let tldrContent = "";
-let restHtml = bodyHtml;
-if (hasTldr) {
-  const h2Tag = bodyHtml.match(/<h2 id="tl-dr"[^>]*>.*?<\/h2>/);
-  const tldrH2Start = bodyHtml.indexOf('<h2 id="tl-dr"');
-  const contentStart = tldrH2Start + (h2Tag ? h2Tag[0].length : 0);
-  const boundary = articleHeadings.length
-    ? bodyHtml.indexOf(`<h2 id="${articleHeadings[0].id}"`)
-    : bodyHtml.length;
-  const rawTldr = bodyHtml.slice(contentStart, boundary);
-  const plugIdx = rawTldr.indexOf("ollawrite.com");
-  const cutIdx =
-    plugIdx > -1 ? rawTldr.indexOf("</p>", plugIdx) + "</p>".length : rawTldr.length;
-  tldrContent = rawTldr.slice(0, cutIdx);
-  restHtml = bodyHtml.slice(boundary);
-}
-
-// Exactly the chapters for the sidebar TOC
-const tocItems = [
-  ...(hasTldr ? [{ id: "tldr", text: "TL;DR Summary" }] : []),
-  ...(keyPointsHtml ? [{ id: "key-takeaways", text: "Key Takeaways" }] : []),
-  ...articleHeadings.map((h) => ({ id: h.id, text: h.text })),
-  ...(faqHtml ? [{ id: "faq", text: "Frequently Asked Questions" }] : []),
-  ...(wrappingUpHtml ? [{ id: "wrapping-it-up", text: "Wrapping It Up" }] : []),
-];
+// Exact chapters for sticky TOC sidebar
+const tocItems = headings;
 ---
 
 <Layout title={`${post.title} — OllaWrite`} description={post.excerpt}>
-  <!-- Top Reading Progress Bar -->
+  <!-- Top Reading Progress Bar in Blue -->
   <div id="reading-progress-container" class="fixed top-0 left-0 z-50 h-1.5 w-full bg-slate-200">
     <div id="reading-progress-bar" class="h-full bg-blue-600 w-0 transition-all duration-75"></div>
   </div>
@@ -406,28 +417,22 @@ const tocItems = [
 
         <!-- Main Content Column -->
         <div class="flex-1 min-w-0 w-full">
-          <!-- 1. TL;DR Highlight Box -->
-          {
-            hasTldr && (
-              <section id="tldr" class="mb-8 scroll-mt-28 rounded-2xl border-2 border-slate-900 border-l-8 border-l-blue-600 bg-blue-50/50 p-6 sm:p-8 text-slate-900 shadow-sm">
-                <h3 class="text-xl font-black text-blue-700 mb-3">TL;DR</h3>
-                <div class="text-[1.08rem] leading-relaxed text-slate-700 space-y-3" set:html={tldrContent} />
-              </section>
-            )
-          }
+          <!-- 1. TL;DR Highlighted Blue Box -->
+          {tldrHtml && <div set:html={tldrHtml} />}
 
-          <!-- 2. Key Takeaways Box -->
+          <!-- 2. Key Takeaways Highlighted Blue Box with Black Border Points -->
           {keyPointsHtml && <div set:html={keyPointsHtml} />}
 
-          <!-- 3. Core Article Content Box -->
-          <div class="my-8 rounded-3xl border-2 border-slate-900 bg-white p-6 sm:p-10 shadow-sm">
-            <div set:html={restHtml} />
-          </div>
+          <!-- 3. EVERY DIFFERENT CONTENT CHAPTER IN ITS OWN SEPARATE BOX -->
+          {chapterBoxes.map((chap) => <div set:html={chap.html} />)}
 
-          <!-- 4. Standalone FAQ Section -->
+          <!-- 4. Mistakes Section with Red Sub-titles & Black Border Cards -->
+          {mistakesHtml && <div set:html={mistakesHtml} />}
+
+          <!-- 5. Standalone FAQ Section with Separate Accordion Cards -->
           {faqHtml && <div set:html={faqHtml} />}
 
-          <!-- 5. Standalone Wrapping Up Box -->
+          <!-- 6. Wrapping Up Highlighted Blue Box with CTA -->
           {wrappingUpHtml && <div set:html={wrappingUpHtml} />}
 
           <!-- Floating Back-to-Top & Copy Pill -->
