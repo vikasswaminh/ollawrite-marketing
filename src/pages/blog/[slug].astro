@@ -148,18 +148,16 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
   const flushWrappingUp = () => {
     if (inWrappingUp && wrappingUpParagraphs.length > 0) {
       wrappingUpHtml = `
-        <div id="wrapping-up" class="my-12 scroll-mt-24 overflow-hidden rounded-3xl border-2 border-indigo-400/90 bg-gradient-to-br from-indigo-100/90 via-purple-100/70 to-blue-100/80 p-8 sm:p-12 text-slate-900 shadow-lg text-center">
-          <div class="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-1 text-xs font-black uppercase tracking-wider text-white shadow-sm mb-4">
-            <span class="text-amber-300">⚡</span> Key Takeaway
-          </div>
-          <h2 class="text-2xl sm:text-3xl font-black text-indigo-950 tracking-tight">
-            Wrapping Up
+        <div id="wrapping-up" class="my-12 scroll-mt-24 overflow-hidden rounded-3xl border border-indigo-100/90 bg-[#fafcff] p-8 sm:p-12 text-slate-900 shadow-sm text-center">
+          <div class="h-1 w-12 mx-auto rounded-full bg-indigo-500/40 mb-5"></div>
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center justify-center gap-2">
+            <span class="text-indigo-600">⚡</span> Wrapping Up
           </h2>
-          <div class="mt-4 max-w-2xl mx-auto text-slate-800 text-base sm:text-[1.05rem] leading-relaxed space-y-4 font-medium">
+          <div class="mt-4 max-w-2xl mx-auto text-slate-600 text-base sm:text-[1.05rem] leading-relaxed space-y-4 font-normal">
             ${wrappingUpParagraphs.map((p) => `<p>${inline(p)}</p>`).join("")}
           </div>
           <div class="mt-8 flex justify-center">
-            <a href="https://www.ollawrite.com" class="group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-8 py-4 text-sm sm:text-base font-bold text-white shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/45 hover:scale-105 transition-all">
+            <a href="https://www.ollawrite.com" class="group inline-flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 hover:bg-indigo-700 px-8 py-3.5 text-sm font-bold text-white shadow-md hover:scale-105 transition-all">
               <span>Start free with OllaWrite</span>
               <span class="group-hover:translate-x-1 transition-transform">→</span>
             </a>
@@ -505,20 +503,20 @@ const quickPickConfig = isAiContentGenerator
 
         <!-- Article content -->
         <div class="min-w-0 flex-1 lg:max-w-[56rem]">
-          <!-- TL;DR SUMMARY: Soft-Medium Highlight Box -->
+          <!-- TL;DR SUMMARY: Very Light Highlight Box -->
           {
             hasTldr && (
-              <section id="tl-dr" class="relative mb-8 scroll-mt-32 overflow-hidden rounded-3xl border-2 border-indigo-400/90 bg-gradient-to-br from-indigo-100/90 via-purple-100/70 to-blue-100/80 p-6 sm:p-8 text-slate-900 shadow-lg">
-                <div class="h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-full mb-5"></div>
-                <div class="flex items-center gap-2.5 mb-3">
-                  <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-indigo-600 text-white text-xs font-black shadow-sm">
+              <section id="tl-dr" class="relative mb-8 scroll-mt-32 overflow-hidden rounded-3xl border border-indigo-100/90 bg-[#fafcff] p-6 sm:p-8 text-slate-900 shadow-sm">
+                <div class="h-1 w-full rounded-full bg-gradient-to-r from-blue-500/20 via-indigo-500/30 to-purple-500/20 mb-4"></div>
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="text-indigo-600 text-base">
                     ⚡
                   </span>
-                  <h3 class="text-lg sm:text-xl font-black tracking-tight text-indigo-950">
+                  <h3 class="text-base sm:text-lg font-bold tracking-tight text-slate-900">
                     TL;DR
                   </h3>
                 </div>
-                <div class="border-l-4 border-indigo-600 pl-4.5 tldr-body" set:html={tldrContent} />
+                <div class="border-l-2 border-indigo-400 pl-4 tldr-body" set:html={tldrContent} />
               </section>
             )
           }
