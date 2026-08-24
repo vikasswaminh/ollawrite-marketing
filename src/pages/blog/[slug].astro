@@ -18,8 +18,8 @@ const slugify = (s: string): string =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-// Render the lightweight markdown body into HTML blocks.
-const renderBody = (body: string): { html: string; headings: { id: string; text: string }[] } => {
+// Render markdown body with well-defined black border boxes for points & red highlighted mistake boxes
+const renderBody = (body: string) => {
   const escape = (s: string) =>
     s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -27,94 +27,61 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
     escape(s)
       .replace(
         /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
-        '<a href="$2" class="font-bold text-blue-600 underline underline-offset-4 decoration-blue-300 hover:decoration-blue-600 hover:text-blue-800 transition-all">$1</a>'
+        '<a href="$2" target="_blank" rel="noopener noreferrer" class="font-bold text-blue-600 underline underline-offset-4 hover:text-blue-800 transition-colors">$1</a>'
       )
-      .replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>')
-      .replace(/\*(.+?)\*/g, '<em class="text-slate-800 font-medium">$1</em>');
-
-  const li = (item: string) => {
-    const text = item.replace(/^-\s*/, "");
-    return `<li class="flex gap-3 items-start"><span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-blue-600"></span><span class="text-slate-700 leading-relaxed font-normal">${inline(
-      text
-    )}</span></li>`;
-  };
-
-  const parseTable = (tableBlock: string) => {
-    const lines = tableBlock.trim().split("\n").filter((l) => l.trim().startsWith("|"));
-    if (lines.length < 2) return "";
-    const headers = lines[0]
-      .split("|")
-      .map((s) => s.trim())
-      .filter((_, i, arr) => i > 0 && i < arr.length - 1);
-    const rows = lines
-      .slice(2)
-      .map((line) =>
-        line
-          .split("|")
-          .map((s) => s.trim())
-          .filter((_, i, arr) => i > 0 && i < arr.length - 1)
-      );
-
-    const ths = headers
-      .map((h) => `<th class="px-5 py-3.5 font-bold text-slate-900">${inline(h)}</th>`)
-      .join("");
-    const trs = rows
-      .map((row, idx) => {
-        const tds = row
-          .map((cell, cIdx) => {
-            const isFirst = cIdx === 0;
-            return `<td class="px-5 py-3.5 ${isFirst ? "font-bold text-slate-900" : "text-slate-700"}">${inline(cell)}</td>`;
-          })
-          .join("");
-        const bg = idx % 2 === 0 ? "bg-white" : "bg-slate-50/70";
-        return `<tr class="${bg} transition-colors hover:bg-blue-50/40">${tds}</tr>`;
-      })
-      .join("");
-
-    return `<div class="table-container my-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div class="overflow-x-auto">
-        <table class="w-full min-w-[34rem] text-left text-sm">
-          <thead>
-            <tr class="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-700">
-              ${ths}
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100">
-            ${trs}
-          </tbody>
-        </table>
-      </div>
-    </div>`;
-  };
+      .replace(/\*\*([^\*]+)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>')
+      .replace(/\*([^\*]+)\*/g, '<em class="text-slate-800 font-medium italic">$1</em>');
 
   const out: string[] = [];
   const headings: { id: string; text: string }[] = [];
   let list: string[] = [];
-  const flushList = () => {
-    if (list.length) {
-      out.push(`<ul class="my-5 space-y-2.5 pl-1">${list.join("")}</ul>`);
-      list = [];
+  let orderedList: string[] = [];
+
+  let inMistakes = false;
+  let mistakesList: string[] = [];
+
+  const flushMistakes = () => {
+    if (inMistakes && mistakesList.length > 0) {
+      out.push(`<ul class="my-6 space-y-4 list-none p-0">${mistakesList.join("")}</ul>`);
+      mistakesList = [];
+      inMistakes = false;
     }
   };
 
-  const blocks = body.split("\n\n");
+  const flushList = () => {
+    if (inMistakes) {
+      flushMistakes();
+      return;
+    }
+    if (list.length > 0) {
+      out.push(`<ul class="my-6 space-y-3.5 list-none p-0">${list.join("")}</ul>`);
+      list = [];
+    }
+    if (orderedList.length > 0) {
+      out.push(`<ol class="my-6 space-y-3.5 list-none p-0">${orderedList.join("")}</ol>`);
+      orderedList = [];
+    }
+  };
+
   let inFaq = false;
   let faqItems: { q: string; a: string[] }[] = [];
   let currentFaq: { q: string; a: string[] } | null = null;
 
   let inWrappingUp = false;
+  let wrappingUpParagraphs: string[] = [];
+
   let inKeyPoints = false;
   let keyPointsList: string[] = [];
   let keyPointsHtml = "";
+
   const flushKeyPoints = () => {
     if (inKeyPoints && keyPointsList.length > 0) {
       keyPointsHtml = `
-        <section id="key-points" class="relative my-6 scroll-mt-32 rounded-2xl border-2 border-blue-400 bg-gradient-to-br from-blue-50/90 via-sky-50/80 to-blue-50/80 p-5 sm:p-6 text-slate-900 shadow-xs">
-          <div class="flex items-center gap-2 mb-3">
-            <span class="flex h-5 w-5 items-center justify-center rounded-lg bg-blue-600 text-white text-[10px] font-black shadow-xs">⚡</span>
-            <h3 class="text-base font-bold tracking-tight text-blue-950">Key Points</h3>
-          </div>
-          <ul class="space-y-3 text-slate-700 text-[0.98rem] leading-relaxed">
+        <section id="key-takeaways" class="my-8 scroll-mt-28 rounded-2xl border-2 border-slate-900 bg-[#f8fafc] p-6 sm:p-8 text-slate-900 shadow-md">
+          <h3 class="text-xl font-black text-blue-600 mb-6 flex items-center gap-2">
+            Key Takeaways
+          </h3>
+          <ul class="space-y-4 list-none p-0 m-0">
             ${keyPointsList.join("")}
           </ul>
         </section>
@@ -124,122 +91,160 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
     }
   };
 
-  let wrappingUpParagraphs: string[] = [];
-
   let faqHtml = "";
   const flushFaq = () => {
     if (currentFaq) {
       faqItems.push(currentFaq);
       currentFaq = null;
     }
-      if (faqItems.length > 0) {
-        const itemsHtml = faqItems
-          .map(
-            (item) => `
-          <details class="faq-item group border-b border-slate-200/80 last:border-0 py-4.5 transition-all">
-            <summary class="flex cursor-pointer list-none items-center justify-between font-bold text-slate-900 hover:text-blue-700 transition-colors">
-              <span class="text-base sm:text-lg pr-4">${inline(item.q)}</span>
-              <span class="ml-2 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-transform duration-200 group-open:rotate-180 group-open:bg-blue-100 group-open:text-blue-700">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
-              </span>
-            </summary>
-            <div class="mt-3.5 space-y-3 text-slate-600 leading-relaxed text-[1.02rem] font-normal pl-1">
-              ${item.a.map((p) => `<p>${inline(p)}</p>`).join("")}
-            </div>
-          </details>`
-          )
-          .join("");
-
-        faqHtml = `
-          <div id="frequently-asked-questions" class="my-8 scroll-mt-24 rounded-3xl border-2 border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
-            <div class="flex items-center gap-3 border-b border-slate-200 pb-4 mb-3">
-              <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-blue-600 text-xs font-black text-white shadow-sm">?</span>
-              <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Frequently Asked Questions</h2>
-            </div>
-            <div class="divide-y divide-slate-100">
-              ${itemsHtml}
-            </div>
+    if (faqItems.length > 0) {
+      const itemsHtml = faqItems
+        .map(
+          (item) => `
+        <details class="faq-item group border-2 border-slate-900 rounded-xl bg-white p-5 transition-all hover:border-blue-600 open:border-blue-600 open:bg-blue-50/20 shadow-sm">
+          <summary class="flex cursor-pointer list-none items-center justify-between font-bold text-slate-900 hover:text-blue-700 transition-colors">
+            <span class="text-base sm:text-lg pr-4 font-bold">${inline(item.q)}</span>
+            <span class="faq-toggle-badge inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 border border-blue-200 text-blue-600 font-bold transition-transform group-open:bg-blue-600 group-open:text-white">
+              <span class="group-open:hidden text-lg">+</span>
+              <span class="hidden group-open:inline text-lg">−</span>
+            </span>
+          </summary>
+          <div class="mt-4 pt-3 border-t border-slate-200 space-y-3 text-slate-600 leading-relaxed text-[1.02rem] font-normal">
+            ${item.a.map((p) => `<p>${inline(p)}</p>`).join("")}
           </div>
-        `;
-        faqItems = [];
-        inFaq = false;
-      }
-    };
+        </details>`
+        )
+        .join("");
 
-    let wrappingUpHtml = "";
-    const flushWrappingUp = () => {
-      if (inWrappingUp && wrappingUpParagraphs.length > 0) {
-        wrappingUpHtml = `
-          <div id="wrapping-up" class="my-8 scroll-mt-24 overflow-hidden rounded-3xl border-2 border-blue-400 bg-gradient-to-br from-blue-50/90 via-sky-50/80 to-blue-50/80 p-6 sm:p-8 text-slate-900 shadow-sm text-center">
-            <h2 class="text-2xl sm:text-3xl font-black text-blue-950 tracking-tight flex items-center justify-center gap-2">
-              <span class="text-blue-700">⚡</span> Wrapping Up
-            </h2>
-            <div class="mt-4 max-w-2xl mx-auto text-slate-800 text-base sm:text-[1.02rem] leading-relaxed space-y-3 font-normal">
-              ${wrappingUpParagraphs.map((p) => `<p>${inline(p)}</p>`).join("")}
-            </div>
-            <div class="mt-6 flex justify-center">
-              <a href="https://www.ollawrite.com" class="group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 via-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-500/25 hover:scale-105 transition-all">
-                <span>Start free with OllaWrite</span>
-                <span class="group-hover:translate-x-0.5 transition-transform">→</span>
-              </a>
-            </div>
+      faqHtml = `
+        <section id="faq" class="my-10 scroll-mt-28">
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mb-6 border-l-4 border-blue-600 pl-4">
+            Frequently Asked Questions
+          </h2>
+          <div class="space-y-4">
+            ${itemsHtml}
           </div>
-        `;
-        wrappingUpParagraphs = [];
-        inWrappingUp = false;
-      }
-    };
-
-  blocks.forEach((block) => {
-    const trimmedBlock = block.trim();
-    if (trimmedBlock.startsWith("|") && trimmedBlock.includes("\n|")) {
-      flushList();
-      if (inFaq) flushFaq();
-      if (inWrappingUp) flushWrappingUp();
-      out.push(parseTable(trimmedBlock));
-      return;
+        </section>
+      `;
     }
+  };
 
+  let wrappingUpHtml = "";
+  const flushWrappingUp = () => {
+    if (wrappingUpParagraphs.length > 0) {
+      wrappingUpHtml = `
+        <section id="wrapping-it-up" class="my-10 scroll-mt-28 rounded-2xl border-2 border-slate-900 bg-gradient-to-br from-blue-50/70 via-sky-50/50 to-blue-50/70 p-8 sm:p-10 text-center shadow-md">
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mb-4">Wrapping It Up</h2>
+          <div class="space-y-4 max-w-3xl mx-auto text-slate-700 text-[1.08rem] leading-relaxed mb-8">
+            ${wrappingUpParagraphs.map((p) => `<p>${inline(p)}</p>`).join("")}
+          </div>
+          <div class="flex justify-center">
+            <a href="https://www.ollawrite.com" class="inline-flex items-center justify-center font-bold px-8 py-4 text-base rounded-xl bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all hover:scale-105">
+              Start free with OllaWrite →
+            </a>
+          </div>
+        </section>
+      `;
+    }
+  };
+
+  const blocks = body.split("\n\n");
+  blocks.forEach((block) => {
     const lines = block.split("\n");
     lines.forEach((line) => {
       const trimmed = line.trim();
 
-      
+      if (trimmed.startsWith("## Frequently Asked Questions")) {
+        flushList();
+        if (inWrappingUp) flushWrappingUp();
+        if (inKeyPoints) flushKeyPoints();
+        inFaq = true;
+        headings.push({ id: "faq", text: "Frequently Asked Questions" });
+        return;
+      }
+
+      if (
+        trimmed.startsWith("## Wrapping Up") ||
+        trimmed.startsWith("## Final Verdict") ||
+        trimmed.startsWith("## Final Thoughts")
+      ) {
+        flushList();
+        if (inFaq) flushFaq();
+        if (inKeyPoints) flushKeyPoints();
+        inWrappingUp = true;
+        headings.push({ id: "wrapping-it-up", text: "Wrapping It Up" });
+        return;
+      }
+
       if (trimmed.startsWith("## Key Points") || trimmed.startsWith("## Key Takeaways")) {
         flushList();
         if (inFaq) flushFaq();
         if (inWrappingUp) flushWrappingUp();
         inKeyPoints = true;
-        headings.push({ id: "key-points", text: "Key Points" });
+        headings.push({ id: "key-takeaways", text: "Key Takeaways" });
         return;
       }
 
-      if (trimmed.startsWith("## Frequently Asked Questions")) {
-        flushList();
-        if (inWrappingUp) flushWrappingUp();
-        inFaq = true;
-        headings.push({ id: "frequently-asked-questions", text: "Frequently Asked Questions" });
-        return;
-      }
-
-      if (trimmed.startsWith("## Wrapping Up") || trimmed.startsWith("## Final Verdict") || trimmed.startsWith("## Final Thoughts")) {
+      if (
+        trimmed.toLowerCase().includes("mistake") &&
+        trimmed.startsWith("## ")
+      ) {
         flushList();
         if (inFaq) flushFaq();
-        inWrappingUp = true;
-        headings.push({ id: "wrapping-up", text: "Wrapping Up" });
+        if (inWrappingUp) flushWrappingUp();
+        if (inKeyPoints) flushKeyPoints();
+        inMistakes = true;
+        const text = trimmed.replace("## ", "").trim();
+        const id = slugify(text);
+        headings.push({ id, text });
+        out.push(
+          `<h2 id="${id}" class="text-2xl sm:text-3xl font-black text-slate-900 mt-12 mb-6 scroll-mt-28 border-l-4 border-red-600 pl-4"><a href="#${id}" class="hover:text-red-600 transition-colors">${inline(text)}</a></h2>`
+        );
         return;
       }
 
-      
       if (inKeyPoints) {
         if (trimmed.startsWith("- ")) {
-          keyPointsList.push(li(trimmed));
+          const text = trimmed.replace(/^-\s*/, "");
+          keyPointsList.push(
+            `<li class="rounded-xl border-2 border-slate-900 bg-white p-4 sm:p-5 shadow-xs flex gap-3.5 items-start"><span class="text-blue-600 font-black text-xl leading-none flex-shrink-0 mt-0.5">•</span><div class="text-slate-800 text-[1.02rem] leading-relaxed">${inline(text)}</div></li>`
+          );
           return;
         } else if (trimmed.startsWith("## ")) {
           flushKeyPoints();
         } else if (trimmed) {
-          // If we hit regular paragraph text, flush key points and process normally
           flushKeyPoints();
+        }
+      }
+
+      if (inMistakes) {
+        if (trimmed.startsWith("- ")) {
+          const rawItem = trimmed.replace(/^-\s*/, "");
+          // Check for bold title format: **Mistake X: Title**: Description
+          const boldMatch = rawItem.match(/^\*\*(.*?)\*\*:\s*(.*)$/);
+          if (boldMatch) {
+            const mTitle = boldMatch[1];
+            const mDesc = boldMatch[2];
+            mistakesList.push(
+              `<li class="rounded-xl border-2 border-slate-900 bg-red-50/30 p-5 sm:p-6 shadow-sm transition-all hover:border-red-600 flex flex-col gap-2.5">
+                <div class="flex items-center gap-2.5">
+                  <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600 font-black text-xs">✕</span>
+                  <span class="text-red-600 font-black text-base sm:text-lg tracking-tight">${inline(mTitle)}</span>
+                </div>
+                <p class="text-slate-700 text-[1.02rem] leading-relaxed pl-8 m-0 font-normal">${inline(mDesc)}</p>
+              </li>`
+            );
+          } else {
+            mistakesList.push(
+              `<li class="rounded-xl border-2 border-slate-900 bg-red-50/30 p-5 sm:p-6 shadow-sm flex gap-3.5 items-start">
+                <span class="text-red-600 font-black text-xl leading-none flex-shrink-0 mt-0.5">•</span>
+                <div class="text-slate-700 text-[1.02rem] leading-relaxed">${inline(rawItem)}</div>
+              </li>`
+            );
+          }
+          return;
+        } else if (trimmed.startsWith("## ")) {
+          flushMistakes();
         }
       }
 
@@ -251,7 +256,6 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
         }
         if (trimmed.startsWith("## ")) {
           flushFaq();
-          // continue processing as regular ## heading below
         } else if (currentFaq && trimmed) {
           currentFaq.a.push(trimmed);
           return;
@@ -268,69 +272,58 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
       }
 
       if (trimmed.startsWith("- ")) {
-        list.push(li(trimmed));
+        const text = trimmed.replace(/^-\s*/, "");
+        list.push(
+          `<li class="rounded-xl border-2 border-slate-900 bg-white p-4 sm:p-4.5 shadow-xs flex gap-3.5 items-start"><span class="text-blue-600 font-black text-lg leading-none flex-shrink-0 mt-0.5">•</span><span class="text-slate-700 text-[1.02rem] leading-relaxed font-normal">${inline(text)}</span></li>`
+        );
         return;
       }
+
+      if (/^\d+\.\s/.test(trimmed)) {
+        const text = trimmed.replace(/^\d+\.\s*/, "");
+        orderedList.push(
+          `<li class="rounded-xl border-2 border-slate-900 bg-white p-4 sm:p-4.5 shadow-xs flex gap-3.5 items-start"><span class="font-black text-blue-600 text-[1.02rem] flex-shrink-0">${orderedList.length + 1}.</span><span class="text-slate-700 text-[1.02rem] leading-relaxed font-normal">${inline(text)}</span></li>`
+        );
+        return;
+      }
+
       flushList();
 
       if (trimmed.startsWith("### ")) {
         const text = trimmed.replace("### ", "").trim();
         const id = slugify(text);
         out.push(
-          `<h3 id="${id}" class="group mt-8 mb-4 scroll-mt-24 text-lg font-bold text-slate-900 sm:text-xl flex items-center gap-2.5"><span class="flex h-3 w-3 rounded-full bg-blue-600 shadow-sm"></span><a href="#${id}" class="hover:text-blue-600 transition-colors">${inline(
-            text
-          )}</a></h3>`
+          `<h3 id="${id}" class="text-xl sm:text-2xl font-black text-slate-900 mt-8 mb-4 scroll-mt-28"><a href="#${id}" class="hover:text-blue-600 transition-colors">${inline(text)}</a></h3>`
         );
       } else if (trimmed.startsWith("## ")) {
         const text = trimmed.replace("## ", "").trim();
         const id = slugify(text);
         headings.push({ id, text });
         out.push(
-          `<h2 id="${id}" class="group mt-14 mb-5 scroll-mt-24 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl border-l-4 border-blue-600 pl-4 flex items-center justify-between"><a href="#${id}" class="hover:text-blue-600 transition-colors">${inline(
-            text
-          )}</a><a href="#${id}" aria-label="Direct link to this section" class="text-sm font-bold text-blue-600 opacity-0 transition-opacity group-hover:opacity-100">#</a></h2>`
-        );
-      } else if (trimmed.startsWith("Who should use it:")) {
-        // Requirement 8: Clean text without green callout box
-        out.push(
-          `<p class="my-3 text-[1.02rem] leading-relaxed text-slate-700"><strong class="font-bold text-slate-900">Who should use it:</strong> ${inline(
-            trimmed.replace(/^Who should use it:\s*/i, "")
-          )}</p>`
-        );
-      } else if (trimmed.startsWith("Who should skip it:")) {
-        // Requirement 8: Clean text without red callout box
-        out.push(
-          `<p class="my-3 text-[1.02rem] leading-relaxed text-slate-700"><strong class="font-bold text-slate-900">Who should skip it:</strong> ${inline(
-            trimmed.replace(/^Who should skip it:\s*/i, "")
-          )}</p>`
-        );
-      } else if (trimmed.startsWith("1. ") || trimmed.startsWith("2. ") || trimmed.startsWith("3. ") || trimmed.startsWith("4. ") || trimmed.startsWith("5. ") || trimmed.startsWith("6. ")) {
-        const num = trimmed.substring(0, 3);
-        const rest = trimmed.substring(3);
-        out.push(
-          `<div class="my-3.5 flex items-start gap-3.5 rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-xs font-bold text-white shadow-sm">${num.replace('.', '').trim()}</span><div class="leading-relaxed text-slate-700 font-normal">${inline(rest)}</div></div>`
+          `<h2 id="${id}" class="text-2xl sm:text-3xl font-black text-slate-900 mt-12 mb-6 scroll-mt-28 border-l-4 border-blue-600 pl-4"><a href="#${id}" class="hover:text-blue-600 transition-colors">${inline(text)}</a></h2>`
         );
       } else if (trimmed) {
-        out.push(`<p class="mt-4 text-[1.05rem] leading-8 text-slate-700 font-normal">${inline(trimmed)}</p>`);
+        out.push(
+          `<p class="text-slate-700 text-[1.12rem] leading-relaxed mb-6 font-normal">${inline(trimmed)}</p>`
+        );
       }
     });
-    flushList();
   });
+
   flushList();
   if (inFaq) flushFaq();
   if (inWrappingUp) flushWrappingUp();
-
   flushKeyPoints();
+
   return { html: out.join(""), faqHtml, wrappingUpHtml, keyPointsHtml, headings };
 };
 
 const { html: bodyHtml, faqHtml, wrappingUpHtml, keyPointsHtml, headings } = renderBody(post.body);
 
-// TL;DR is the first section of the body when present; the rest are article sections.
+// TL;DR extraction
 const hasTldr = headings.length > 0 && headings[0].text === "TL;DR";
-const articleHeadings = headings.filter(h => h.text !== "TL;DR" && h.text !== "Key Points");
+const articleHeadings = headings.filter(h => h.text !== "TL;DR" && h.text !== "Key Takeaways" && h.text !== "Key Points");
 
-// Split body: TL;DR summary vs rest.
 let tldrContent = "";
 let restHtml = bodyHtml;
 if (hasTldr) {
@@ -348,285 +341,101 @@ if (hasTldr) {
   restHtml = bodyHtml.slice(boundary);
 }
 
-// Exactly the Article Chapters in the TOC Sidebar (without 30sec TL;DR)
-const toc = articleHeadings;
-
-const isAiContentGenerator = post.slug === "ai-content-generator-complete-guide";
-const isBestAiWritingTools = post.slug === "best-ai-writing-tools-in-2026";
-const isWhatIsAiContentWriter = post.slug === "what-is-an-ai-content-writer";
-const isAiAgentsVsAssistants = post.slug === "ai-agents-vs-ai-assistants";
-
-const showQuickPicks = false;
-
-const quickPickConfig = isAiContentGenerator
-  ? {
-      title: "The 5 AI Content Generator Architectures — Matrix",
-      badge: "5 Architectures",
-      rows: [
-        {
-          c1: "General Reasoning Models",
-          c2: "Next-token prediction + instruction tuning (Claude, ChatGPT). Versatile for long-form essays, logical drafting, and deep reasoning.",
-          c3: "General Drafting",
-          actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
-          actionText: "Open Chapter →",
-        },
-        {
-          c1: "Marketing Workflow Platforms",
-          c2: "Prompt templates + multi-channel governance (Jasper, Copy.ai). Optimized for bulk social copy, ad variations, and emails.",
-          c3: "Marketing Teams",
-          actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
-          actionText: "Open Chapter →",
-        },
-        {
-          c1: "SEO-Native Ranking Platforms",
-          c2: "Live SERP scraping + intent scoring (Surfer, Frase). Ideal for search-optimized outlines, keyword coverage, and rank tracking.",
-          c3: "SEO & SERP",
-          actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
-          actionText: "Open Chapter →",
-        },
-        {
-          c1: "Niche Creative Specialists",
-          c2: "Narrative heuristics + continuity codex (Sudowrite, Novel Crafter). Engineered for fiction manuscripts, character arcs, and scenes.",
-          c3: "Creative Fiction",
-          actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
-          actionText: "Open Chapter →",
-        },
-        {
-          c1: "Site-Grounded Multi-Agent",
-          c2: "Live sitemap crawling + independent editor critic (OllaWrite). Produces factual, citation-backed web publishing.",
-          c3: "Site-Aware Multi-Agent",
-          actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
-          actionText: "Open Chapter →",
-        },
-      ],
-    }
-  : isBestAiWritingTools
-  ? {
-      title: "Quick Pick — The AI Writing Tools Matrix",
-      badge: "8 Selected Tools",
-      rows: [
-        { c1: "ChatGPT", c2: "Versatile reasoning, technical explainers, complex outlining, and structured drafting.", c3: "General Model", actionUrl: "#chatgpt-still-the-default", actionText: "Open Review →" },
-        { c1: "Claude", c2: "The gold standard for natural, human-cadence long-form prose and nuanced tone shifts.", c3: "Prose Leader", actionUrl: "#claude-natural-long-form-writing", actionText: "Open Review →" },
-        { c1: "Google Gemini", c2: "Native Google Workspace integration with direct context from Docs, Drive, and Gmail.", c3: "Workspace", actionUrl: "#google-gemini-best-for-google-workspace", actionText: "Open Review →" },
-        { c1: "Writesonic", c2: "Rapid article generation with live web search and real-time keyword suggestions.", c3: "SEO Speed", actionUrl: "#writesonic-seo-focused-content", actionText: "Open Review →" },
-        { c1: "Grammarly", c2: "Essential real-time grammar, clarity, and tone polishing across every desktop app.", c3: "Real-Time Polish", actionUrl: "#grammarly-best-for-editing-and-polish", actionText: "Open Review →" },
-        { c1: "Surfer SEO", c2: "Competitor SERP scoring and keyword frequency modeling for organic search optimization.", c3: "SEO Ranking", actionUrl: "#surfer-seo-for-search-rankings", actionText: "Open Review →" },
-        { c1: "Notion AI", c2: "Writing, summarizing, and note synthesis directly embedded within your team wiki.", c3: "Internal Wiki", actionUrl: "#notion-ai-writing-inside-your-workspace", actionText: "Open Review →" },
-        { c1: "Sudowrite", c2: "Specialized sensory expanders, dialogue refinement, and plotting for novelists.", c3: "Fiction", actionUrl: "#sudowrite-for-fiction-writers", actionText: "Open Review →" },
-      ],
-    }
-  : isWhatIsAiContentWriter
-  ? {
-      title: "The 5 AI Content Writer Tiers — Architecture Matrix",
-      badge: "5 Tiers",
-      rows: [
-        { c1: "Raw Prompt Generators", c2: "Direct LLM API calls without a research or citation pass. Best for quick informal brainstorms.", c3: "Tier 1: Basic", actionUrl: "#how-these-tools-actually-work-step-by-step", actionText: "Open Tier →" },
-        { c1: "Template Marketing Tools", c2: "Multi-channel prompt templates and brand controls. Best for high-volume social and ad copy.", c3: "Tier 2: Template", actionUrl: "#how-these-tools-actually-work-step-by-step", actionText: "Open Tier →" },
-        { c1: "SEO Scoring Platforms", c2: "Live SERP scraping and keyword density scoring. Best for search intent briefs and rankings.", c3: "Tier 3: SEO Native", actionUrl: "#how-these-tools-actually-work-step-by-step", actionText: "Open Tier →" },
-        { c1: "Contextual Workspace Assistants", c2: "Document ingestion inside existing notes and CMS. Best for internal wiki and meeting notes.", c3: "Tier 4: Contextual", actionUrl: "#how-these-tools-actually-work-step-by-step", actionText: "Open Tier →" },
-        { c1: "Site-Grounded Multi-Agent", c2: "Autonomous crawler + independent factual critic gate. Best for authoritative, publish-ready blogs.", c3: "Tier 5: Multi-Agent", actionUrl: "#how-these-tools-actually-work-step-by-step", actionText: "Open Tier →" },
-      ],
-    }
-  : {
-      title: "Architecture Matrix — The 4 Tiers",
-      badge: "4 Tiers",
-      rows: [
-        { c1: "AI Assistant", c2: "Conversational drafting, code review and legal redlines. Reactive / Chat model.", c3: "Reactive Chat", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open Tier →" },
-        { c1: "Contextual Assistant", c2: "Workspace document synthesis and file ingestion. Reactive / Workspace model.", c3: "Workspace", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open Tier →" },
-        { c1: "Advisory Agent", c2: "24/7 background audit, pipeline and anomaly monitoring. Proactive / Scheduled.", c3: "Monitoring", actionUrl: "#how-these-tools-actually-work-step-by-step", actionText: "Open Tier →" },
-        { c1: "Autonomous Agent", c2: "Multi-step tool execution with human approval gate. Proactive / Real Tools.", c3: "Autonomous", actionUrl: "#how-these-tools-actually-work-step-by-step", actionText: "Open Tier →" },
-      ],
-    };
+// Exactly the chapters for the sidebar TOC
+const tocItems = [
+  ...(hasTldr ? [{ id: "tldr", text: "TL;DR Summary" }] : []),
+  ...(keyPointsHtml ? [{ id: "key-takeaways", text: "Key Takeaways" }] : []),
+  ...articleHeadings.map((h) => ({ id: h.id, text: h.text })),
+  ...(faqHtml ? [{ id: "faq", text: "Frequently Asked Questions" }] : []),
+  ...(wrappingUpHtml ? [{ id: "wrapping-it-up", text: "Wrapping It Up" }] : []),
+];
 ---
 
-<Layout title={`${post.title} — OllaWrite Journal`} description={post.excerpt}>
-  <!-- Top Reading Progress Bar with Neon Glow -->
-  <div
-    id="reading-progress-bar"
-    class="fixed top-0 left-0 h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-blue-600 z-50 transition-all duration-75 shadow-[0_2px_12px_rgba(59,130,246,0.6)]"
-    style="width: 0%;"
-  ></div>
-
-  <!-- Toast notification for link copy -->
-  <div
-    id="copy-toast"
-    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 transform opacity-0 pointer-events-none transition-all duration-300 rounded-full border border-slate-800 bg-slate-950/95 backdrop-blur-md px-5 py-2.5 text-xs font-semibold text-white shadow-2xl flex items-center gap-2"
-  >
-    <span class="text-emerald-400 font-black">✓</span> Copied link to clipboard
+<Layout title={`${post.title} — OllaWrite`} description={post.excerpt}>
+  <!-- Top Reading Progress Bar -->
+  <div id="reading-progress-container" class="fixed top-0 left-0 z-50 h-1.5 w-full bg-slate-200">
+    <div id="reading-progress-bar" class="h-full bg-blue-600 w-0 transition-all duration-75"></div>
   </div>
 
-  <article class="bg-[#ffffff] text-slate-900 min-h-screen">
-    <!-- Top sticky bar -->
-    <div class="border-b border-slate-200/80 bg-white/90 backdrop-blur-md sticky top-16 z-30 shadow-sm">
-      <div class="wrap flex items-center justify-between py-3.5">
-        <a
-          href="/blog"
-          class="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-blue-600 transition-colors"
-        >
-          ← Back to Journal
-        </a>
-        <a
-          href="https://www.ollawrite.com"
-          class="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors"
-        >
-          Visit OllaWrite Home →
-        </a>
-      </div>
-    </div>
-
-    <!-- Hero Header with Ambient Background Glow -->
-    <div class="relative border-b border-slate-200/80 bg-gradient-to-b from-slate-50 via-blue-50/30 to-white overflow-hidden">
-      <!-- Decorative ambient gradient circles -->
-      <div class="pointer-events-none absolute -top-24 right-1/4 h-96 w-96 rounded-full bg-blue-400/10 blur-3xl"></div>
-      <div class="pointer-events-none absolute top-10 left-10 h-72 w-72 rounded-full bg-blue-500/10 blur-2xl"></div>
-
-      <div class="wrap relative py-12 lg:py-16">
-        <div class="flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-widest text-blue-600">
-          <span class="rounded-full bg-gradient-to-r from-blue-600 to-blue-600 px-3.5 py-1 text-white shadow-sm font-black">
-            {post.category}
-          </span>
-          <span class="text-slate-300">•</span>
-          <span class="text-slate-600 font-bold">{post.date}</span>
-          <span class="text-slate-300">•</span>
-          <span class="text-slate-600 font-bold">{post.readTime}</span>
+  <div class="max-w-[1360px] mx-auto px-6 py-12 lg:py-16">
+    <article class="w-full">
+      <!-- Article Header -->
+      <header class="mb-10 pb-8 border-b border-slate-200">
+        <div class="flex items-center gap-3 text-xs sm:text-sm font-bold text-blue-600 uppercase tracking-wider mb-4">
+          <span>{post.category}</span>
+          <span>•</span>
+          <span>{post.date}</span>
+          <span>•</span>
+          <span>{post.readTime}</span>
         </div>
-        <h1
-          class="mt-5 max-w-4xl text-3xl font-black leading-[1.14] tracking-tight sm:text-4xl lg:text-[3.25rem] text-slate-900"
-        >
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 leading-tight mb-6">
           {post.title}
         </h1>
-        <p class="mt-5 max-w-3xl text-lg leading-relaxed text-slate-600 font-normal">
+        <p class="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-4xl">
           {post.excerpt}
         </p>
-        <div class="mt-6 flex items-center gap-3 text-sm text-slate-500">
-          <span class="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-tr from-blue-600 via-blue-600 to-blue-600 text-sm font-black text-white shadow-md ring-2 ring-blue-100">OW</span>
-          <div>
-            <p class="font-black text-slate-900">{post.author.name}</p>
-            <p class="text-xs text-slate-500 font-semibold">{post.author.role}</p>
-          </div>
-        </div>
-      </div>
-    </div>
+      </header>
 
-    <!-- Body: sticky TOC sidebar + full-width content -->
-    <div class="wrap py-12 lg:py-16">
-      <div class="lg:flex lg:gap-10">
-        <!-- VIBRANT ELECTRIC GRADIENT TOC SIDEBAR (Requirement 4: No 30sec TL;DR jump) -->
-        <aside class="mb-10 lg:mb-0 lg:w-76 lg:shrink-0">
-          <nav class="rounded-2xl border-2 border-blue-100 bg-white p-4 shadow-[0_12px_36px_rgba(79,70,229,0.08)] lg:sticky lg:top-28">
-            <!-- Sidebar Header Banner with Electric Gradient -->
-            <div class="flex items-center justify-between rounded-xl bg-gradient-to-r from-blue-600 via-blue-600 to-blue-600 px-4 py-3 text-white shadow-md">
-              <h2 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-white">
-                <span class="text-cyan-200">☰</span> Table of Contents
-              </h2>
-              <span class="rounded-full bg-white/20 backdrop-blur-md px-2.5 py-0.5 text-[0.65rem] font-black text-white border border-white/30 shadow-sm">
-                {toc.length} Chapters
-              </span>
+      <!-- 2-Column Grid Layout: Sticky TOC + Content -->
+      <div class="flex flex-col lg:flex-row gap-10 items-start relative w-full">
+        <!-- Sticky Sidebar TOC -->
+        <aside class="w-full lg:w-[320px] lg:shrink-0 lg:sticky lg:top-24 max-h-[calc(100vh-120px)] overflow-y-auto">
+          <div class="rounded-2xl border-2 border-slate-900 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-2 pb-3 mb-3 border-b border-slate-100 font-black text-slate-900 text-sm uppercase tracking-wider">
+              <span class="text-blue-600">☰</span>
+              <span>Table of Contents</span>
             </div>
-
-            <ol id="sidebar-toc" class="mt-4 space-y-1.5 max-h-[68vh] overflow-y-auto pr-1 toc-scrollbar">
+            <nav class="space-y-1.5">
               {
-                toc.map((h, i) => (
-                  <li>
-                    <a
-                      href={`#${h.id}`}
-                      data-target={h.id}
-                      class="toc-sidebar-link group flex items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white px-2.5 py-2 text-xs font-semibold text-slate-800 transition-all hover:border-blue-500 hover:bg-gradient-to-r hover:from-blue-50/60 hover:to-blue-50/60 hover:text-blue-700 hover:shadow-sm"
-                    >
-                      <span class="toc-badge flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-gradient-to-tr from-blue-600 to-blue-600 text-[0.65rem] font-black text-white shadow-sm transition-transform group-hover:scale-105">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span class="flex-1 truncate leading-tight font-semibold">{h.text}</span>
-                      <span class="text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-blue-600 text-[0.7rem] font-black">→</span>
-                    </a>
-                  </li>
+                tocItems.map((item, index) => (
+                  <a
+                    href={`#${item.id}`}
+                    data-target={item.id}
+                    class="toc-sidebar-link flex items-center gap-2.5 rounded-xl border border-transparent px-3 py-2 text-xs font-semibold text-slate-600 transition-all hover:border-slate-300 hover:bg-blue-50/70 hover:text-blue-700"
+                  >
+                    <span class="toc-num flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-blue-100 text-[0.7rem] font-bold text-blue-700">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span class="flex-1 truncate">{item.text}</span>
+                  </a>
                 ))
               }
-            </ol>
-          </nav>
+            </nav>
+          </div>
         </aside>
 
-        <!-- Article content -->
-        <div class="min-w-0 flex-1 lg:max-w-[56rem]">
-          <!-- TL;DR SUMMARY: Compact Pure Violet Purple Highlight Box -->
+        <!-- Main Content Column -->
+        <div class="flex-1 min-w-0 w-full">
+          <!-- 1. TL;DR Highlight Box -->
           {
             hasTldr && (
-              <section id="tl-dr" class="relative mb-6 scroll-mt-32 rounded-2xl border-2 border-blue-400 bg-gradient-to-br from-blue-50/90 via-sky-50/80 to-blue-50/80 p-4 sm:p-5 text-slate-900 shadow-xs">
-                <div class="flex items-center gap-2 mb-2">
-                  <span class="flex h-5 w-5 items-center justify-center rounded-lg bg-blue-600 text-white text-[10px] font-black shadow-xs">
-                    ⚡
-                  </span>
-                  <h3 class="text-base font-bold tracking-tight text-blue-950">
-                    TL;DR
-                  </h3>
-                </div>
-                <div class="border-l-2 border-blue-500 pl-3 tldr-body" set:html={tldrContent} />
+              <section id="tldr" class="mb-8 scroll-mt-28 rounded-2xl border-2 border-slate-900 border-l-8 border-l-blue-600 bg-blue-50/50 p-6 sm:p-8 text-slate-900 shadow-sm">
+                <h3 class="text-xl font-black text-blue-700 mb-3">TL;DR</h3>
+                <div class="text-[1.08rem] leading-relaxed text-slate-700 space-y-3" set:html={tldrContent} />
               </section>
             )
           }
-          {keyPointsHtml && <div set:html={keyPointsHtml} class="mb-6" />}
 
-          <!-- ONE LIGHT-BACKGROUND CONTAINER BOX FOR OVERALL CONTENT -->
-          <div class="article-content-box my-6 rounded-3xl border border-slate-300 bg-[#f8fafc]/90 p-6 sm:p-8 shadow-sm backdrop-blur-sm">
-            <!-- 5 TIERS / QUICK PICKS (PLACED INSIDE CONTENT BOX WITH SINGLE ARROW) -->
-            {
-              showQuickPicks && (
-                <section class="mb-6 overflow-hidden rounded-2xl border border-slate-300 bg-white p-5 shadow-xs">
-                  <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
-                    <h3 class="text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-2">
-                      <span class="text-blue-600">⚡</span> {quickPickConfig.title}
-                    </h3>
-                    <span class="rounded-full bg-blue-50 border border-blue-200 px-3 py-0.5 text-xs font-bold text-blue-700">
-                      {quickPickConfig.badge}
-                    </span>
-                  </div>
-                  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {
-                      quickPickConfig.rows.map((row) => (
-                        <a
-                          href={row.actionUrl}
-                          class="group relative flex flex-col justify-between rounded-2xl border border-slate-300 bg-gradient-to-b from-white to-slate-50/50 p-4 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 hover:shadow-md hover:to-blue-50/30"
-                        >
-                          <div>
-                            <div class="flex items-center justify-between gap-2 mb-3">
-                              <span class="text-[0.7rem] font-black uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200">
-                                {row.c3}
-                              </span>
-                            </div>
-                            <h4 class="text-base font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
-                              {row.c1}
-                            </h4>
-                            <p class="mt-2 text-xs leading-relaxed text-slate-600 font-normal">
-                              {row.c2}
-                            </p>
-                          </div>
-                          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-700">
-                            <span>Read Detailed Section</span>
-                            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-blue-50 group-hover:bg-blue-600 group-hover:text-white transition-colors">→</span>
-                          </div>
-                        </a>
-                      ))
-                    }
-                  </div>
-                </section>
-              )
-            }
+          <!-- 2. Key Takeaways Box -->
+          {keyPointsHtml && <div set:html={keyPointsHtml} />}
 
+          <!-- 3. Core Article Content Box -->
+          <div class="my-8 rounded-3xl border-2 border-slate-900 bg-white p-6 sm:p-10 shadow-sm">
             <div set:html={restHtml} />
           </div>
 
-          <!-- STANDALONE SEPARATE FAQ BOX OUTSIDE CONTENT BOX -->
+          <!-- 4. Standalone FAQ Section -->
           {faqHtml && <div set:html={faqHtml} />}
 
-          <!-- STANDALONE HIGHLIGHTED WRAPPING UP SECTION AT THE VERY END -->
+          <!-- 5. Standalone Wrapping Up Box -->
           {wrappingUpHtml && <div set:html={wrappingUpHtml} />}
 
-          <!-- Floating Action Control Pill -->
-          <div class="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full border border-slate-300 bg-white/95 p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.12)] backdrop-blur-md">
+          <!-- Floating Back-to-Top & Copy Pill -->
+          <div class="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full border-2 border-slate-900 bg-white/95 p-1.5 shadow-lg backdrop-blur-md">
             <a
-              href="#main"
+              href="#"
               title="Back to Top"
-              class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-700 transition-colors hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-600 hover:text-white"
+              class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-700 hover:bg-blue-600 hover:text-white transition-colors"
             >
               ↑
             </a>
@@ -634,35 +443,42 @@ const quickPickConfig = isAiContentGenerator
               id="copy-article-link"
               type="button"
               title="Copy link to clipboard"
-              class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-700 transition-colors hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-600 hover:text-white"
+              class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-700 hover:bg-blue-600 hover:text-white transition-colors"
             >
               🔗
             </button>
           </div>
         </div>
       </div>
-    </div>
-  </article>
+    </article>
+  </div>
 
-  <!-- Script for Reading Progress Bar, Scroll Spy, & Copy Actions -->
+  <!-- Toast for Copy Link -->
+  <div
+    id="copy-toast"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 transform opacity-0 pointer-events-none transition-all duration-300 rounded-full border border-slate-800 bg-slate-950/95 backdrop-blur-md px-5 py-2.5 text-xs font-semibold text-white shadow-2xl flex items-center gap-2"
+  >
+    <span class="text-emerald-400 font-black">✓</span> Copied link to clipboard
+  </div>
+
   <script>
     // 1. Reading progress bar
-    const progressBar = document.getElementById("reading-progress-bar");
+    const bar = document.getElementById("reading-progress-bar");
     const updateProgress = () => {
-      const scrollTotal = document.documentElement.scrollHeight - window.innerHeight;
-      if (scrollTotal > 0 && progressBar) {
-        const scrolled = (window.scrollY / scrollTotal) * 100;
-        progressBar.style.width = Math.min(100, Math.max(0, scrolled)) + "%";
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollHeight > 0 && bar) {
+        const pct = (window.scrollY / scrollHeight) * 100;
+        bar.style.width = Math.min(100, Math.max(0, pct)) + "%";
       }
     };
     window.addEventListener("scroll", updateProgress, { passive: true });
     updateProgress();
 
-    // 2. Active Sidebar TOC Spy
-    const headings = document.querySelectorAll("article h2[id], article h3[id]");
+    // 2. Active TOC Scroll Spy
+    const headings = document.querySelectorAll("article h2[id], article h3[id], section[id]");
     const tocLinks = document.querySelectorAll(".toc-sidebar-link");
 
-    const highlightToc = () => {
+    const updateActiveToc = () => {
       let currentId = "";
       const scrollPos = window.scrollY + 160;
 
@@ -675,22 +491,19 @@ const quickPickConfig = isAiContentGenerator
 
       tocLinks.forEach((link) => {
         const target = link.getAttribute("data-target");
-        const badge = link.querySelector(".toc-badge");
         if (target === currentId) {
-          link.classList.add("border-blue-600", "bg-blue-50/90", "text-blue-950", "font-bold", "shadow-sm");
-          link.classList.remove("border-slate-200/80", "bg-white", "text-slate-800");
-          badge?.classList.add("scale-110", "ring-2", "ring-blue-300");
+          link.classList.add("border-blue-500", "bg-blue-50", "text-blue-700", "font-bold");
+          link.classList.remove("border-transparent", "text-slate-600");
         } else {
-          link.classList.remove("border-blue-600", "bg-blue-50/90", "text-blue-950", "font-bold", "shadow-sm");
-          link.classList.add("border-slate-200/80", "bg-white", "text-slate-800");
-          badge?.classList.remove("scale-110", "ring-2", "ring-blue-300");
+          link.classList.remove("border-blue-500", "bg-blue-50", "text-blue-700", "font-bold");
+          link.classList.add("border-transparent", "text-slate-600");
         }
       });
     };
-    window.addEventListener("scroll", highlightToc, { passive: true });
-    highlightToc();
+    window.addEventListener("scroll", updateActiveToc, { passive: true });
+    updateActiveToc();
 
-    // 3. One-Click Copy Article URL Toast
+    // 3. Copy Link Toast
     const copyBtn = document.getElementById("copy-article-link");
     const toast = document.getElementById("copy-toast");
     copyBtn?.addEventListener("click", () => {
@@ -707,52 +520,3 @@ const quickPickConfig = isAiContentGenerator
     });
   </script>
 </Layout>
-
-<style is:global>
-  /* Custom pleasant slim scrollbar for TOC sidebar */
-  .toc-scrollbar::-webkit-scrollbar {
-    width: 4px;
-  }
-  .toc-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .toc-scrollbar::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 9999px;
-  }
-  .toc-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #3b82f6;
-  }
-
-  /* Crisp high contrast text inside the compact blue TL;DR box */
-  .tldr-body p {
-    margin-top: 0.4rem;
-    font-size: 0.96rem;
-    line-height: 1.68;
-    font-weight: 400;
-    color: #1e293b !important;
-  }
-  .tldr-body strong {
-    color: #0f172a !important;
-    font-weight: 700;
-  }
-  .tldr-body a {
-    color: #2563eb !important;
-    font-weight: 700;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-  .tldr-body a:hover {
-    color: #1d4ed8 !important;
-  }
-  .tldr-body ul {
-    margin: 0.5rem 0;
-    display: grid;
-    gap: 0.4rem;
-  }
-  .tldr-body li span {
-    color: #1e293b !important;
-    font-size: 0.95rem;
-    font-weight: 400;
-  }
-</style>
