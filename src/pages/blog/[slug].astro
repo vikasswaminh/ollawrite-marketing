@@ -18,7 +18,7 @@ const slugify = (s: string): string =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-// Parse markdown into distinct sections where EVERY box has a vibrant blue border line
+// Parse markdown into distinct sections with NO EMOJIS/SYMBOLS and extra-highlighted TLDR & Wrapping Up
 const parseBlog = (body: string) => {
   const escape = (s: string) =>
     s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -100,23 +100,23 @@ const parseBlog = (body: string) => {
     const firstLine = lines[0].replace(/^##\s*/, "").trim();
     const restLines = lines.slice(1).join("\n").trim();
 
-    // 1. TL;DR Section (Blue Border + Blue Glow)
+    // 1. TL;DR Section (EXTRA PROMINENT BLUE HIGHLIGHT, NO EMOJIS)
     if (firstLine === "TL;DR") {
       headings.push({ id: "tldr", text: "TL;DR Summary" });
-      const paragraphs = restLines.split(/\n\n+/).map(p => `<p class="text-[1.08rem] leading-relaxed text-slate-800 mb-3 last:mb-0">${inline(p.trim())}</p>`).join("");
+      const paragraphs = restLines.split(/\n\n+/).map(p => `<p class="text-[1.12rem] leading-relaxed text-slate-900 font-medium mb-3.5 last:mb-0">${inline(p.trim())}</p>`).join("");
       tldrHtml = `
-        <section id="tldr" class="my-8 scroll-mt-28 rounded-2xl border-2 border-blue-500 border-l-8 border-l-blue-600 bg-gradient-to-br from-blue-50/90 via-sky-50/80 to-blue-50/80 p-6 sm:p-8 text-slate-900 shadow-md">
-          <div class="flex items-center gap-2 mb-4">
-            <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-600 text-white text-xs font-black shadow-xs">⚡</span>
-            <h3 class="text-xl font-black tracking-tight text-blue-950">TL;DR Summary</h3>
+        <section id="tldr" class="my-10 scroll-mt-28 rounded-3xl border-3 border-blue-600 border-l-[12px] border-l-blue-700 bg-gradient-to-br from-blue-50 via-sky-50 to-blue-100/80 p-7 sm:p-10 text-slate-900 shadow-xl shadow-blue-500/10">
+          <div class="mb-4">
+            <span class="text-xs uppercase tracking-widest font-black text-blue-700 bg-blue-100/80 border border-blue-300 px-3 py-1 rounded-full">Executive Brief</span>
+            <h3 class="text-2xl sm:text-3xl font-black tracking-tight text-blue-950 mt-2">TL;DR Summary</h3>
           </div>
-          <div class="space-y-3">${paragraphs}</div>
+          <div class="space-y-3.5">${paragraphs}</div>
         </section>
       `;
       return;
     }
 
-    // 2. Key Takeaways Section (Blue Border Container + Blue Border Point Cards)
+    // 2. Key Points / Key Takeaways Section (Blue Border Container + Blue Border Point Cards, NO EMOJIS)
     if (firstLine === "Key Points" || firstLine === "Key Takeaways") {
       headings.push({ id: "key-takeaways", text: "Key Takeaways" });
       const items = restLines.split("\n").filter(l => l.trim().startsWith("- "));
@@ -130,9 +130,8 @@ const parseBlog = (body: string) => {
 
       keyPointsHtml = `
         <section id="key-takeaways" class="my-8 scroll-mt-28 rounded-2xl border-2 border-blue-500 bg-blue-50/40 p-6 sm:p-8 text-slate-900 shadow-md">
-          <div class="flex items-center gap-2 mb-5">
-            <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-600 text-white text-xs font-black shadow-xs">📌</span>
-            <h3 class="text-xl font-black text-blue-950">Key Takeaways</h3>
+          <div class="mb-5">
+            <h3 class="text-xl sm:text-2xl font-black text-blue-950">Key Takeaways</h3>
           </div>
           <ul class="space-y-4 list-none p-0 m-0">${itemsHtml}</ul>
         </section>
@@ -140,7 +139,7 @@ const parseBlog = (body: string) => {
       return;
     }
 
-    // 3. Frequently Asked Questions Section (Blue Border Box Container)
+    // 3. Frequently Asked Questions Section (Blue Border Box Container, NO EMOJIS)
     if (firstLine.includes("Frequently Asked Questions")) {
       headings.push({ id: "faq", text: "Frequently Asked Questions" });
       const faqBlocks = restLines.split(/(?=\n### )|^### /g).filter(Boolean);
@@ -153,8 +152,8 @@ const parseBlog = (body: string) => {
             <summary class="flex cursor-pointer list-none items-center justify-between font-bold text-slate-900 hover:text-blue-700 transition-colors">
               <span class="text-base sm:text-lg pr-4 font-black text-slate-900">${inline(q)}</span>
               <span class="faq-toggle-badge inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 border border-blue-300 text-blue-600 font-bold transition-transform group-open:bg-blue-600 group-open:text-white">
-                <span class="group-open:hidden text-lg">+</span>
-                <span class="hidden group-open:inline text-lg">−</span>
+                <span class="group-open:hidden text-base font-bold">+</span>
+                <span class="hidden group-open:inline text-base font-bold">−</span>
               </span>
             </summary>
             <div class="mt-4 pt-3 border-t border-blue-100 space-y-2 font-normal">
@@ -166,8 +165,7 @@ const parseBlog = (body: string) => {
 
       faqHtml = `
         <section id="faq" class="my-10 scroll-mt-28 rounded-3xl border-2 border-blue-500 bg-slate-50/60 p-6 sm:p-10 shadow-md">
-          <div class="flex items-center gap-3 mb-6 border-b border-blue-200 pb-4">
-            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white text-sm font-black shadow-xs">❓</span>
+          <div class="mb-6 border-b border-blue-200 pb-4">
             <h2 class="text-2xl sm:text-3xl font-black text-slate-900">Frequently Asked Questions</h2>
           </div>
           <div class="space-y-4">${faqItemsHtml}</div>
@@ -176,21 +174,23 @@ const parseBlog = (body: string) => {
       return;
     }
 
-    // 4. Wrapping Up Section (Blue Border Box)
+    // 4. Wrapping Up Section (EXTRA PROMINENT BLUE HIGHLIGHT, NO EMOJIS)
     if (
       firstLine.startsWith("Wrapping Up") ||
       firstLine.startsWith("Final Verdict") ||
       firstLine.startsWith("Final Thoughts")
     ) {
       headings.push({ id: "wrapping-it-up", text: "Wrapping It Up" });
-      const paragraphs = restLines.split(/\n\n+/).map(p => `<p class="text-slate-700 text-[1.08rem] leading-relaxed mb-4 last:mb-0">${inline(p.trim())}</p>`).join("");
+      const paragraphs = restLines.split(/\n\n+/).map(p => `<p class="text-slate-800 text-[1.12rem] leading-relaxed mb-5 last:mb-0 font-normal">${inline(p.trim())}</p>`).join("");
       wrappingUpHtml = `
-        <section id="wrapping-it-up" class="my-10 scroll-mt-28 rounded-3xl border-2 border-blue-500 bg-gradient-to-br from-blue-50/80 via-sky-50/60 to-blue-50/80 p-8 sm:p-12 text-center shadow-lg">
-          <div class="inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-blue-600 text-white text-lg font-black mb-4 shadow-md">✓</div>
-          <h2 class="text-2xl sm:text-4xl font-black text-slate-900 mb-4 tracking-tight">Wrapping It Up</h2>
-          <div class="space-y-4 max-w-3xl mx-auto mb-8">${paragraphs}</div>
+        <section id="wrapping-it-up" class="my-12 scroll-mt-28 rounded-3xl border-3 border-blue-600 bg-gradient-to-br from-blue-50 via-sky-50 to-blue-100/90 p-8 sm:p-14 text-center shadow-2xl shadow-blue-500/15">
+          <div class="mb-4">
+            <span class="text-xs uppercase tracking-widest font-black text-blue-700 bg-blue-100/80 border border-blue-300 px-3 py-1 rounded-full">Final Take</span>
+          </div>
+          <h2 class="text-3xl sm:text-5xl font-black text-slate-950 mb-6 tracking-tight">Wrapping It Up</h2>
+          <div class="space-y-4 max-w-3xl mx-auto mb-10 text-left sm:text-center">${paragraphs}</div>
           <div class="flex justify-center">
-            <a href="https://www.ollawrite.com" class="inline-flex items-center justify-center font-black px-10 py-4.5 text-base sm:text-lg rounded-xl bg-blue-600 text-white hover:bg-blue-700 shadow-xl shadow-blue-500/30 transition-all hover:scale-105">
+            <a href="https://www.ollawrite.com" class="inline-flex items-center justify-center font-black px-12 py-5 text-lg sm:text-xl rounded-2xl bg-blue-600 hover:bg-blue-700 text-white shadow-2xl shadow-blue-600/40 hover:scale-105 transition-all">
               Start free with OllaWrite →
             </a>
           </div>
@@ -199,7 +199,7 @@ const parseBlog = (body: string) => {
       return;
     }
 
-    // 5. Mistakes Section (Blue Border Container + Red Highlighted Sub-Titles)
+    // 5. Mistakes Section (Blue Border Container + Red Highlighted Sub-Titles, NO EMOJIS)
     if (firstLine.toLowerCase().includes("mistake")) {
       const id = slugify(firstLine);
       headings.push({ id, text: firstLine });
@@ -216,12 +216,9 @@ const parseBlog = (body: string) => {
             const mTitle = boldMatch[1];
             const mDesc = boldMatch[2];
             mistakeItems.push(`
-              <li class="rounded-xl border-2 border-blue-400 bg-red-50/30 p-5 sm:p-6 shadow-sm transition-all hover:border-red-500 flex flex-col gap-2.5">
-                <div class="flex items-center gap-2.5">
-                  <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600 font-black text-xs">✕</span>
-                  <span class="text-red-600 font-black text-base sm:text-lg tracking-tight">${inline(mTitle)}</span>
-                </div>
-                <p class="text-slate-700 text-[1.02rem] leading-relaxed pl-8 m-0 font-normal">${inline(mDesc)}</p>
+              <li class="rounded-xl border-2 border-blue-400 bg-red-50/30 p-5 sm:p-6 shadow-sm transition-all hover:border-red-500 flex flex-col gap-2">
+                <span class="text-red-600 font-black text-base sm:text-lg tracking-tight">${inline(mTitle)}</span>
+                <p class="text-slate-700 text-[1.02rem] leading-relaxed m-0 font-normal">${inline(mDesc)}</p>
               </li>
             `);
           } else {
@@ -239,10 +236,10 @@ const parseBlog = (body: string) => {
 
       mistakesHtml = `
         <section id="${id}" class="chapter-box my-8 scroll-mt-28 rounded-2xl border-2 border-blue-500 bg-white p-6 sm:p-8 shadow-xs">
-          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mb-6 border-l-4 border-red-600 pl-4 flex items-center justify-between">
-            <span>${inline(firstLine)}</span>
+          <div class="flex items-center justify-between mb-6 border-l-4 border-red-600 pl-4">
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900">${inline(firstLine)}</h2>
             <span class="text-xs uppercase tracking-wider font-black px-3 py-1 bg-red-100 text-red-700 rounded-full border border-red-200">Critical Pitfalls</span>
-          </h2>
+          </div>
           ${introParas.join("")}
           <ul class="space-y-4 list-none p-0 m-0 mt-6">${mistakeItems.join("")}</ul>
         </section>
@@ -250,7 +247,7 @@ const parseBlog = (body: string) => {
       return;
     }
 
-    // 6. Regular Chapter Boxes (Blue Border Chapter Cards)
+    // 6. Regular Chapter Boxes (Blue Border Chapter Cards, NO EMOJIS)
     const id = slugify(firstLine);
     headings.push({ id, text: firstLine });
 
@@ -280,8 +277,8 @@ const parseBlog = (body: string) => {
           const subId = slugify(subTitle);
           innerHtml.push(`
             <div id="${subId}" class="my-6 rounded-2xl border-2 border-blue-300 bg-blue-50/40 p-5 sm:p-6 shadow-xs">
-              <h3 class="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2 mb-2">
-                <span class="text-blue-600 font-black">▸</span> ${inline(subTitle)}
+              <h3 class="text-lg sm:text-xl font-black text-slate-900 mb-1">
+                ${inline(subTitle)}
               </h3>
             </div>
           `);
@@ -391,9 +388,8 @@ const tocItems = headings;
         <!-- Sticky Sidebar TOC (Blue Border Box) -->
         <aside class="w-full lg:w-[320px] lg:shrink-0 lg:sticky lg:top-24 max-h-[calc(100vh-120px)] overflow-y-auto">
           <div class="rounded-2xl border-2 border-blue-500 bg-white p-5 shadow-sm">
-            <div class="flex items-center gap-2 pb-3 mb-3 border-b-2 border-blue-100 font-black text-slate-900 text-sm uppercase tracking-wider">
-              <span class="text-blue-600">☰</span>
-              <span>Table of Contents</span>
+            <div class="pb-3 mb-3 border-b-2 border-blue-100 font-black text-slate-900 text-sm uppercase tracking-wider">
+              Table of Contents
             </div>
             <nav class="space-y-1.5">
               {
@@ -416,7 +412,7 @@ const tocItems = headings;
 
         <!-- Main Content Column -->
         <div class="flex-1 min-w-0 w-full">
-          <!-- 1. TL;DR Highlighted Blue Box -->
+          <!-- 1. TL;DR Extra-Highlighted Blue Box -->
           {tldrHtml && <div set:html={tldrHtml} />}
 
           <!-- 2. Key Takeaways Highlighted Blue Box with Blue Border Points -->
@@ -424,8 +420,7 @@ const tocItems = headings;
 
           <!-- 3. OVERALL CONTENT BOX (WITH BOLD BLUE BORDER) -->
           <div class="blog-main-content-box my-8 rounded-3xl border-2 border-blue-500 bg-blue-50/20 p-6 sm:p-10 shadow-md">
-            <div class="flex items-center gap-3 mb-6 pb-4 border-b-2 border-blue-200">
-              <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white text-sm font-black shadow-xs">📖</span>
+            <div class="mb-6 pb-4 border-b-2 border-blue-200">
               <h2 class="text-xl sm:text-2xl font-black text-slate-900">Complete Guide & Deep-Dive Analysis</h2>
             </div>
 
@@ -439,25 +434,25 @@ const tocItems = headings;
           <!-- 4. Standalone FAQ Section Box (With Blue Border) -->
           {faqHtml && <div set:html={faqHtml} />}
 
-          <!-- 5. Wrapping Up Highlighted Blue Box with CTA (With Blue Border) -->
+          <!-- 5. Wrapping Up Extra-Highlighted Blue Box with CTA -->
           {wrappingUpHtml && <div set:html={wrappingUpHtml} />}
 
-          <!-- Floating Back-to-Top & Copy Pill (With Blue Border) -->
+          <!-- Floating Back-to-Top & Copy Pill -->
           <div class="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full border-2 border-blue-500 bg-white/95 p-1.5 shadow-lg backdrop-blur-md">
             <a
               href="#"
               title="Back to Top"
-              class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-xs font-black text-blue-700 hover:bg-blue-600 hover:text-white transition-colors"
+              class="flex h-9 px-3 items-center justify-center rounded-full bg-blue-50 text-xs font-black text-blue-700 hover:bg-blue-600 hover:text-white transition-colors"
             >
-              ↑
+              Top
             </a>
             <button
               id="copy-article-link"
               type="button"
               title="Copy link to clipboard"
-              class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-xs font-bold text-blue-700 hover:bg-blue-600 hover:text-white transition-colors"
+              class="flex h-9 px-3 items-center justify-center rounded-full bg-blue-50 text-xs font-bold text-blue-700 hover:bg-blue-600 hover:text-white transition-colors"
             >
-              🔗
+              Share
             </button>
           </div>
         </div>
@@ -468,9 +463,9 @@ const tocItems = headings;
   <!-- Toast for Copy Link -->
   <div
     id="copy-toast"
-    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 transform opacity-0 pointer-events-none transition-all duration-300 rounded-full border border-blue-700 bg-slate-950/95 backdrop-blur-md px-5 py-2.5 text-xs font-semibold text-white shadow-2xl flex items-center gap-2"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 transform opacity-0 pointer-events-none transition-all duration-300 rounded-full border border-blue-700 bg-slate-950/95 backdrop-blur-md px-5 py-2.5 text-xs font-semibold text-white shadow-2xl"
   >
-    <span class="text-emerald-400 font-black">✓</span> Copied link to clipboard
+    Copied link to clipboard
   </div>
 
   <script>
