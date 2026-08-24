@@ -116,9 +116,9 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
           .map(
             (item) => `
           <details class="faq-item group border-b border-slate-200/80 last:border-0 py-4.5 transition-all">
-            <summary class="flex cursor-pointer list-none items-center justify-between font-bold text-slate-900 hover:text-purple-700 transition-colors">
+            <summary class="flex cursor-pointer list-none items-center justify-between font-bold text-slate-900 hover:text-blue-700 transition-colors">
               <span class="text-base sm:text-lg pr-4">${inline(item.q)}</span>
-              <span class="ml-2 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-transform duration-200 group-open:rotate-180 group-open:bg-purple-100 group-open:text-purple-700">
+              <span class="ml-2 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-transform duration-200 group-open:rotate-180 group-open:bg-blue-100 group-open:text-blue-700">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
               </span>
             </summary>
@@ -132,7 +132,7 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
         faqHtml = `
           <div id="frequently-asked-questions" class="my-8 scroll-mt-24 rounded-3xl border-2 border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
             <div class="flex items-center gap-3 border-b border-slate-200 pb-4 mb-3">
-              <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-xs font-black text-white shadow-sm">?</span>
+              <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-xs font-black text-white shadow-sm">?</span>
               <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Frequently Asked Questions</h2>
             </div>
             <div class="divide-y divide-slate-100">
@@ -149,15 +149,15 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
     const flushWrappingUp = () => {
       if (inWrappingUp && wrappingUpParagraphs.length > 0) {
         wrappingUpHtml = `
-          <div id="wrapping-up" class="my-8 scroll-mt-24 overflow-hidden rounded-3xl border-2 border-violet-400 bg-gradient-to-br from-violet-100/90 via-purple-100/80 to-indigo-100/90 p-6 sm:p-8 text-slate-900 shadow-sm text-center">
-            <h2 class="text-2xl sm:text-3xl font-black text-violet-950 tracking-tight flex items-center justify-center gap-2">
-              <span class="text-violet-700">⚡</span> Wrapping Up
+          <div id="wrapping-up" class="my-8 scroll-mt-24 overflow-hidden rounded-3xl border-2 border-blue-400 bg-gradient-to-br from-blue-50/90 via-sky-50/80 to-indigo-50/80 p-6 sm:p-8 text-slate-900 shadow-sm text-center">
+            <h2 class="text-2xl sm:text-3xl font-black text-blue-950 tracking-tight flex items-center justify-center gap-2">
+              <span class="text-blue-700">⚡</span> Wrapping Up
             </h2>
             <div class="mt-4 max-w-2xl mx-auto text-slate-800 text-base sm:text-[1.02rem] leading-relaxed space-y-3 font-normal">
               ${wrappingUpParagraphs.map((p) => `<p>${inline(p)}</p>`).join("")}
             </div>
             <div class="mt-6 flex justify-center">
-              <a href="https://www.ollawrite.com" class="group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-500/30 hover:scale-105 transition-all">
+              <a href="https://www.ollawrite.com" class="group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-500/25 hover:scale-105 transition-all">
                 <span>Start free with OllaWrite</span>
                 <span class="group-hover:translate-x-0.5 transition-transform">→</span>
               </a>
@@ -506,16 +506,16 @@ const quickPickConfig = isAiContentGenerator
           <!-- TL;DR SUMMARY: Compact Pure Violet Purple Highlight Box -->
           {
             hasTldr && (
-              <section id="tl-dr" class="relative mb-6 scroll-mt-32 rounded-2xl border-2 border-violet-400 bg-gradient-to-br from-violet-100/90 via-purple-100/80 to-indigo-100/90 p-4 sm:p-5 text-slate-900 shadow-xs">
+              <section id="tl-dr" class="relative mb-6 scroll-mt-32 rounded-2xl border-2 border-blue-400 bg-gradient-to-br from-blue-50/90 via-sky-50/80 to-indigo-50/80 p-4 sm:p-5 text-slate-900 shadow-xs">
                 <div class="flex items-center gap-2 mb-2">
-                  <span class="flex h-5 w-5 items-center justify-center rounded-lg bg-violet-700 text-white text-[10px] font-black shadow-xs">
+                  <span class="flex h-5 w-5 items-center justify-center rounded-lg bg-blue-600 text-white text-[10px] font-black shadow-xs">
                     ⚡
                   </span>
-                  <h3 class="text-base font-bold tracking-tight text-violet-950">
+                  <h3 class="text-base font-bold tracking-tight text-blue-950">
                     TL;DR
                   </h3>
                 </div>
-                <div class="border-l-2 border-violet-500 pl-3 tldr-body" set:html={tldrContent} />
+                <div class="border-l-2 border-blue-500 pl-3 tldr-body" set:html={tldrContent} />
               </section>
             )
           }
@@ -528,9 +528,9 @@ const quickPickConfig = isAiContentGenerator
                 <section class="mb-6 overflow-hidden rounded-2xl border border-slate-300 bg-white p-5 shadow-xs">
                   <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
                     <h3 class="text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-2">
-                      <span class="text-purple-600">⚡</span> {quickPickConfig.title}
+                      <span class="text-blue-600">⚡</span> {quickPickConfig.title}
                     </h3>
-                    <span class="rounded-full bg-purple-50 border border-purple-200 px-3 py-0.5 text-xs font-bold text-purple-700">
+                    <span class="rounded-full bg-blue-50 border border-blue-200 px-3 py-0.5 text-xs font-bold text-blue-700">
                       {quickPickConfig.badge}
                     </span>
                   </div>
@@ -539,24 +539,24 @@ const quickPickConfig = isAiContentGenerator
                       quickPickConfig.rows.map((row) => (
                         <a
                           href={row.actionUrl}
-                          class="group relative flex flex-col justify-between rounded-2xl border border-slate-300 bg-gradient-to-b from-white to-slate-50/50 p-4 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-purple-500 hover:shadow-md hover:to-purple-50/30"
+                          class="group relative flex flex-col justify-between rounded-2xl border border-slate-300 bg-gradient-to-b from-white to-slate-50/50 p-4 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-blue-500 hover:shadow-md hover:to-blue-50/30"
                         >
                           <div>
                             <div class="flex items-center justify-between gap-2 mb-3">
-                              <span class="text-[0.7rem] font-black uppercase tracking-wider text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-200">
+                              <span class="text-[0.7rem] font-black uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200">
                                 {row.c3}
                               </span>
                             </div>
-                            <h4 class="text-base font-bold text-slate-900 group-hover:text-purple-700 transition-colors">
+                            <h4 class="text-base font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
                               {row.c1}
                             </h4>
                             <p class="mt-2 text-xs leading-relaxed text-slate-600 font-normal">
                               {row.c2}
                             </p>
                           </div>
-                          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-purple-700">
+                          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-700">
                             <span>Read Detailed Section</span>
-                            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-purple-50 group-hover:bg-purple-600 group-hover:text-white transition-colors">→</span>
+                            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-blue-50 group-hover:bg-blue-600 group-hover:text-white transition-colors">→</span>
                           </div>
                         </a>
                       ))
@@ -678,7 +678,7 @@ const quickPickConfig = isAiContentGenerator
     background: #818cf8;
   }
 
-  /* Crisp high contrast text inside the compact violet purple TL;DR box */
+  /* Crisp high contrast text inside the compact blue TL;DR box */
   .tldr-body p {
     margin-top: 0.4rem;
     font-size: 0.96rem;
@@ -691,13 +691,13 @@ const quickPickConfig = isAiContentGenerator
     font-weight: 700;
   }
   .tldr-body a {
-    color: #6d28d9 !important;
+    color: #2563eb !important;
     font-weight: 700;
     text-decoration: underline;
     text-underline-offset: 3px;
   }
   .tldr-body a:hover {
-    color: #4c1d95 !important;
+    color: #1d4ed8 !important;
   }
   .tldr-body ul {
     margin: 0.5rem 0;
