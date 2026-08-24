@@ -360,14 +360,14 @@ const quickPickConfig = isAiContentGenerator
       title: "Quick Pick — The AI Writing Tools Matrix",
       badge: "8 Selected Tools",
       rows: [
-        { c1: "ChatGPT", c2: "Versatile reasoning, technical explainers, complex outlining, and structured drafting.", c3: "General Model", actionUrl: "#chatgpt-still-the-default-and-still-worth-it", actionText: "Open Review →" },
-        { c1: "Claude", c2: "The gold standard for natural, human-cadence long-form prose and nuanced tone shifts.", c3: "Prose Leader", actionUrl: "#claude-the-one-that-actually-sounds-like-a-person-wrote-it", actionText: "Open Review →" },
-        { c1: "Google Gemini", c2: "Native Google Workspace integration with direct context from Docs, Drive, and Gmail.", c3: "Workspace", actionUrl: "#google-gemini-the-quiet-workhorse-for-google-native-teams", actionText: "Open Review →" },
-        { c1: "Writesonic", c2: "Rapid article generation with live web search and real-time keyword suggestions.", c3: "SEO Speed", actionUrl: "#writesonic-the-seo-native-speed-option", actionText: "Open Review →" },
-        { c1: "Grammarly", c2: "Essential real-time grammar, clarity, and tone polishing across every desktop app.", c3: "Real-Time Polish", actionUrl: "#grammarly-still-the-standard-for-polish-not-generation", actionText: "Open Review →" },
-        { c1: "Surfer SEO", c2: "Competitor SERP scoring and keyword frequency modeling for organic search optimization.", c3: "SEO Ranking", actionUrl: "#surfer-seo-for-teams-who-live-and-die-by-rankings", actionText: "Open Review →" },
-        { c1: "Notion AI", c2: "Writing, summarizing, and note synthesis directly embedded within your team wiki.", c3: "Internal Wiki", actionUrl: "#notion-ai-writing-where-your-work-already-lives", actionText: "Open Review →" },
-        { c1: "Sudowrite", c2: "Specialized sensory expanders, dialogue refinement, and plotting for novelists.", c3: "Fiction", actionUrl: "#sudowrite-still-the-fiction-writers-favorite", actionText: "Open Review →" },
+        { c1: "ChatGPT", c2: "Versatile reasoning, technical explainers, complex outlining, and structured drafting.", c3: "General Model", actionUrl: "#chatgpt-still-the-default", actionText: "Open Review →" },
+        { c1: "Claude", c2: "The gold standard for natural, human-cadence long-form prose and nuanced tone shifts.", c3: "Prose Leader", actionUrl: "#claude-natural-long-form-writing", actionText: "Open Review →" },
+        { c1: "Google Gemini", c2: "Native Google Workspace integration with direct context from Docs, Drive, and Gmail.", c3: "Workspace", actionUrl: "#google-gemini-best-for-google-workspace", actionText: "Open Review →" },
+        { c1: "Writesonic", c2: "Rapid article generation with live web search and real-time keyword suggestions.", c3: "SEO Speed", actionUrl: "#writesonic-seo-focused-content", actionText: "Open Review →" },
+        { c1: "Grammarly", c2: "Essential real-time grammar, clarity, and tone polishing across every desktop app.", c3: "Real-Time Polish", actionUrl: "#grammarly-best-for-editing-and-polish", actionText: "Open Review →" },
+        { c1: "Surfer SEO", c2: "Competitor SERP scoring and keyword frequency modeling for organic search optimization.", c3: "SEO Ranking", actionUrl: "#surfer-seo-for-search-rankings", actionText: "Open Review →" },
+        { c1: "Notion AI", c2: "Writing, summarizing, and note synthesis directly embedded within your team wiki.", c3: "Internal Wiki", actionUrl: "#notion-ai-writing-inside-your-workspace", actionText: "Open Review →" },
+        { c1: "Sudowrite", c2: "Specialized sensory expanders, dialogue refinement, and plotting for novelists.", c3: "Fiction", actionUrl: "#sudowrite-for-fiction-writers", actionText: "Open Review →" },
       ],
     }
   : isWhatIsAiContentWriter
@@ -503,19 +503,19 @@ const quickPickConfig = isAiContentGenerator
 
         <!-- Article content -->
         <div class="min-w-0 flex-1 lg:max-w-[56rem]">
-          <!-- TL;DR SUMMARY: Pure Violet Purple Highlight Box -->
+          <!-- TL;DR SUMMARY: Compact Pure Violet Purple Highlight Box -->
           {
             hasTldr && (
-              <section id="tl-dr" class="relative mb-8 scroll-mt-32 rounded-3xl border-2 border-violet-400 bg-gradient-to-br from-violet-100/90 via-purple-100/80 to-indigo-100/90 p-6 sm:p-8 text-slate-900 shadow-md">
-                <div class="flex items-center gap-2.5 mb-3">
-                  <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-violet-700 text-white text-xs font-black shadow-xs">
+              <section id="tl-dr" class="relative mb-6 scroll-mt-32 rounded-2xl border-2 border-violet-400 bg-gradient-to-br from-violet-100/90 via-purple-100/80 to-indigo-100/90 p-4 sm:p-5 text-slate-900 shadow-xs">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="flex h-5 w-5 items-center justify-center rounded-lg bg-violet-700 text-white text-[10px] font-black shadow-xs">
                     ⚡
                   </span>
-                  <h3 class="text-lg font-black tracking-tight text-violet-950">
+                  <h3 class="text-base font-bold tracking-tight text-violet-950">
                     TL;DR
                   </h3>
                 </div>
-                <div class="border-l-2 border-violet-500 pl-4 tldr-body" set:html={tldrContent} />
+                <div class="border-l-2 border-violet-500 pl-3 tldr-body" set:html={tldrContent} />
               </section>
             )
           }
@@ -678,11 +678,11 @@ const quickPickConfig = isAiContentGenerator
     background: #818cf8;
   }
 
-  /* Crisp high contrast text inside the light purple TL;DR box */
+  /* Crisp high contrast text inside the compact violet purple TL;DR box */
   .tldr-body p {
-    margin-top: 0.75rem;
-    font-size: 1.02rem;
-    line-height: 1.8;
+    margin-top: 0.4rem;
+    font-size: 0.96rem;
+    line-height: 1.68;
     font-weight: 400;
     color: #1e293b !important;
   }
@@ -691,21 +691,22 @@ const quickPickConfig = isAiContentGenerator
     font-weight: 700;
   }
   .tldr-body a {
-    color: #7e22ce !important;
+    color: #6d28d9 !important;
     font-weight: 700;
     text-decoration: underline;
     text-underline-offset: 3px;
   }
   .tldr-body a:hover {
-    color: #581c87 !important;
+    color: #4c1d95 !important;
   }
   .tldr-body ul {
-    margin: 1rem 0;
+    margin: 0.5rem 0;
     display: grid;
-    gap: 0.75rem;
+    gap: 0.4rem;
   }
   .tldr-body li span {
     color: #1e293b !important;
+    font-size: 0.95rem;
     font-weight: 400;
   }
 </style>
