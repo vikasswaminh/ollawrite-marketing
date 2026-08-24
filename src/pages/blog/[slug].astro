@@ -148,15 +148,15 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
   const flushWrappingUp = () => {
     if (inWrappingUp && wrappingUpParagraphs.length > 0) {
       wrappingUpHtml = `
-        <div id="wrapping-up" class="my-10 scroll-mt-24 rounded-2xl border border-slate-200/80 bg-white p-7 sm:p-10 text-slate-900 shadow-xs text-center">
-          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center justify-center gap-2">
-            <span class="text-indigo-600">⚡</span> Wrapping Up
+        <div id="wrapping-up" class="my-10 scroll-mt-24 rounded-2xl border-2 border-pink-400 bg-[#fff5f9] p-7 sm:p-10 text-slate-900 shadow-sm text-center">
+          <h2 class="text-2xl sm:text-3xl font-black text-fuchsia-900 tracking-tight flex items-center justify-center gap-2">
+            <span class="text-pink-600">⚡</span> Wrapping Up
           </h2>
-          <div class="mt-4 max-w-2xl mx-auto text-slate-600 text-base sm:text-[1.05rem] leading-relaxed space-y-3.5 font-normal">
+          <div class="mt-4 max-w-2xl mx-auto text-slate-800 text-base sm:text-[1.05rem] leading-relaxed space-y-3.5 font-normal">
             ${wrappingUpParagraphs.map((p) => `<p>${inline(p)}</p>`).join("")}
           </div>
           <div class="mt-7 flex justify-center">
-            <a href="https://www.ollawrite.com" class="group inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 px-7 py-3 text-sm font-bold text-white shadow-xs hover:scale-105 transition-all">
+            <a href="https://www.ollawrite.com" class="group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 px-7 py-3 text-sm font-bold text-white shadow-md hover:scale-105 transition-all">
               <span>Start free with OllaWrite</span>
               <span class="group-hover:translate-x-0.5 transition-transform">→</span>
             </a>
@@ -502,19 +502,19 @@ const quickPickConfig = isAiContentGenerator
 
         <!-- Article content -->
         <div class="min-w-0 flex-1 lg:max-w-[56rem]">
-          <!-- TL;DR SUMMARY: Pure White Light Box -->
+          <!-- TL;DR SUMMARY: Pink-Fuchsia Highlight Box (Matching Reference Image) -->
           {
             hasTldr && (
-              <section id="tl-dr" class="relative mb-8 scroll-mt-32 rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-7 text-slate-900 shadow-xs">
+              <section id="tl-dr" class="relative mb-8 scroll-mt-32 rounded-2xl border-2 border-pink-400 bg-[#fff5f9] p-6 sm:p-8 text-slate-900 shadow-sm">
                 <div class="flex items-center gap-2 mb-3">
-                  <span class="text-indigo-600 font-black text-base">
+                  <span class="text-pink-600 font-black text-lg">
                     ⚡
                   </span>
-                  <h3 class="text-base sm:text-lg font-bold tracking-tight text-slate-900">
+                  <h3 class="text-lg font-black tracking-tight text-fuchsia-900">
                     TL;DR
                   </h3>
                 </div>
-                <div class="border-l-2 border-indigo-500 pl-4 tldr-body" set:html={tldrContent} />
+                <div class="tldr-body" set:html={tldrContent} />
               </section>
             )
           }
