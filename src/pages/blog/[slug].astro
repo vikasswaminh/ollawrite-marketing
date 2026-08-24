@@ -34,7 +34,7 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
 
   const li = (item: string) => {
     const text = item.replace(/^-\s*/, "");
-    return `<li class="flex gap-3.5 items-start"><span class="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 shadow-sm ring-4 ring-indigo-50"></span><span class="text-slate-700 leading-relaxed font-normal">${inline(
+    return `<li class="flex gap-3 items-start"><span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-indigo-600"></span><span class="text-slate-700 leading-relaxed font-normal">${inline(
       text
     )}</span></li>`;
   };
@@ -56,26 +56,26 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
       );
 
     const ths = headers
-      .map((h) => `<th class="px-5 py-4 font-black text-slate-900">${inline(h)}</th>`)
+      .map((h) => `<th class="px-5 py-3.5 font-bold text-slate-900">${inline(h)}</th>`)
       .join("");
     const trs = rows
       .map((row, idx) => {
         const tds = row
           .map((cell, cIdx) => {
             const isFirst = cIdx === 0;
-            return `<td class="px-5 py-4 ${isFirst ? "font-bold text-slate-900" : "text-slate-700"}">${inline(cell)}</td>`;
+            return `<td class="px-5 py-3.5 ${isFirst ? "font-bold text-slate-900" : "text-slate-700"}">${inline(cell)}</td>`;
           })
           .join("");
-        const bg = idx % 2 === 0 ? "bg-white" : "bg-slate-50/60";
-        return `<tr class="${bg} transition-colors hover:bg-indigo-50/50">${tds}</tr>`;
+        const bg = idx % 2 === 0 ? "bg-white" : "bg-slate-50/70";
+        return `<tr class="${bg} transition-colors hover:bg-indigo-50/40">${tds}</tr>`;
       })
       .join("");
 
-    return `<div class="table-container my-10 overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_12px_36px_rgba(79,70,229,0.06)]">
+    return `<div class="table-container my-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div class="overflow-x-auto">
         <table class="w-full min-w-[34rem] text-left text-sm">
           <thead>
-            <tr class="border-b-2 border-indigo-100 bg-slate-50/90 text-xs font-black uppercase tracking-wider text-slate-800">
+            <tr class="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-700">
               ${ths}
             </tr>
           </thead>
@@ -92,15 +92,84 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
   let list: string[] = [];
   const flushList = () => {
     if (list.length) {
-      out.push(`<ul class="my-6 space-y-3.5 pl-1">${list.join("")}</ul>`);
+      out.push(`<ul class="my-5 space-y-2.5 pl-1">${list.join("")}</ul>`);
       list = [];
     }
   };
 
-  body.split("\n\n").forEach((block) => {
+  const blocks = body.split("\n\n");
+  let inFaq = false;
+  let faqItems: { q: string; a: string[] }[] = [];
+  let currentFaq: { q: string; a: string[] } | null = null;
+
+  let inWrappingUp = false;
+  let wrappingUpParagraphs: string[] = [];
+
+  const flushFaq = () => {
+    if (currentFaq) {
+      faqItems.push(currentFaq);
+      currentFaq = null;
+    }
+    if (faqItems.length > 0) {
+      const itemsHtml = faqItems
+        .map(
+          (item) => `
+        <details class="faq-item group border-b border-slate-200/80 last:border-0 py-4.5 transition-all">
+          <summary class="flex cursor-pointer list-none items-center justify-between font-bold text-slate-900 hover:text-indigo-600 transition-colors">
+            <span class="text-base sm:text-lg pr-4">${inline(item.q)}</span>
+            <span class="ml-2 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-transform duration-200 group-open:rotate-180 group-open:bg-indigo-100 group-open:text-indigo-700">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
+            </span>
+          </summary>
+          <div class="mt-3.5 space-y-3 text-slate-600 leading-relaxed text-[1rem] font-normal pl-1">
+            ${item.a.map((p) => `<p>${inline(p)}</p>`).join("")}
+          </div>
+        </details>`
+        )
+        .join("");
+
+      out.push(`
+        <div id="frequently-asked-questions" class="my-10 scroll-mt-24 rounded-2xl border border-indigo-100 bg-white p-6 sm:p-8 shadow-sm">
+          <div class="flex items-center gap-3 border-b border-slate-100 pb-4 mb-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-xs font-black text-white shadow-sm">?</span>
+            <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Frequently Asked Questions</h2>
+          </div>
+          <div class="divide-y divide-slate-100">
+            ${itemsHtml}
+          </div>
+        </div>
+      `);
+      faqItems = [];
+      inFaq = false;
+    }
+  };
+
+  const flushWrappingUp = () => {
+    if (inWrappingUp && wrappingUpParagraphs.length > 0) {
+      out.push(`
+        <div id="wrapping-up" class="my-12 scroll-mt-24 rounded-3xl border border-slate-900/10 bg-[#0f172a] p-8 sm:p-12 text-white shadow-2xl text-center">
+          <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Wrapping Up</h2>
+          <div class="mt-5 max-w-3xl mx-auto text-slate-300 text-base sm:text-lg leading-relaxed space-y-4 font-normal">
+            ${wrappingUpParagraphs.map((p) => `<p>${inline(p)}</p>`).join("")}
+          </div>
+          <div class="mt-8 flex justify-center">
+            <a href="https://www.ollawrite.com" class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg hover:shadow-indigo-500/30 hover:scale-105 transition-all">
+              Start free with OllaWrite →
+            </a>
+          </div>
+        </div>
+      `);
+      wrappingUpParagraphs = [];
+      inWrappingUp = false;
+    }
+  };
+
+  blocks.forEach((block) => {
     const trimmedBlock = block.trim();
     if (trimmedBlock.startsWith("|") && trimmedBlock.includes("\n|")) {
       flushList();
+      if (inFaq) flushFaq();
+      if (inWrappingUp) flushWrappingUp();
       out.push(parseTable(trimmedBlock));
       return;
     }
@@ -108,6 +177,47 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
     const lines = block.split("\n");
     lines.forEach((line) => {
       const trimmed = line.trim();
+
+      if (trimmed.startsWith("## Frequently Asked Questions")) {
+        flushList();
+        if (inWrappingUp) flushWrappingUp();
+        inFaq = true;
+        headings.push({ id: "frequently-asked-questions", text: "Frequently Asked Questions" });
+        return;
+      }
+
+      if (trimmed.startsWith("## Wrapping Up") || trimmed.startsWith("## Final Verdict") || trimmed.startsWith("## Final Thoughts")) {
+        flushList();
+        if (inFaq) flushFaq();
+        inWrappingUp = true;
+        headings.push({ id: "wrapping-up", text: "Wrapping Up" });
+        return;
+      }
+
+      if (inFaq) {
+        if (trimmed.startsWith("### ")) {
+          if (currentFaq) faqItems.push(currentFaq);
+          currentFaq = { q: trimmed.replace("### ", "").trim(), a: [] };
+          return;
+        }
+        if (trimmed.startsWith("## ")) {
+          flushFaq();
+          // continue processing as regular ## heading below
+        } else if (currentFaq && trimmed) {
+          currentFaq.a.push(trimmed);
+          return;
+        }
+      }
+
+      if (inWrappingUp) {
+        if (trimmed.startsWith("## ")) {
+          flushWrappingUp();
+        } else if (trimmed) {
+          wrappingUpParagraphs.push(trimmed);
+          return;
+        }
+      }
+
       if (trimmed.startsWith("- ")) {
         list.push(li(trimmed));
         return;
@@ -115,45 +225,51 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
       flushList();
 
       if (trimmed.startsWith("### ")) {
+        const text = trimmed.replace("### ", "").trim();
+        const id = slugify(text);
         out.push(
-          `<div class="mt-9 mb-5 rounded-2xl border border-indigo-100 bg-gradient-to-r from-white via-indigo-50/40 to-white p-5 shadow-sm hover:border-indigo-300 transition-all"><h3 class="text-lg font-bold text-slate-900 sm:text-xl flex items-center gap-3"><span class="flex h-3.5 w-3.5 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 shadow-sm"></span> ${inline(
-            trimmed.replace("### ", "")
-          )}</h3></div>`
+          `<h3 id="${id}" class="group mt-8 mb-4 scroll-mt-24 text-lg font-bold text-slate-900 sm:text-xl flex items-center gap-2.5"><span class="flex h-3 w-3 rounded-full bg-indigo-600 shadow-sm"></span><a href="#${id}" class="hover:text-indigo-600 transition-colors">${inline(
+            text
+          )}</a></h3>`
         );
       } else if (trimmed.startsWith("## ")) {
         const text = trimmed.replace("## ", "").trim();
         const id = slugify(text);
         headings.push({ id, text });
         out.push(
-          `<h2 id="${id}" class="group mt-16 mb-6 scroll-mt-24 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl border-l-4 border-indigo-600 pl-4 flex items-center justify-between"><a href="#${id}" class="hover:text-indigo-600 transition-colors">${inline(
+          `<h2 id="${id}" class="group mt-14 mb-5 scroll-mt-24 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl border-l-4 border-indigo-600 pl-4 flex items-center justify-between"><a href="#${id}" class="hover:text-indigo-600 transition-colors">${inline(
             text
           )}</a><a href="#${id}" aria-label="Direct link to this section" class="text-sm font-bold text-indigo-600 opacity-0 transition-opacity group-hover:opacity-100">#</a></h2>`
         );
       } else if (trimmed.startsWith("Who should use it:")) {
+        // Requirement 8: Clean text without green callout box
         out.push(
-          `<div class="my-6 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50/90 to-teal-50/60 p-5 text-sm text-emerald-950 shadow-sm"><strong class="font-black text-emerald-800 flex items-center gap-2 mb-1 text-base"><span>✓</span> Who should use it:</strong> ${inline(
+          `<p class="my-3 text-[1.02rem] leading-relaxed text-slate-700"><strong class="font-bold text-slate-900">Who should use it:</strong> ${inline(
             trimmed.replace(/^Who should use it:\s*/i, "")
-          )}</div>`
+          )}</p>`
         );
       } else if (trimmed.startsWith("Who should skip it:")) {
+        // Requirement 8: Clean text without red callout box
         out.push(
-          `<div class="my-6 rounded-2xl border border-rose-200 bg-gradient-to-r from-rose-50/90 to-orange-50/60 p-5 text-sm text-rose-950 shadow-sm"><strong class="font-black text-rose-800 flex items-center gap-2 mb-1 text-base"><span>✕</span> Who should skip it:</strong> ${inline(
+          `<p class="my-3 text-[1.02rem] leading-relaxed text-slate-700"><strong class="font-bold text-slate-900">Who should skip it:</strong> ${inline(
             trimmed.replace(/^Who should skip it:\s*/i, "")
-          )}</div>`
+          )}</p>`
         );
-      } else if (trimmed.startsWith("1. ") || trimmed.startsWith("2. ") || trimmed.startsWith("3. ") || trimmed.startsWith("4. ") || trimmed.startsWith("5. ")) {
+      } else if (trimmed.startsWith("1. ") || trimmed.startsWith("2. ") || trimmed.startsWith("3. ") || trimmed.startsWith("4. ") || trimmed.startsWith("5. ") || trimmed.startsWith("6. ")) {
         const num = trimmed.substring(0, 3);
         const rest = trimmed.substring(3);
         out.push(
-          `<div class="my-4 rounded-2xl border border-slate-200/90 bg-white p-4.5 text-sm text-slate-800 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all flex items-start gap-4"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-xs font-black text-white shadow-sm">${num.replace('.', '').trim()}</span><div class="leading-relaxed font-medium">${inline(rest)}</div></div>`
+          `<div class="my-3.5 flex items-start gap-3.5 rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-xs font-bold text-white shadow-sm">${num.replace('.', '').trim()}</span><div class="leading-relaxed text-slate-700 font-normal">${inline(rest)}</div></div>`
         );
       } else if (trimmed) {
-        out.push(`<p class="mt-5 text-[1.06rem] leading-8 text-slate-700 font-normal">${inline(trimmed)}</p>`);
+        out.push(`<p class="mt-4 text-[1.05rem] leading-8 text-slate-700 font-normal">${inline(trimmed)}</p>`);
       }
     });
     flushList();
   });
   flushList();
+  if (inFaq) flushFaq();
+  if (inWrappingUp) flushWrappingUp();
 
   return { html: out.join(""), headings };
 };
@@ -182,7 +298,7 @@ if (hasTldr) {
   restHtml = rawTldr.slice(cutIdx) + bodyHtml.slice(boundary);
 }
 
-// Exactly the Article Chapters in the TOC Sidebar
+// Exactly the Article Chapters in the TOC Sidebar (without 30sec TL;DR)
 const toc = articleHeadings;
 
 const isAiContentGenerator = post.slug === "ai-content-generator-complete-guide";
@@ -194,42 +310,41 @@ const showQuickPicks = isAiContentGenerator || isBestAiWritingTools || isWhatIsA
 
 const quickPickConfig = isAiContentGenerator
   ? {
-      title: "The 5 AI Content Generator Architectures — Comparison Matrix",
+      title: "The 5 AI Content Generator Architectures — Matrix",
       badge: "5 Architectures",
-      headers: ["Generator Category", "Core Mechanism", "Best Fit", "Interactive Action"],
       rows: [
         {
           c1: "General Reasoning Models",
-          c2: "Next-token prediction + Instruction tuning (Claude, ChatGPT)",
-          c3: "Versatile essays, outlining, reasoning & drafts",
+          c2: "Next-token prediction + instruction tuning (Claude, ChatGPT). Versatile for long-form essays, logical drafting, and deep reasoning.",
+          c3: "General Drafting",
           actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
           actionText: "Open Chapter →",
         },
         {
           c1: "Marketing Workflow Platforms",
-          c2: "Prompt templates + Multi-channel governance (Jasper, Copy.ai)",
-          c3: "High-volume ad copy, emails & campaign assets",
+          c2: "Prompt templates + multi-channel governance (Jasper, Copy.ai). Optimized for bulk social copy, ad variations, and emails.",
+          c3: "Marketing Teams",
           actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
           actionText: "Open Chapter →",
         },
         {
           c1: "SEO-Native Ranking Platforms",
-          c2: "Live SERP scraping + Search intent scoring (Surfer, Frase)",
-          c3: "Competitive search ranking & content briefs",
+          c2: "Live SERP scraping + intent scoring (Surfer, Frase). Ideal for search-optimized outlines, keyword coverage, and rank tracking.",
+          c3: "SEO & SERP",
           actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
           actionText: "Open Chapter →",
         },
         {
           c1: "Niche Creative Specialists",
-          c2: "Genre heuristics + Narrative continuity (Sudowrite)",
-          c3: "Fiction manuscripts, plotting & creative scenes",
+          c2: "Narrative heuristics + continuity codex (Sudowrite, Novel Crafter). Engineered for fiction manuscripts, character arcs, and scenes.",
+          c3: "Creative Fiction",
           actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
           actionText: "Open Chapter →",
         },
         {
           c1: "Site-Grounded Multi-Agent",
-          c2: "Live sitemap crawling + Critic verification (OllaWrite)",
-          c3: "Verifiable, factual, site-anchored publishing",
+          c2: "Live sitemap crawling + independent editor critic (OllaWrite). Produces factual, citation-backed web publishing.",
+          c3: "Site-Aware Multi-Agent",
           actionUrl: "#the-main-types-of-ai-content-generators-youll-actually-run-into",
           actionText: "Open Chapter →",
         },
@@ -237,42 +352,39 @@ const quickPickConfig = isAiContentGenerator
     }
   : isBestAiWritingTools
   ? {
-      title: "Quick Pick — The Shortlist",
-      badge: "8 Tools",
-      headers: ["Tool", "Best for", "Category / Focus", "Interactive Action"],
+      title: "Quick Pick — The AI Writing Tools Matrix",
+      badge: "8 Selected Tools",
       rows: [
-        { c1: "ChatGPT", c2: "Versatile research, outlining & drafting", c3: "General Model", actionUrl: "#chatgpt-still-the-default", actionText: "Open →" },
-        { c1: "Claude", c2: "Natural long-form flow & nuanced tone", c3: "General Model", actionUrl: "#claude-natural-long-form-writing", actionText: "Open →" },
-        { c1: "Google Gemini", c2: "Google Workspace & Docs integration", c3: "Ecosystem", actionUrl: "#google-gemini-best-for-google-workspace", actionText: "Open →" },
-        { c1: "Writesonic", c2: "High-volume SEO content at scale", c3: "SEO Drafting", actionUrl: "#writesonic-seo-focused-content", actionText: "Open →" },
-        { c1: "Grammarly", c2: "Real-time grammar, clarity & polish", c3: "Editing", actionUrl: "#grammarly-best-for-editing-and-polish", actionText: "Open →" },
-        { c1: "Surfer SEO", c2: "SERP-driven on-page ranking scoring", c3: "SEO Ranking", actionUrl: "#surfer-seo-for-search-rankings", actionText: "Open →" },
-        { c1: "Notion AI", c2: "Workspace-integrated drafting & notes", c3: "Productivity", actionUrl: "#notion-ai-writing-inside-your-workspace", actionText: "Open →" },
-        { c1: "Sudowrite", c2: "Fiction, plot brainstorming & scenes", c3: "Creative", actionUrl: "#sudowrite-for-fiction-writers", actionText: "Open →" },
+        { c1: "ChatGPT", c2: "Versatile reasoning, technical explainers, complex outlining, and structured drafting.", c3: "General Model", actionUrl: "#chatgpt-still-the-default-and-still-worth-it", actionText: "Open Review →" },
+        { c1: "Claude", c2: "The gold standard for natural, human-cadence long-form prose and nuanced tone shifts.", c3: "Prose Leader", actionUrl: "#claude-the-one-that-actually-sounds-like-a-person-wrote-it", actionText: "Open Review →" },
+        { c1: "Google Gemini", c2: "Native Google Workspace integration with direct context from Docs, Drive, and Gmail.", c3: "Workspace", actionUrl: "#google-gemini-the-quiet-workhorse-for-google-native-teams", actionText: "Open Review →" },
+        { c1: "Writesonic", c2: "Rapid article generation with live web search and real-time keyword suggestions.", c3: "SEO Speed", actionUrl: "#writesonic-the-seo-native-speed-option", actionText: "Open Review →" },
+        { c1: "Grammarly", c2: "Essential real-time grammar, clarity, and tone polishing across every desktop app.", c3: "Real-Time Polish", actionUrl: "#grammarly-still-the-standard-for-polish-not-generation", actionText: "Open Review →" },
+        { c1: "Surfer SEO", c2: "Competitor SERP scoring and keyword frequency modeling for organic search optimization.", c3: "SEO Ranking", actionUrl: "#surfer-seo-for-teams-who-live-and-die-by-rankings", actionText: "Open Review →" },
+        { c1: "Notion AI", c2: "Writing, summarizing, and note synthesis directly embedded within your team wiki.", c3: "Internal Wiki", actionUrl: "#notion-ai-writing-where-your-work-already-lives", actionText: "Open Review →" },
+        { c1: "Sudowrite", c2: "Specialized sensory expanders, dialogue refinement, and plotting for novelists.", c3: "Fiction", actionUrl: "#sudowrite-still-the-fiction-writers-favorite", actionText: "Open Review →" },
       ],
     }
   : isWhatIsAiContentWriter
   ? {
       title: "The 5 AI Content Writer Tiers — Architecture Matrix",
       badge: "5 Tiers",
-      headers: ["Writer Category", "Core Engine", "Best Fit", "Interactive Action"],
       rows: [
-        { c1: "Raw Prompt Generators", c2: "Direct LLM API without research or citation pass", c3: "Quick informal drafts & rough brainstorms", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open →" },
-        { c1: "Template Marketing Tools", c2: "Multi-channel prompt templates & brand governance", c3: "Social ad copy, emails & campaign blurbs", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open →" },
-        { c1: "SEO Scoring Platforms", c2: "Live SERP scraping & keyword density scoring", c3: "Search intent briefs & ranking optimization", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open →" },
-        { c1: "Contextual Workspace Assistants", c2: "Document ingestion inside existing notes & CMS", c3: "Internal docs & meeting synthesis", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open →" },
-        { c1: "Site-Grounded Multi-Agent", c2: "Autonomous crawler + factual critic gate", c3: "Verifiable, authoritative web publishing", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open →" },
+        { c1: "Raw Prompt Generators", c2: "Direct LLM API calls without a research or citation pass. Best for quick informal brainstorms.", c3: "Tier 1: Basic", actionUrl: "#how-these-tools-actually-work-step-by-step", actionText: "Open Tier →" },
+        { c1: "Template Marketing Tools", c2: "Multi-channel prompt templates and brand controls. Best for high-volume social and ad copy.", c3: "Tier 2: Template", actionUrl: "#how-these-tools-actually-work-step-by-step", actionText: "Open Tier →" },
+        { c1: "SEO Scoring Platforms", c2: "Live SERP scraping and keyword density scoring. Best for search intent briefs and rankings.", c3: "Tier 3: SEO Native", actionUrl: "#how-these-tools-actually-work-step-by-step", actionText: "Open Tier →" },
+        { c1: "Contextual Workspace Assistants", c2: "Document ingestion inside existing notes and CMS. Best for internal wiki and meeting notes.", c3: "Tier 4: Contextual", actionUrl: "#how-these-tools-actually-work-step-by-step", actionText: "Open Tier →" },
+        { c1: "Site-Grounded Multi-Agent", c2: "Autonomous crawler + independent factual critic gate. Best for authoritative, publish-ready blogs.", c3: "Tier 5: Multi-Agent", actionUrl: "#how-these-tools-actually-work-step-by-step", actionText: "Open Tier →" },
       ],
     }
   : {
       title: "Architecture Matrix — The 4 Tiers",
       badge: "4 Tiers",
-      headers: ["Architecture", "Best for", "Execution Model", "Interactive Action"],
       rows: [
-        { c1: "AI Assistant", c2: "Conversational drafting, code review & legal redlines", c3: "Reactive / Chat", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open →" },
-        { c1: "Contextual Assistant", c2: "Workspace document synthesis & file ingestion", c3: "Reactive / Workspace", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open →" },
-        { c1: "Advisory Agent", c2: "24/7 background audit, pipeline & anomaly monitoring", c3: "Proactive / Scheduled", actionUrl: "#under-the-hood-the-5-step-pipeline", actionText: "Open →" },
-        { c1: "Autonomous Agent", c2: "Multi-step tool execution with human approval gate", c3: "Proactive / Real Tools", actionUrl: "#under-the-hood-the-5-step-pipeline", actionText: "Open →" },
+        { c1: "AI Assistant", c2: "Conversational drafting, code review and legal redlines. Reactive / Chat model.", c3: "Reactive Chat", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open Tier →" },
+        { c1: "Contextual Assistant", c2: "Workspace document synthesis and file ingestion. Reactive / Workspace model.", c3: "Workspace", actionUrl: "#what-an-ai-content-writer-actually-is", actionText: "Open Tier →" },
+        { c1: "Advisory Agent", c2: "24/7 background audit, pipeline and anomaly monitoring. Proactive / Scheduled.", c3: "Monitoring", actionUrl: "#how-these-tools-actually-work-step-by-step", actionText: "Open Tier →" },
+        { c1: "Autonomous Agent", c2: "Multi-step tool execution with human approval gate. Proactive / Real Tools.", c3: "Autonomous", actionUrl: "#how-these-tools-actually-work-step-by-step", actionText: "Open Tier →" },
       ],
     };
 ---
@@ -304,10 +416,10 @@ const quickPickConfig = isAiContentGenerator
           ← Back to Journal
         </a>
         <a
-          href="#table-of-contents-top"
+          href="https://www.ollawrite.com"
           class="flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
         >
-          Skip to Table of Contents ↓
+          Visit OllaWrite Home →
         </a>
       </div>
     </div>
@@ -329,7 +441,7 @@ const quickPickConfig = isAiContentGenerator
           <span class="text-slate-600 font-bold">{post.readTime}</span>
         </div>
         <h1
-          class="mt-5 max-w-4xl text-3xl font-black leading-[1.12] tracking-tight sm:text-4xl lg:text-[3.25rem] text-slate-900"
+          class="mt-5 max-w-4xl text-3xl font-black leading-[1.14] tracking-tight sm:text-4xl lg:text-[3.25rem] text-slate-900"
         >
           {post.title}
         </h1>
@@ -349,7 +461,7 @@ const quickPickConfig = isAiContentGenerator
     <!-- Body: sticky TOC sidebar + full-width content -->
     <div class="wrap py-12 lg:py-16">
       <div class="lg:flex lg:gap-10">
-        <!-- VIBRANT ELECTRIC GRADIENT TOC SIDEBAR WITH CHAPTERS -->
+        <!-- VIBRANT ELECTRIC GRADIENT TOC SIDEBAR (Requirement 4: No 30sec TL;DR jump) -->
         <aside class="mb-10 lg:mb-0 lg:w-76 lg:shrink-0">
           <nav class="rounded-2xl border-2 border-indigo-100 bg-white p-4 shadow-[0_12px_36px_rgba(79,70,229,0.08)] lg:sticky lg:top-28">
             <!-- Sidebar Header Banner with Electric Gradient -->
@@ -362,24 +474,7 @@ const quickPickConfig = isAiContentGenerator
               </span>
             </div>
 
-            <!-- Quick jump pill inside sidebar for TL;DR -->
-            {
-              hasTldr && (
-                <div class="mt-3 border-b border-slate-100 pb-2.5">
-                  <a
-                    href="#tl-dr"
-                    class="group flex items-center justify-between rounded-xl bg-gradient-to-r from-indigo-50 via-purple-50 to-blue-50 border border-indigo-200 px-3 py-2 text-xs font-bold text-indigo-700 transition-all hover:border-indigo-400 hover:shadow-sm"
-                  >
-                    <span class="flex items-center gap-1.5">
-                      <span class="text-indigo-600">⚡</span> 30-Sec TL;DR
-                    </span>
-                    <span class="text-[0.65rem] font-black text-indigo-600 group-hover:text-indigo-800">Jump ↓</span>
-                  </a>
-                </div>
-              )
-            }
-
-            <ol id="sidebar-toc" class="mt-3 space-y-1.5 max-h-[62vh] overflow-y-auto pr-1 toc-scrollbar">
+            <ol id="sidebar-toc" class="mt-4 space-y-1.5 max-h-[68vh] overflow-y-auto pr-1 toc-scrollbar">
               {
                 toc.map((h, i) => (
                   <li>
@@ -403,47 +498,7 @@ const quickPickConfig = isAiContentGenerator
 
         <!-- Article content -->
         <div class="min-w-0 flex-1 lg:max-w-[56rem]">
-          <!-- 1. TABLE OF CONTENTS: CHAPTER MODULES (TOP) -->
-          <section id="table-of-contents-top" class="mb-8 scroll-mt-32">
-            <!-- Modern High-Contrast White Chapter Grid with Vibrant Badges -->
-            <div class="overflow-hidden rounded-2xl border-2 border-indigo-100 bg-white p-6 shadow-[0_12px_36px_rgba(79,70,229,0.06)]">
-              <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                <div class="flex items-center gap-2.5">
-                  <span class="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-xs font-black text-white shadow-md">☰</span>
-                  <h3 class="text-sm font-black uppercase tracking-wider text-slate-900">
-                    Table of Contents — Chapter Modules
-                  </h3>
-                </div>
-                <span class="rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-3.5 py-1 text-xs font-black text-white shadow-sm">
-                  {articleHeadings.length} Chapters
-                </span>
-              </div>
-              <div class="mt-5 grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
-                {
-                  articleHeadings.map((h, i) => (
-                    <a
-                      href={`#${h.id}`}
-                      class="group relative flex flex-col justify-between rounded-xl border border-slate-200/90 bg-white p-4.5 shadow-sm transition-all duration-200 hover:-translate-y-1.5 hover:border-indigo-500 hover:bg-gradient-to-br hover:from-white hover:to-indigo-50/40 hover:shadow-lg"
-                    >
-                      <div class="flex items-center justify-between">
-                        <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-xs font-black text-white shadow-sm transition-transform group-hover:scale-110">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <span class="text-xs font-black text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-0.5 rounded-lg group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                          Open →
-                        </span>
-                      </div>
-                      <span class="mt-3.5 text-xs font-bold text-slate-900 leading-snug transition-colors group-hover:text-indigo-600">
-                        {h.text}
-                      </span>
-                    </a>
-                  ))
-                }
-              </div>
-            </div>
-          </section>
-
-          <!-- 2. TL;DR SUMMARY (BEFORE THE MATRIX TABLE) -->
+          <!-- TL;DR SUMMARY (Requirement 3: before light container box) -->
           {
             hasTldr && (
               <section id="tl-dr" class="relative mb-8 scroll-mt-32 overflow-hidden rounded-2xl border-2 border-indigo-950 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white shadow-[0_16px_40px_rgba(15,23,42,0.25)]">
@@ -463,81 +518,73 @@ const quickPickConfig = isAiContentGenerator
             )
           }
 
-          <!-- 3. COMPARISON MATRIX TABLE (AFTER TL;DR) -->
+          <!-- REQUIREMENT 6: 5 TIERS / QUICK PICKS IN BOX / BENTO CARD FORM -->
           {
             showQuickPicks && (
-              <section class="mb-10 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_30px_rgba(79,70,229,0.06)]">
-                <div class="flex items-center justify-between bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 px-6 py-4 border-b border-indigo-900/40">
-                  <h3 class="text-sm font-black uppercase tracking-wider text-cyan-300 flex items-center gap-2">
-                    <span class="text-amber-400">⚡</span> {quickPickConfig.title}
+              <section class="mb-8 overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
+                  <h3 class="text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                    <span class="text-indigo-600">⚡</span> {quickPickConfig.title}
                   </h3>
-                  <span class="rounded-full bg-white/10 border border-white/20 px-3 py-0.5 text-[0.65rem] font-black uppercase tracking-wider text-slate-200">
+                  <span class="rounded-full bg-indigo-50 border border-indigo-200 px-3 py-0.5 text-xs font-bold text-indigo-700">
                     {quickPickConfig.badge}
                   </span>
                 </div>
-                <div class="overflow-x-auto">
-                  <table class="w-full min-w-[34rem] text-left text-sm">
-                    <thead>
-                      <tr class="border-b border-slate-200 bg-slate-50 text-xs font-black uppercase tracking-wider text-slate-700">
-                        <th class="px-6 py-3.5">{quickPickConfig.headers[0]}</th>
-                        <th class="px-6 py-3.5">{quickPickConfig.headers[1]}</th>
-                        <th class="px-6 py-3.5">{quickPickConfig.headers[2]}</th>
-                        <th class="px-6 py-3.5 text-right">{quickPickConfig.headers[3]}</th>
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                      {
-                        quickPickConfig.rows.map((row, i) => (
-                          <tr class={`transition-colors hover:bg-indigo-50/50 ${i % 2 === 0 ? "bg-white" : "bg-slate-50/60"}`}>
-                            <td class="px-6 py-4 font-black text-slate-900">{row.c1}</td>
-                            <td class="px-6 py-4 text-slate-600 text-xs leading-relaxed">{row.c2}</td>
-                            <td class="px-6 py-4 font-bold text-indigo-600 text-xs">{row.c3}</td>
-                            <td class="px-6 py-4 text-right">
-                              <a
-                                href={row.actionUrl}
-                                class="inline-flex items-center gap-1 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-3.5 py-1.5 text-xs font-black text-white shadow-sm transition-all hover:shadow-md hover:scale-105"
-                              >
-                                {row.actionText}
-                              </a>
-                            </td>
-                          </tr>
-                        ))
-                      }
-                    </tbody>
-                  </table>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {
+                    quickPickConfig.rows.map((row) => (
+                      <a
+                        href={row.actionUrl}
+                        class="group relative flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/50 p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-indigo-500 hover:shadow-md hover:to-indigo-50/30"
+                      >
+                        <div>
+                          <div class="flex items-center justify-between gap-2 mb-2.5">
+                            <span class="text-[0.7rem] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
+                              {row.c3}
+                            </span>
+                            <span class="text-xs font-bold text-indigo-600 group-hover:translate-x-0.5 transition-transform">
+                              {row.actionText}
+                            </span>
+                          </div>
+                          <h4 class="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                            {row.c1}
+                          </h4>
+                          <p class="mt-2 text-xs leading-relaxed text-slate-600 font-normal">
+                            {row.c2}
+                          </p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600">
+                          <span>Read Detailed Section</span>
+                          <span class="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-50 group-hover:bg-indigo-600 group-hover:text-white transition-colors">→</span>
+                        </div>
+                      </a>
+                    ))
+                  }
                 </div>
               </section>
             )
           }
 
-          <!-- 4. REMAINING CONTENT DIRECTLY -->
-          <div set:html={restHtml} />
+          <!-- REQUIREMENT 3: ONE LIGHT-BACKGROUND CONTAINER BOX FOR OVERALL CONTENT (LEAVING WRAPPING) -->
+          <div class="article-content-box my-8 rounded-3xl border border-slate-200/90 bg-[#f8fafc]/90 p-6 sm:p-10 shadow-[0_4px_24px_rgba(0,0,0,0.03)] backdrop-blur-sm">
+            <div set:html={restHtml} />
+          </div>
 
-          <!-- Bottom quick action bar: direct link to TOC & TL;DR -->
-          <div class="mt-12 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(79,70,229,0.05)]">
+          <!-- Bottom quick action bar: direct link to Home & Register -->
+          <div class="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div class="flex items-center gap-3 text-sm font-semibold text-slate-700">
               <span class="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-xs font-black text-white shadow-sm">⚡</span>
-              <span>Finished reading? Need to review chapters or summary?</span>
+              <span>Ready to transform your content workflow with site-grounded AI?</span>
             </div>
             <div class="flex items-center gap-3">
               <a
-                href="#table-of-contents-top"
+                href="https://www.ollawrite.com"
                 class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-700 transition-all hover:border-indigo-400 hover:text-indigo-700 hover:bg-white shadow-sm"
               >
-                ↑ Table of Contents
+                OllaWrite Home →
               </a>
-              {
-                hasTldr && (
-                  <a
-                    href="#tl-dr"
-                    class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-xs font-black uppercase tracking-wider text-white shadow-sm transition-all hover:scale-105 hover:shadow-md"
-                  >
-                    ↑ 30-sec TL;DR
-                  </a>
-                )
-              }
               <a
-                href="https://login.ollawrite.com"
+                href="https://login.ollawrite.com/register"
                 class="inline-flex items-center gap-1.5 rounded-xl border border-slate-900 bg-slate-900 px-4 py-2 text-xs font-black uppercase tracking-wider text-white transition-all hover:bg-slate-800 shadow-sm"
               >
                 Audit your site free →
@@ -545,7 +592,7 @@ const quickPickConfig = isAiContentGenerator
             </div>
           </div>
 
-          <!-- Floating Action Control Pill (White contrast aesthetic) -->
+          <!-- Floating Action Control Pill -->
           <div class="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full border border-slate-300 bg-white/95 p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.12)] backdrop-blur-md">
             <a
               href="#main"
@@ -554,17 +601,6 @@ const quickPickConfig = isAiContentGenerator
             >
               ↑
             </a>
-            {
-              hasTldr && (
-                <a
-                  href="#tl-dr"
-                  title="Jump to TL;DR"
-                  class="flex h-9 px-3.5 items-center justify-center rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 border border-indigo-200 text-xs font-black text-indigo-700 transition-all hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white"
-                >
-                  ⚡ TL;DR
-                </a>
-              )
-            }
             <button
               id="copy-article-link"
               type="button"
@@ -575,7 +611,7 @@ const quickPickConfig = isAiContentGenerator
             </button>
           </div>
 
-          <!-- Email signup (Clean pleasant contrast) -->
+          <!-- Email signup -->
           <div class="mt-10 overflow-hidden rounded-2xl border border-slate-900/10 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 p-6 text-white shadow-xl">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -629,7 +665,7 @@ const quickPickConfig = isAiContentGenerator
     updateProgress();
 
     // 2. Active Sidebar TOC Spy
-    const headings = document.querySelectorAll("article h2[id]");
+    const headings = document.querySelectorAll("article h2[id], article h3[id]");
     const tocLinks = document.querySelectorAll(".toc-sidebar-link");
 
     const highlightToc = () => {
