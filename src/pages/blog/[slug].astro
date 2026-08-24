@@ -328,7 +328,7 @@ const { html: bodyHtml, faqHtml, wrappingUpHtml, keyPointsHtml, headings } = ren
 
 // TL;DR is the first section of the body when present; the rest are article sections.
 const hasTldr = headings.length > 0 && headings[0].text === "TL;DR";
-const articleHeadings = hasTldr ? headings.slice(1) : headings;
+const articleHeadings = headings.filter(h => h.text !== "TL;DR" && h.text !== "Key Points");
 
 // Split body: TL;DR summary vs rest.
 let tldrContent = "";
@@ -345,7 +345,7 @@ if (hasTldr) {
   const cutIdx =
     plugIdx > -1 ? rawTldr.indexOf("</p>", plugIdx) + "</p>".length : rawTldr.length;
   tldrContent = rawTldr.slice(0, cutIdx);
-  restHtml = rawTldr.slice(cutIdx) + bodyHtml.slice(boundary);
+  restHtml = bodyHtml.slice(boundary);
 }
 
 // Exactly the Article Chapters in the TOC Sidebar (without 30sec TL;DR)
