@@ -105,68 +105,69 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
   let inWrappingUp = false;
   let wrappingUpParagraphs: string[] = [];
 
+  let faqHtml = "";
   const flushFaq = () => {
     if (currentFaq) {
       faqItems.push(currentFaq);
       currentFaq = null;
     }
-    if (faqItems.length > 0) {
-      const itemsHtml = faqItems
-        .map(
-          (item) => `
-        <details class="faq-item group border-b border-slate-200/80 last:border-0 py-4.5 transition-all">
-          <summary class="flex cursor-pointer list-none items-center justify-between font-bold text-slate-900 hover:text-indigo-600 transition-colors">
-            <span class="text-base sm:text-lg pr-4">${inline(item.q)}</span>
-            <span class="ml-2 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-transform duration-200 group-open:rotate-180 group-open:bg-indigo-100 group-open:text-indigo-700">
-              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
-            </span>
-          </summary>
-          <div class="mt-3.5 space-y-3 text-slate-600 leading-relaxed text-[1rem] font-normal pl-1">
-            ${item.a.map((p) => `<p>${inline(p)}</p>`).join("")}
-          </div>
-        </details>`
-        )
-        .join("");
+      if (faqItems.length > 0) {
+        const itemsHtml = faqItems
+          .map(
+            (item) => `
+          <details class="faq-item group border-b border-slate-200/80 last:border-0 py-4.5 transition-all">
+            <summary class="flex cursor-pointer list-none items-center justify-between font-bold text-slate-900 hover:text-purple-700 transition-colors">
+              <span class="text-base sm:text-lg pr-4">${inline(item.q)}</span>
+              <span class="ml-2 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-transform duration-200 group-open:rotate-180 group-open:bg-purple-100 group-open:text-purple-700">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
+              </span>
+            </summary>
+            <div class="mt-3.5 space-y-3 text-slate-600 leading-relaxed text-[1.02rem] font-normal pl-1">
+              ${item.a.map((p) => `<p>${inline(p)}</p>`).join("")}
+            </div>
+          </details>`
+          )
+          .join("");
 
-      out.push(`
-        <div id="frequently-asked-questions" class="my-10 scroll-mt-24 rounded-2xl border border-indigo-100 bg-white p-6 sm:p-8 shadow-sm">
-          <div class="flex items-center gap-3 border-b border-slate-100 pb-4 mb-3">
-            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-xs font-black text-white shadow-sm">?</span>
-            <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Frequently Asked Questions</h2>
+        faqHtml = `
+          <div id="frequently-asked-questions" class="my-10 scroll-mt-24 rounded-3xl border border-purple-200/80 bg-white p-7 sm:p-9 shadow-sm">
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-4 mb-3">
+              <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-xs font-black text-white shadow-sm">?</span>
+              <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Frequently Asked Questions</h2>
+            </div>
+            <div class="divide-y divide-slate-100">
+              ${itemsHtml}
+            </div>
           </div>
-          <div class="divide-y divide-slate-100">
-            ${itemsHtml}
-          </div>
-        </div>
-      `);
-      faqItems = [];
-      inFaq = false;
-    }
-  };
+        `;
+        faqItems = [];
+        inFaq = false;
+      }
+    };
 
-  let wrappingUpHtml = "";
-  const flushWrappingUp = () => {
-    if (inWrappingUp && wrappingUpParagraphs.length > 0) {
-      wrappingUpHtml = `
-        <div id="wrapping-up" class="my-10 scroll-mt-24 rounded-2xl border-2 border-pink-400 bg-[#fff5f9] p-7 sm:p-10 text-slate-900 shadow-sm text-center">
-          <h2 class="text-2xl sm:text-3xl font-black text-fuchsia-900 tracking-tight flex items-center justify-center gap-2">
-            <span class="text-pink-600">⚡</span> Wrapping Up
-          </h2>
-          <div class="mt-4 max-w-2xl mx-auto text-slate-800 text-base sm:text-[1.05rem] leading-relaxed space-y-3.5 font-normal">
-            ${wrappingUpParagraphs.map((p) => `<p>${inline(p)}</p>`).join("")}
+    let wrappingUpHtml = "";
+    const flushWrappingUp = () => {
+      if (inWrappingUp && wrappingUpParagraphs.length > 0) {
+        wrappingUpHtml = `
+          <div id="wrapping-up" class="my-10 scroll-mt-24 overflow-hidden rounded-3xl border-2 border-purple-300/90 bg-gradient-to-br from-[#faf5ff] via-[#f5f0ff] to-[#faf5ff] p-8 sm:p-10 text-slate-900 shadow-sm text-center">
+            <h2 class="text-2xl sm:text-3xl font-black text-purple-950 tracking-tight flex items-center justify-center gap-2">
+              <span class="text-purple-600">⚡</span> Wrapping Up
+            </h2>
+            <div class="mt-4 max-w-2xl mx-auto text-slate-700 text-base sm:text-[1.05rem] leading-relaxed space-y-3.5 font-normal">
+              ${wrappingUpParagraphs.map((p) => `<p>${inline(p)}</p>`).join("")}
+            </div>
+            <div class="mt-7 flex justify-center">
+              <a href="https://www.ollawrite.com" class="group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 px-8 py-3.5 text-sm font-bold text-white shadow-md hover:scale-105 transition-all">
+                <span>Start free with OllaWrite</span>
+                <span class="group-hover:translate-x-0.5 transition-transform">→</span>
+              </a>
+            </div>
           </div>
-          <div class="mt-7 flex justify-center">
-            <a href="https://www.ollawrite.com" class="group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 px-7 py-3 text-sm font-bold text-white shadow-md hover:scale-105 transition-all">
-              <span>Start free with OllaWrite</span>
-              <span class="group-hover:translate-x-0.5 transition-transform">→</span>
-            </a>
-          </div>
-        </div>
-      `;
-      wrappingUpParagraphs = [];
-      inWrappingUp = false;
-    }
-  };
+        `;
+        wrappingUpParagraphs = [];
+        inWrappingUp = false;
+      }
+    };
 
   blocks.forEach((block) => {
     const trimmedBlock = block.trim();
@@ -275,10 +276,10 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
   if (inFaq) flushFaq();
   if (inWrappingUp) flushWrappingUp();
 
-  return { html: out.join(""), wrappingUpHtml, headings };
+  return { html: out.join(""), faqHtml, wrappingUpHtml, headings };
 };
 
-const { html: bodyHtml, wrappingUpHtml, headings } = renderBody(post.body);
+const { html: bodyHtml, faqHtml, wrappingUpHtml, headings } = renderBody(post.body);
 
 // TL;DR is the first section of the body when present; the rest are article sections.
 const hasTldr = headings.length > 0 && headings[0].text === "TL;DR";
@@ -502,76 +503,76 @@ const quickPickConfig = isAiContentGenerator
 
         <!-- Article content -->
         <div class="min-w-0 flex-1 lg:max-w-[56rem]">
-          <!-- TL;DR SUMMARY: Pink-Fuchsia Highlight Box (Matching Reference Image) -->
+          <!-- TL;DR SUMMARY: Light Purple Highlight Box -->
           {
             hasTldr && (
-              <section id="tl-dr" class="relative mb-8 scroll-mt-32 rounded-2xl border-2 border-pink-400 bg-[#fff5f9] p-6 sm:p-8 text-slate-900 shadow-sm">
-                <div class="flex items-center gap-2 mb-3">
-                  <span class="text-pink-600 font-black text-lg">
+              <section id="tl-dr" class="relative mb-8 scroll-mt-32 rounded-3xl border-2 border-purple-300/90 bg-gradient-to-br from-[#faf5ff] via-[#f5f0ff] to-[#faf5ff] p-6 sm:p-8 text-slate-900 shadow-sm">
+                <div class="flex items-center gap-2.5 mb-3">
+                  <span class="flex h-7 w-7 items-center justify-center rounded-xl bg-purple-600 text-white text-xs font-black shadow-xs">
                     ⚡
                   </span>
-                  <h3 class="text-lg font-black tracking-tight text-fuchsia-900">
+                  <h3 class="text-lg font-black tracking-tight text-purple-950">
                     TL;DR
                   </h3>
                 </div>
-                <div class="tldr-body" set:html={tldrContent} />
+                <div class="border-l-2 border-purple-400 pl-4 tldr-body" set:html={tldrContent} />
               </section>
             )
           }
 
-          <!-- REQUIREMENT 6: 5 TIERS / QUICK PICKS IN BOX / BENTO CARD FORM -->
-          {
-            showQuickPicks && (
-              <section class="mb-8 overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
-                  <h3 class="text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-2">
-                    <span class="text-indigo-600">⚡</span> {quickPickConfig.title}
-                  </h3>
-                  <span class="rounded-full bg-indigo-50 border border-indigo-200 px-3 py-0.5 text-xs font-bold text-indigo-700">
-                    {quickPickConfig.badge}
-                  </span>
-                </div>
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {
-                    quickPickConfig.rows.map((row) => (
-                      <a
-                        href={row.actionUrl}
-                        class="group relative flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/50 p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-indigo-500 hover:shadow-md hover:to-indigo-50/30"
-                      >
-                        <div>
-                          <div class="flex items-center justify-between gap-2 mb-2.5">
-                            <span class="text-[0.7rem] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
-                              {row.c3}
-                            </span>
-                            <span class="text-xs font-bold text-indigo-600 group-hover:translate-x-0.5 transition-transform">
-                              {row.actionText}
-                            </span>
-                          </div>
-                          <h4 class="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
-                            {row.c1}
-                          </h4>
-                          <p class="mt-2 text-xs leading-relaxed text-slate-600 font-normal">
-                            {row.c2}
-                          </p>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600">
-                          <span>Read Detailed Section</span>
-                          <span class="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-50 group-hover:bg-indigo-600 group-hover:text-white transition-colors">→</span>
-                        </div>
-                      </a>
-                    ))
-                  }
-                </div>
-              </section>
-            )
-          }
-
-          <!-- REQUIREMENT 3: ONE LIGHT-BACKGROUND CONTAINER BOX FOR OVERALL CONTENT (LEAVING WRAPPING) -->
+          <!-- ONE LIGHT-BACKGROUND CONTAINER BOX FOR OVERALL CONTENT -->
           <div class="article-content-box my-8 rounded-3xl border border-slate-200/90 bg-[#f8fafc]/90 p-6 sm:p-10 shadow-[0_4px_24px_rgba(0,0,0,0.03)] backdrop-blur-sm">
+            <!-- 5 TIERS / QUICK PICKS (PLACED INSIDE CONTENT BOX WITH SINGLE ARROW) -->
+            {
+              showQuickPicks && (
+                <section class="mb-10 overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-6 shadow-xs">
+                  <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
+                    <h3 class="text-sm font-black uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                      <span class="text-purple-600">⚡</span> {quickPickConfig.title}
+                    </h3>
+                    <span class="rounded-full bg-purple-50 border border-purple-200 px-3 py-0.5 text-xs font-bold text-purple-700">
+                      {quickPickConfig.badge}
+                    </span>
+                  </div>
+                  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {
+                      quickPickConfig.rows.map((row) => (
+                        <a
+                          href={row.actionUrl}
+                          class="group relative flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/50 p-5 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-purple-400 hover:shadow-md hover:to-purple-50/30"
+                        >
+                          <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                              <span class="text-[0.7rem] font-black uppercase tracking-wider text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-200">
+                                {row.c3}
+                              </span>
+                            </div>
+                            <h4 class="text-base font-bold text-slate-900 group-hover:text-purple-700 transition-colors">
+                              {row.c1}
+                            </h4>
+                            <p class="mt-2 text-xs leading-relaxed text-slate-600 font-normal">
+                              {row.c2}
+                            </p>
+                          </div>
+                          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-purple-700">
+                            <span>Read Detailed Section</span>
+                            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-purple-50 group-hover:bg-purple-600 group-hover:text-white transition-colors">→</span>
+                          </div>
+                        </a>
+                      ))
+                    }
+                  </div>
+                </section>
+              )
+            }
+
             <div set:html={restHtml} />
           </div>
 
-          <!-- STANDALONE UNIQUE & HIGHLIGHTED WRAPPING UP SECTION AT THE VERY END -->
+          <!-- STANDALONE SEPARATE FAQ BOX OUTSIDE CONTENT BOX -->
+          {faqHtml && <div set:html={faqHtml} />}
+
+          <!-- STANDALONE HIGHLIGHTED WRAPPING UP SECTION AT THE VERY END -->
           {wrappingUpHtml && <div set:html={wrappingUpHtml} />}
 
           <!-- Floating Action Control Pill -->
@@ -677,7 +678,7 @@ const quickPickConfig = isAiContentGenerator
     background: #818cf8;
   }
 
-  /* Crisp high contrast text inside the soft-medium TL;DR box */
+  /* Crisp high contrast text inside the light purple TL;DR box */
   .tldr-body p {
     margin-top: 0.75rem;
     font-size: 1.02rem;
@@ -690,13 +691,13 @@ const quickPickConfig = isAiContentGenerator
     font-weight: 700;
   }
   .tldr-body a {
-    color: #4f46e5 !important;
+    color: #7e22ce !important;
     font-weight: 700;
     text-decoration: underline;
     text-underline-offset: 3px;
   }
   .tldr-body a:hover {
-    color: #3730a3 !important;
+    color: #581c87 !important;
   }
   .tldr-body ul {
     margin: 1rem 0;
