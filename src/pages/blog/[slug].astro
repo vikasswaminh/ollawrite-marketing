@@ -18,7 +18,7 @@ const slugify = (s: string): string =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-// Parse markdown into distinct sections where EVERY chapter and special section is in its own box
+// Parse markdown into distinct sections where EVERY chapter is in a box inside the overall Content Box
 const parseBlog = (body: string) => {
   const escape = (s: string) =>
     s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -100,7 +100,7 @@ const parseBlog = (body: string) => {
     const firstLine = lines[0].replace(/^##\s*/, "").trim();
     const restLines = lines.slice(1).join("\n").trim();
 
-    // 1. TL;DR Section
+    // 1. TL;DR Section (Highlighted in Blue)
     if (firstLine === "TL;DR") {
       headings.push({ id: "tldr", text: "TL;DR Summary" });
       const paragraphs = restLines.split(/\n\n+/).map(p => `<p class="text-[1.08rem] leading-relaxed text-slate-800 mb-3 last:mb-0">${inline(p.trim())}</p>`).join("");
@@ -116,7 +116,7 @@ const parseBlog = (body: string) => {
       return;
     }
 
-    // 2. Key Points / Key Takeaways Section
+    // 2. Key Points / Key Takeaways Section (Highlighted in Blue with Black Border Cards)
     if (firstLine === "Key Points" || firstLine === "Key Takeaways") {
       headings.push({ id: "key-takeaways", text: "Key Takeaways" });
       const items = restLines.split("\n").filter(l => l.trim().startsWith("- "));
@@ -140,7 +140,7 @@ const parseBlog = (body: string) => {
       return;
     }
 
-    // 3. Frequently Asked Questions Section
+    // 3. Frequently Asked Questions Section (Dedicated Standalone FAQ Box)
     if (firstLine.includes("Frequently Asked Questions")) {
       headings.push({ id: "faq", text: "Frequently Asked Questions" });
       const faqBlocks = restLines.split(/(?=\n### )|^### /g).filter(Boolean);
@@ -176,7 +176,7 @@ const parseBlog = (body: string) => {
       return;
     }
 
-    // 4. Wrapping Up Section (Highlighted in Blue)
+    // 4. Wrapping Up Section (Highlighted in Blue with CTA)
     if (
       firstLine.startsWith("Wrapping Up") ||
       firstLine.startsWith("Final Verdict") ||
@@ -199,7 +199,7 @@ const parseBlog = (body: string) => {
       return;
     }
 
-    // 5. Mistakes Section (Red highlighted sub-titles in boxes)
+    // 5. Mistakes Section (Inside the Content Box, red highlighted sub-titles in black-bordered cards)
     if (firstLine.toLowerCase().includes("mistake")) {
       const id = slugify(firstLine);
       headings.push({ id, text: firstLine });
@@ -238,7 +238,7 @@ const parseBlog = (body: string) => {
       });
 
       mistakesHtml = `
-        <section id="${id}" class="my-8 scroll-mt-28 rounded-3xl border-2 border-slate-900 bg-white p-6 sm:p-10 shadow-sm">
+        <section id="${id}" class="chapter-box my-8 scroll-mt-28 rounded-2xl border-2 border-slate-900 bg-white p-6 sm:p-8 shadow-xs">
           <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mb-6 border-l-4 border-red-600 pl-4 flex items-center justify-between">
             <span>${inline(firstLine)}</span>
             <span class="text-xs uppercase tracking-wider font-black px-3 py-1 bg-red-100 text-red-700 rounded-full border border-red-200">Critical Pitfalls</span>
@@ -250,11 +250,10 @@ const parseBlog = (body: string) => {
       return;
     }
 
-    // 6. Regular Chapter Boxes: EVERY DIFFERENT CONTENT GETS A SEPARATE BOX
+    // 6. Regular Chapter Boxes (Inside the overall Content Box)
     const id = slugify(firstLine);
     headings.push({ id, text: firstLine });
 
-    // Parse sub-content within this chapter
     const innerBlocks = restLines.split(/\n\n+/);
     const innerHtml: string[] = [];
     let listArr: string[] = [];
@@ -327,7 +326,7 @@ const parseBlog = (body: string) => {
       id,
       title: firstLine,
       html: `
-        <section id="${id}" class="chapter-box my-8 scroll-mt-28 rounded-3xl border-2 border-slate-900 bg-white p-6 sm:p-10 shadow-sm">
+        <section id="${id}" class="chapter-box my-8 scroll-mt-28 rounded-2xl border-2 border-slate-900 bg-white p-6 sm:p-8 shadow-xs">
           <h2 class="text-2xl sm:text-3xl font-black text-slate-900 mb-6 border-l-4 border-blue-600 pl-4">
             <a href="#${id}" class="hover:text-blue-600 transition-colors">${inline(firstLine)}</a>
           </h2>
@@ -423,16 +422,24 @@ const tocItems = headings;
           <!-- 2. Key Takeaways Highlighted Blue Box with Black Border Points -->
           {keyPointsHtml && <div set:html={keyPointsHtml} />}
 
-          <!-- 3. EVERY DIFFERENT CONTENT CHAPTER IN ITS OWN SEPARATE BOX -->
-          {chapterBoxes.map((chap) => <div set:html={chap.html} />)}
+          <!-- 3. OVERALL CONTENT BOX (FROM CONTENT START TO END BEFORE FAQ) -->
+          <div class="blog-main-content-box my-8 rounded-3xl border-2 border-slate-900 bg-slate-50/60 p-6 sm:p-10 shadow-md">
+            <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-200">
+              <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white text-sm font-black shadow-xs">📖</span>
+              <h2 class="text-xl sm:text-2xl font-black text-slate-900">Complete Guide & Deep-Dive Analysis</h2>
+            </div>
 
-          <!-- 4. Mistakes Section with Red Sub-titles & Black Border Cards -->
-          {mistakesHtml && <div set:html={mistakesHtml} />}
+            <!-- Individual Chapter Boxes Inside the Content Box -->
+            {chapterBoxes.map((chap) => <div set:html={chap.html} />)}
 
-          <!-- 5. Standalone FAQ Section with Separate Accordion Cards -->
+            <!-- Mistakes Section Box Inside the Content Box -->
+            {mistakesHtml && <div set:html={mistakesHtml} />}
+          </div>
+
+          <!-- 4. Standalone FAQ Section Box -->
           {faqHtml && <div set:html={faqHtml} />}
 
-          <!-- 6. Wrapping Up Highlighted Blue Box with CTA -->
+          <!-- 5. Wrapping Up Highlighted Blue Box with CTA -->
           {wrappingUpHtml && <div set:html={wrappingUpHtml} />}
 
           <!-- Floating Back-to-Top & Copy Pill -->
