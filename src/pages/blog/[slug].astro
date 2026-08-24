@@ -147,14 +147,18 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
   const flushWrappingUp = () => {
     if (inWrappingUp && wrappingUpParagraphs.length > 0) {
       out.push(`
-        <div id="wrapping-up" class="my-10 scroll-mt-24 rounded-2xl border-2 border-indigo-400 bg-gradient-to-br from-indigo-100/90 via-purple-100/70 to-blue-100/80 p-7 sm:p-9 text-slate-900 shadow-md text-center">
-          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Wrapping Up</h2>
+        <div id="wrapping-up" class="my-10 scroll-mt-24 overflow-hidden rounded-3xl border-2 border-indigo-200/90 bg-gradient-to-br from-indigo-50/80 via-white to-purple-50/60 p-8 sm:p-10 text-slate-900 shadow-[0_8px_30px_rgba(79,70,229,0.06)] text-center">
+          <div class="h-1.5 w-16 mx-auto rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 mb-5"></div>
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center justify-center gap-2.5">
+            <span class="text-indigo-600">⚡</span> Wrapping Up
+          </h2>
           <div class="mt-4 max-w-2xl mx-auto text-slate-700 text-base sm:text-[1.05rem] leading-relaxed space-y-3.5 font-normal">
             ${wrappingUpParagraphs.map((p) => `<p>${inline(p)}</p>`).join("")}
           </div>
-          <div class="mt-7 flex justify-center">
-            <a href="https://www.ollawrite.com" class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-7 py-3 text-sm font-bold text-white shadow-lg hover:shadow-indigo-500/30 hover:scale-105 transition-all">
-              Start free with OllaWrite →
+          <div class="mt-8 flex justify-center">
+            <a href="https://www.ollawrite.com" class="group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/35 hover:scale-105 transition-all">
+              <span>Start free with OllaWrite</span>
+              <span class="group-hover:translate-x-1 transition-transform">→</span>
             </a>
           </div>
         </div>
