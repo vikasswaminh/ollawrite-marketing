@@ -147,13 +147,13 @@ const renderBody = (body: string): { html: string; headings: { id: string; text:
   const flushWrappingUp = () => {
     if (inWrappingUp && wrappingUpParagraphs.length > 0) {
       out.push(`
-        <div id="wrapping-up" class="my-12 scroll-mt-24 rounded-3xl border border-slate-900/10 bg-[#0f172a] p-8 sm:p-12 text-white shadow-2xl text-center">
-          <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Wrapping Up</h2>
-          <div class="mt-5 max-w-3xl mx-auto text-slate-300 text-base sm:text-lg leading-relaxed space-y-4 font-normal">
+        <div id="wrapping-up" class="my-8 scroll-mt-24 rounded-2xl border border-indigo-200/90 bg-gradient-to-br from-indigo-50/70 via-white to-blue-50/50 p-6 sm:p-7 text-slate-900 shadow-sm text-center">
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Wrapping Up</h2>
+          <div class="mt-3.5 max-w-xl mx-auto text-slate-600 text-sm sm:text-[0.95rem] leading-relaxed space-y-3 font-normal">
             ${wrappingUpParagraphs.map((p) => `<p>${inline(p)}</p>`).join("")}
           </div>
-          <div class="mt-8 flex justify-center">
-            <a href="https://www.ollawrite.com" class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 px-7 py-3.5 text-sm font-bold text-white shadow-lg hover:shadow-indigo-500/30 hover:scale-105 transition-all">
+          <div class="mt-6 flex justify-center">
+            <a href="https://www.ollawrite.com" class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-md hover:from-blue-700 hover:to-indigo-700 hover:scale-105 transition-all">
               Start free with OllaWrite →
             </a>
           </div>
@@ -501,18 +501,18 @@ const quickPickConfig = isAiContentGenerator
           <!-- TL;DR SUMMARY (Requirement 3: before light container box) -->
           {
             hasTldr && (
-              <section id="tl-dr" class="relative mb-8 scroll-mt-32 overflow-hidden rounded-2xl border-2 border-indigo-950 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white shadow-[0_16px_40px_rgba(15,23,42,0.25)]">
-                <div class="h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600"></div>
-                <div class="p-6 sm:p-8">
+              <section id="tl-dr" class="relative mb-8 scroll-mt-32 overflow-hidden rounded-2xl border-2 border-indigo-200 bg-gradient-to-br from-indigo-50/90 via-white to-blue-50/60 text-slate-900 shadow-[0_4px_24px_rgba(79,70,229,0.06)]">
+                <div class="h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600"></div>
+                <div class="p-6 sm:p-7">
                   <div class="flex flex-wrap items-center gap-3">
-                    <span class="rounded-xl border border-indigo-400/40 bg-gradient-to-r from-blue-600/40 to-indigo-600/40 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-cyan-300 shadow-sm backdrop-blur-sm">
+                    <span class="rounded-xl border border-indigo-200 bg-indigo-100/80 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-indigo-700 shadow-xs">
                       TL;DR
                     </span>
-                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-200">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-600">
                       Too long? Here's the whole article in 30 seconds
                     </span>
                   </div>
-                  <div class="mt-4 border-l-4 border-indigo-400 pl-5 tldr-body" set:html={tldrContent} />
+                  <div class="mt-4 border-l-4 border-indigo-600 pl-5 tldr-body" set:html={tldrContent} />
                 </div>
               </section>
             )
@@ -730,27 +730,26 @@ const quickPickConfig = isAiContentGenerator
     background: #818cf8;
   }
 
-  /* High contrast text inside the TL;DR box */
-  .tldr-body,
-  .tldr-body * {
-    color: #ffffff !important;
-  }
+  /* Crisp high contrast text inside the light TL;DR box */
   .tldr-body p {
     margin-top: 0.75rem;
-    font-size: 1.05rem;
+    font-size: 1.02rem;
     line-height: 1.8;
     font-weight: 400;
-    color: #f1f5f9 !important;
+    color: #334155 !important;
   }
   .tldr-body strong {
-    color: #a5b4fc !important;
+    color: #0f172a !important;
     font-weight: 700;
   }
   .tldr-body a {
-    color: #67e8f9 !important;
+    color: #4f46e5 !important;
     font-weight: 700;
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+  .tldr-body a:hover {
+    color: #3730a3 !important;
   }
   .tldr-body ul {
     margin: 1rem 0;
@@ -758,7 +757,7 @@ const quickPickConfig = isAiContentGenerator
     gap: 0.75rem;
   }
   .tldr-body li span {
-    color: #f8fafc !important;
+    color: #334155 !important;
     font-weight: 400;
   }
 </style>
