@@ -18,7 +18,7 @@ const slugify = (s: string): string =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-// Parse markdown into distinct sections with NO EMOJIS, HIGHLIGHTED WORKING BACKLINKS, and extra-highlighted TLDR & Wrapping Up
+// Parse markdown into distinct sections with NO EMOJIS, SIMPLE CLEAN HIGHLIGHTED WORKING BACKLINKS, and extra-highlighted TLDR & Wrapping Up
 const parseBlog = (body: string) => {
   const escape = (s: string) =>
     s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -27,7 +27,7 @@ const parseBlog = (body: string) => {
     escape(s)
       .replace(
         /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
-        '<a href="$2" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 font-black text-blue-700 bg-blue-100 hover:bg-blue-600 hover:text-white px-3 py-1 my-0.5 rounded-lg underline underline-offset-4 decoration-2 transition-all cursor-pointer shadow-xs border border-blue-300 hover:border-blue-600">$1 <span class="text-xs no-underline">↗</span></a>'
+        '<a href="$2" target="_blank" rel="noopener noreferrer" class="font-bold text-blue-600 underline underline-offset-4 decoration-2 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-1.5 py-0.5 rounded transition-colors cursor-pointer">$1</a>'
       )
       .replace(/\*\*([^\*]+)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>')
       .replace(/\*([^\*]+)\*/g, '<em class="text-slate-800 font-medium italic">$1</em>');
@@ -247,7 +247,7 @@ const parseBlog = (body: string) => {
       return;
     }
 
-    // 6. Regular Chapter Boxes (Blue Border Chapter Cards, NO EMOJIS, WORKING HIGHLIGHTED BACKLINKS)
+    // 6. Regular Chapter Boxes (Blue Border Chapter Cards, NO EMOJIS, SIMPLE HIGHLIGHTED BACKLINKS)
     const id = slugify(firstLine);
     headings.push({ id, text: firstLine });
 
