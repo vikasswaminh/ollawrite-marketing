@@ -49,39 +49,9 @@
   background-size: 24px 24px;
 }
 
-/* Page View Switcher Controls */
-.view-btn {
-  padding: 0.35rem 0.75rem;
-  border-radius: 0.375rem;
-  font-weight: 600;
-  color: #94a3b8;
-  background-color: #1e293b;
-  border: 1px solid #334155;
-  transition: all 0.15s ease;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.view-btn:hover {
-  color: #ffffff;
-  background-color: #334155;
-  border-color: #475569;
-}
-
-.view-btn.active-tab {
-  color: #ffffff;
-  background-color: #2563eb;
-  border-color: #3b82f6;
-  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
-}
-
 /* Page transitions */
 .page-container {
   transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.page-container.hidden-view {
-  display: none !important;
 }
 
 /* ==========================================================================
@@ -1550,79 +1520,6 @@
           </footer>
         </div>
     <script is:inline>
-// Page-by-Page View Switcher Logic
-
-function switchView(viewName) {
-  const pages = [
-    'page-1',
-    'page-2',
-    'page-3',
-    'page-4',
-    'page-5',
-    'page-6',
-    'pricing',
-    'page-7',
-    'page-8'
-  ];
-
-  const allBtn = document.getElementById('btn-all');
-  const buttons = {
-    'all': allBtn,
-    'page-1': document.getElementById('btn-page-1'),
-    'page-2': document.getElementById('btn-page-2'),
-    'page-3': document.getElementById('btn-page-3'),
-    'page-4': document.getElementById('btn-page-4'),
-    'page-5': document.getElementById('btn-page-5'),
-    'page-6': document.getElementById('btn-page-6'),
-    'pricing': document.getElementById('btn-pricing'),
-    'page-7': document.getElementById('btn-page-7'),
-    'page-8': document.getElementById('btn-page-8')
-  };
-
-  // Reset all button styles
-  Object.values(buttons).forEach(btn => {
-    if (btn) {
-      btn.classList.remove('active-tab');
-      btn.classList.remove('active');
-    }
-  });
-
-  // Activate chosen button
-  if (buttons[viewName]) {
-    buttons[viewName].classList.add('active-tab');
-    buttons[viewName].classList.add('active');
-  }
-
-  function getElement(name) {
-    if (name === 'pricing') {
-      return document.getElementById('pricing') || document.getElementById('view-pricing');
-    }
-    return document.getElementById(`view-${name}`) || document.getElementById(name);
-  }
-
-  if (viewName === 'all') {
-    // Show all pages in order
-    pages.forEach(p => {
-      const el = getElement(p);
-      if (el) el.classList.remove('hidden-view');
-    });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  } else {
-    // Show only the selected page
-    pages.forEach(p => {
-      const el = getElement(p);
-      if (el) {
-        if (p === viewName) {
-          el.classList.remove('hidden-view');
-        } else {
-          el.classList.add('hidden-view');
-        }
-      }
-    });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-}
-
 // What People Say - Format Switcher
 function switchTestimonialFormat(format) {
   const elIndex = document.getElementById('testimonials-index-cards');
@@ -1760,7 +1657,6 @@ function switchCtaFormat(format) {
 }
 
 // Make functions globally accessible
-window.switchView = switchView;
 window.switchTestimonialFormat = switchTestimonialFormat;
 window.selectDeskQuote = selectDeskQuote;
 window.switchFaqFormat = switchFaqFormat;
