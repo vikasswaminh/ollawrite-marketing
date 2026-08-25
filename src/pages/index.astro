@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  
   <script>
     tailwind.config = {
       theme: {
@@ -41,9 +41,46 @@
     }
   </script>
 
-  <link rel="stylesheet" href="/style.css">
+  
 </head>
-<body class="bg-white text-slate-900 font-sans antialiased selection:bg-lime-200">
+<body class="bg-white text-slate-
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            lora: ['Lora', 'serif'],
+            cinzel: ['Cinzel', 'serif'],
+            jakarta: ['Plus Jakarta Sans', 'sans-serif']
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#2563eb',
+              deep: '#1d4ed8',
+              tint: '#eff6ff',
+              light: '#60a5fa'
+            },
+            lime: {
+              brand: '#bef264',
+              highlight: '#a3e635'
+            },
+            ink: '#0f172a'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/style.css">
+900 font-sans antialiased selection:bg-lime-200">
 
   <!-- TOP BAR: PAGE-BY-PAGE SWITCHER -->
   
