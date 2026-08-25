@@ -1,522 +1,1407 @@
----
-import Layout from "../layouts/Layout.astro";
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OllaWrite — the AI content writer that reads your site first</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-const APP = "https://login.ollawrite.com";
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            lora: ['Lora', 'serif'],
+            cinzel: ['Cinzel', 'serif'],
+            jakarta: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#2563eb',
+              deep: '#1d4ed8',
+              tint: '#eff6ff',
+              light: '#60a5fa',
+            },
+            lime: {
+              brand: '#bef264',
+              highlight: '#a3e635',
+            },
+            ink: '#0f172a',
+          }
+        }
+      }
+    }
+  </script>
 
-/*
- * MOCKUP CONTENT. Figures, plans and quotes below are illustrative placeholders
- * for layout purposes, not claims of fact.
- *
- * One deliberate exception: testimonials carry role-based attribution rather
- * than invented named people at invented companies, and there are no customer
- * logos. This site is publicly reachable on a real company domain, and a
- * fabricated named endorsement is the one kind of filler that misleads a
- * visitor instead of just standing in for copy.
- */
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="bg-white text-slate-900 font-sans antialiased selection:bg-lime-200">
 
-const stats = [
-  { value: "12x", label: "Faster first drafts" },
-  { value: "40+", label: "Site signals audited" },
-  { value: "9", label: "Checks per page" },
-  { value: "4", label: "Specialist agents" },
-];
-
-const features = [
-  {
-    title: "Reads your site first",
-    body: "Pulls robots.txt and your sitemap, then audits your real pages before a single word is written.",
-  },
-  {
-    title: "SEO scoring per page",
-    body: "Titles, meta, headings, structured data and readability — graded so you know which pages drag.",
-  },
-  {
-    title: "Specialist agents",
-    body: "Research, a check on that research, writing, then an edit. Four agents, one job each.",
-  },
-  {
-    title: "Grounded drafts",
-    body: "The writer only sees the brief and the audit, so claims trace back to your own pages.",
-  },
-  {
-    title: "Brand voice memory",
-    body: "Give it a few samples and it keeps tone consistent across everything it produces.",
-  },
-  {
-    title: "Built-in critic",
-    body: "An editor agent rejects thin or unsupported drafts before they ever reach you.",
-  },
-];
-
-const steps = [
-  {
-    n: "01",
-    title: "Point it at your domain",
-    body: "It maps the site and audits the pages that matter, and says plainly if the crawl was blocked or partial.",
-  },
-  {
-    n: "02",
-    title: "Get a brief, not a guess",
-    body: "It reads what currently ranks for your topic and turns the gap into a brief a writer can follow.",
-  },
-  {
-    n: "03",
-    title: "Draft, critiqued first",
-    body: "An editor agent checks the draft against the brief and sends it back if it is thin or unsupported.",
-  },
-  {
-    n: "04",
-    title: "Publish or export",
-    body: "Ship it to your CMS, or take the markdown and do what you like with it.",
-  },
-];
-
-const useCases = [
-  { title: "Blog and SEO", body: "Cluster-aware articles that target one intent per page." },
-  { title: "Landing pages", body: "Positioning copy built from what your product pages already claim." },
-  { title: "Product copy", body: "Descriptions consistent with the specs on your own site." },
-  { title: "Newsletters", body: "Recurring sends drawn from your latest published work." },
-];
-
-const testimonials = [
-  {
-    quote:
-      "The audit surfaced three template-level problems we had been shipping for two years. The drafts were almost a side benefit.",
-    role: "Head of content, B2B SaaS",
-  },
-  {
-    quote:
-      "It is the first tool that did not need me to explain what the company does. It had already read the site.",
-    role: "Marketing lead, training provider",
-  },
-  {
-    quote:
-      "The critic stage is the difference. We were getting confident nonsense from everything else we tried.",
-    role: "Editor, agency",
-  },
-];
-
-const plans = [
-  {
-    name: "Starter",
-    price: "$29",
-    cadence: "/month",
-    blurb: "For a single site and one writer.",
-    features: ["1 site", "20 drafts a month", "Full page audits", "Markdown export"],
-    cta: "Start free",
-    featured: false,
-  },
-  {
-    name: "Studio",
-    price: "$99",
-    cadence: "/month",
-    blurb: "For teams publishing every week.",
-    features: [
-      "5 sites",
-      "Unlimited drafts",
-      "Brand voice memory",
-      "Editor critic stage",
-      "CMS export",
-    ],
-    cta: "Start free",
-    featured: true,
-  },
-  {
-    name: "Agency",
-    price: "Custom",
-    cadence: "",
-    blurb: "For teams running many client sites.",
-    features: [
-      "Unlimited sites",
-      "Client workspaces",
-      "Shared brand profiles",
-      "Priority support",
-    ],
-    cta: "Talk to us",
-    featured: false,
-  },
-];
-
-const faqs = [
-  {
-    q: "How is this different from a normal AI writer?",
-    a: "Most tools start from your prompt and invent the rest. OllaWrite starts by crawling and auditing your site, so the draft is built from what is actually published rather than from a guess about your business.",
-  },
-  {
-    q: "Does it need access to my CMS?",
-    a: "No. It reads what is publicly reachable — the same pages a search engine sees. CMS export is optional and only used when you ask for it.",
-  },
-  {
-    q: "What if my site blocks crawlers?",
-    a: "It tells you. A blocked or partial crawl is reported in the audit rather than quietly producing a thin result that looks complete.",
-  },
-  {
-    q: "Can it match our tone of voice?",
-    a: "Give it a handful of existing pieces and it keeps tone consistent across everything it writes afterwards.",
-  },
-  {
-    q: "Who owns the output?",
-    a: "You do. Drafts are yours to edit, publish or discard.",
-  },
-];
----
-
-<Layout
-  title="OllaWrite — the AI content writer that reads your site first"
-  description="OllaWrite audits your website, researches what ranks, then writes drafts grounded in what it found. Four specialist agents, including an editor that rejects thin work."
->
-  <!-- Hero -->
-  <section class="border-b border-ink">
-    <div class="wrap grid items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
-      <div>
-        <p class="eyebrow">AI content writer</p>
-        <h1
-          class="mt-4 text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl"
-        >
-          Content that starts with your <span class="swipe">actual website</span
-          >.
-        </h1>
-        <p class="mt-6 max-w-xl text-lg text-neutral-700">
-          Most AI writing tools start from a prompt and invent the rest.
-          OllaWrite reads your site first — the pages, the structure, what
-          search sees — then writes from what is really there.
-        </p>
-        <div class="mt-8 flex flex-wrap gap-3">
-          <a
-            href={APP}
-            class="rounded-lg border-2 border-brand bg-brand px-6 py-3 font-bold text-paper hover:border-brand-deep hover:bg-brand-deep"
-            >Start writing free</a
-          >
-          <a
-            href="#how"
-            class="rounded-lg border-2 border-ink bg-paper px-6 py-3 font-bold text-ink hover:bg-neutral-100"
-            >See how it works</a
-          >
-        </div>
-        <p class="mt-4 text-sm text-neutral-500">
-          No credit card required · Audit your first site in minutes
-        </p>
+  <!-- TOP BAR: PAGE-BY-PAGE SWITCHER -->
+  <aside class="sticky top-0 z-50 bg-slate-900 text-white px-4 py-2.5 shadow-md border-b border-slate-800" aria-label="Page View Switcher">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="font-bold tracking-wider uppercase text-slate-300">OllaWrite Demo View:</span>
       </div>
+      
+      <!-- Page Switcher Tabs -->
+      <nav class="flex flex-wrap items-center gap-1.5" aria-label="Page navigation">
+        <button onclick="switchView('all')" id="btn-all" class="view-btn active-tab">All Pages (In Order)</button>
+        <button onclick="switchView('page-1')" id="btn-page-1" class="view-btn">1. Hero (Diagonal)</button>
+        <button onclick="switchView('page-2')" id="btn-page-2" class="view-btn">2. Workspace Canvas</button>
+        <button onclick="switchView('page-3')" id="btn-page-3" class="view-btn">3. How It Works</button>
+        <button onclick="switchView('page-4')" id="btn-page-4" class="view-btn">4. Sample Output</button>
+        <button onclick="switchView('page-5')" id="btn-page-5" class="view-btn">5. Use Cases</button>
+        <button onclick="switchView('page-6')" id="btn-page-6" class="view-btn">6. What People Say ✍️</button>
+        <button onclick="switchView('page-7')" id="btn-page-7" class="view-btn">7. Questions Worth Asking ❓</button>
+        <button onclick="switchView('page-8')" id="btn-page-8" class="view-btn">8. Pure White CTA & Footer 🚀</button>
+        
+      </nav>
 
-      <!-- Audit mock -->
-      <div class="card overflow-hidden shadow-lg">
-        <div
-          class="flex items-center justify-between border-b border-ink bg-neutral-50 px-5 py-3"
-        >
-          <span class="text-sm font-bold">Site audit</span>
-          <span
-            class="rounded-full border border-emerald-300 bg-paper px-2.5 py-0.5 text-xs font-bold text-emerald-700"
-            >Complete</span
-          >
-        </div>
-        <div class="space-y-4 p-5">
-          <div class="flex items-baseline justify-between">
-            <span class="text-sm text-neutral-600">example.com</span>
-            <span class="text-3xl font-black text-brand">B+</span>
+      <div class="hidden sm:flex items-center gap-2 text-slate-400">
+        <span class="bg-slate-800 px-2 py-0.5 rounded text-[11px] font-mono border border-slate-700">localhost:3000</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTAINER -->
+  <main id="app-container" class="min-h-screen bg-white">
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 1: HERO SECTION (15-DEGREE ANGLED DIAGONAL KINETIC WAVE PATTERN)   -->
+    <!-- ========================================================================= -->
+    <div id="view-page-1" class="page-container relative overflow-hidden min-h-[92vh] flex flex-col justify-between border-b-2 border-slate-900 bg-white">
+      
+      <header class="relative z-30 border-b border-slate-100 bg-white/95 backdrop-blur">
+        <div class="max-w-7xl mx-auto px-6 sm:px-10 h-20 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="font-black text-3xl tracking-tight text-[#1d4ed8]">OllaWrite</span>
           </div>
-          {
-            /* The strongest score gets the lime bar — as a FILL, never as text. */
-            [
-              ["Discoverability", "92", true],
-              ["Content quality", "78", false],
-              ["Structured data", "45", false],
-            ].map(([label, score, best]) => (
-              <div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-neutral-700">{label}</span>
-                  <span class="font-bold">{score}</span>
+
+          <nav class="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-600">
+            <a href="#features" class="hover:text-blue-600 transition-colors">Features</a>
+            <a href="#how" class="hover:text-blue-600 transition-colors">How it works</a>
+            <a href="#pricing" class="hover:text-blue-600 transition-colors">Pricing</a>
+            <a href="#faq" class="hover:text-blue-600 transition-colors">FAQ</a>
+            <a href="#blog" class="hover:text-blue-600 transition-colors">Blog</a>
+            <a href="#contact" class="hover:text-blue-600 transition-colors">Contact</a>
+          </nav>
+
+          <div class="flex items-center gap-4">
+            <a href="#signin" class="text-sm font-semibold text-slate-700 hover:text-slate-900">Sign in</a>
+            <a href="#start" class="bg-[#1d4ed8] text-white text-sm font-bold px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-all shadow-sm">Start writing</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Diagonal Blue Kinetic Angle Background -->
+      <div class="absolute -top-32 -right-40 w-[60%] h-[150%] bg-[#1d4ed8] -rotate-[15deg] pointer-events-none hidden lg:block z-10 shadow-2xl"></div>
+
+      <!-- Hero Main Content Grid -->
+      <div class="max-w-7xl mx-auto px-6 sm:px-10 py-12 lg:py-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-20 my-auto">
+        
+        <div class="lg:col-span-6 space-y-6">
+          <div class="inline-flex items-center px-3.5 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-700 font-mono text-xs font-bold tracking-wider uppercase">
+            AI CONTENT WRITER
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl lg:text-[3.75rem] font-black tracking-tight text-slate-950 leading-[1.08]">
+            Content that starts with your <span class="bg-[#a3e635] text-slate-950 px-2 py-0.5 rounded-md inline-block">actual website.</span>
+          </h1>
+
+          <p class="text-slate-600 text-lg sm:text-xl max-w-xl leading-relaxed">
+            Most AI writing tools start from a prompt and invent the rest. OllaWrite reads your site first — the pages, the structure, what search sees — then writes from what is really there.
+          </p>
+
+          <div class="flex flex-wrap gap-4 pt-2">
+            <button class="bg-[#1d4ed8] text-white font-bold text-base px-7 py-3.5 rounded-lg hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20">
+              Start writing free
+            </button>
+            <button class="bg-white text-slate-900 border-2 border-slate-900 font-bold text-base px-7 py-3.5 rounded-lg hover:bg-slate-50 transition-all">
+              See how it works
+            </button>
+          </div>
+
+          <p class="text-sm font-medium text-slate-500 pt-1">
+            No credit card required • Audit your first site in minutes
+          </p>
+        </div>
+
+        <!-- Site Audit Card -->
+        <div class="lg:col-span-6 flex justify-center lg:justify-end">
+          <div class="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-2xl p-7 relative z-30">
+            
+            <div class="flex items-center justify-between pb-5 border-b border-slate-100">
+              <h3 class="text-xl font-bold text-slate-900">Site audit</h3>
+              <span class="px-3 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-700 text-xs font-bold">Complete</span>
+            </div>
+
+            <div class="py-6 space-y-5">
+              <div class="flex items-baseline justify-between">
+                <span class="text-slate-600 font-semibold text-base">example.com</span>
+                <span class="text-4xl font-black text-[#1d4ed8]">B+</span>
+              </div>
+
+              <div class="space-y-1.5">
+                <div class="flex justify-between text-sm font-semibold">
+                  <span class="text-slate-700">Discoverability</span>
+                  <span class="text-slate-900 font-bold">92</span>
                 </div>
-                <div class="mt-1.5 h-2 rounded-full bg-neutral-200">
-                  <div
-                    class={`h-2 rounded-full ${best ? "bg-punch" : "bg-brand"}`}
-                    style={`width:${score}%`}
-                  />
+                <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#84cc16] rounded-full" style="width: 92%;"></div>
                 </div>
               </div>
-            ))
-          }
-          <div class="rounded-lg border border-brand/20 bg-brand-tint p-3">
-            <p class="text-xs font-bold uppercase tracking-wider text-brand">
-              Top recommendation
-            </p>
-            <p class="mt-1 text-sm text-neutral-700">
-              Add Article schema — basic eligibility for AI answer surfaces.
-            </p>
+
+              <div class="space-y-1.5">
+                <div class="flex justify-between text-sm font-semibold">
+                  <span class="text-slate-700">Content quality</span>
+                  <span class="text-slate-900 font-bold">78</span>
+                </div>
+                <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#1d4ed8] rounded-full" style="width: 78%;"></div>
+                </div>
+              </div>
+
+              <div class="space-y-1.5">
+                <div class="flex justify-between text-sm font-semibold">
+                  <span class="text-slate-700">Structured data</span>
+                  <span class="text-slate-900 font-bold">45</span>
+                </div>
+                <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#1d4ed8] rounded-full" style="width: 45%;"></div>
+                </div>
+              </div>
+
+              <div class="mt-6 p-4 rounded-xl bg-blue-50 border border-blue-100">
+                <div class="flex items-center gap-1.5 text-xs font-mono font-bold text-blue-700 tracking-wider uppercase">
+                  <span>✨</span> TOP RECOMMENDATION
+                </div>
+                <p class="mt-1 text-sm font-medium text-slate-700">
+                  Add Article schema — basic eligibility for AI answer surfaces.
+                </p>
+              </div>
+            </div>
+
           </div>
         </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Stats -->
-  <section class="border-b border-ink bg-brand-tint">
-    <div class="wrap grid grid-cols-2 gap-8 py-10 lg:grid-cols-4">
-      {
-        stats.map((s) => (
-          <div>
-            <p class="text-3xl font-black text-brand sm:text-4xl">{s.value}</p>
-            <p class="mt-1 text-sm text-neutral-600">{s.label}</p>
+      </div>
+
+      <footer class="max-w-7xl mx-auto w-full px-6 sm:px-10 py-4 flex justify-between text-xs font-mono text-slate-400 border-t border-slate-100 relative z-20">
+        <span>OllaWrite Pattern Concept 02</span>
+        <span>15-Degree Angled Diagonal Kinetic Wave Pattern</span>
+      </footer>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 2: WORKSPACE CANVAS & DYNAMIC PINS (DESIGN 02)                       -->
+    <!-- ========================================================================= -->
+    <div id="view-page-2" class="page-container py-16 lg:py-24 border-b-2 border-slate-900 bg-slate-50/50">
+      <div class="max-w-7xl mx-auto px-6 sm:px-10">
+        
+        <div class="text-center max-w-3xl mx-auto mb-14">
+          <div class="inline-flex items-center px-4 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-700 font-mono text-xs font-bold tracking-wider uppercase mb-4">
+            DESIGN 02 // WORKSPACE CANVAS & DYNAMIC PINS
           </div>
-        ))
-      }
-    </div>
-  </section>
-
-  <!-- Features -->
-  <section id="features" class="border-b border-ink scroll-mt-16">
-    <div class="wrap py-16 lg:py-24">
-      <p class="eyebrow">What it does</p>
-      <h2 class="mt-3 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">
-        Everything a writer would do first, done before the draft.
-      </h2>
-      <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {
-          features.map((f) => (
-            <article class="card p-6">
-              <h3 class="text-lg font-bold">{f.title}</h3>
-              <p class="mt-2 text-neutral-700">{f.body}</p>
-            </article>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- How it works -->
-  <section id="how" class="border-b border-ink bg-neutral-50 scroll-mt-16">
-    <div class="wrap py-16 lg:py-24">
-      <p class="eyebrow">How it works</p>
-      <h2 class="mt-3 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">
-        Four agents, each with one job.
-      </h2>
-      <ol class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {
-          steps.map((s) => (
-            <li class="card p-6">
-              <span class="font-mono text-sm font-bold text-brand">{s.n}</span>
-              <h3 class="mt-3 text-lg font-bold">{s.title}</h3>
-              <p class="mt-2 text-sm text-neutral-700">{s.body}</p>
-            </li>
-          ))
-        }
-      </ol>
-    </div>
-  </section>
-
-  <!-- Showcase -->
-  <section id="showcase" class="border-b border-ink scroll-mt-16">
-    <div class="wrap grid items-start gap-12 py-16 lg:grid-cols-2 lg:py-24">
-      <div>
-        <p class="eyebrow">Sample output</p>
-        <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-          A brief you can argue with, then a draft you can ship.
-        </h2>
-        <p class="mt-5 text-neutral-700">
-          Every draft arrives with the brief it was written against and the audit
-          findings it drew on, so you can check the reasoning instead of trusting
-          it.
-        </p>
-        <ul class="mt-6 space-y-3">
-          {
-            [
-              "Target intent and the format that currently wins",
-              "Section outline with must-cover points",
-              "Editor verdict, with the specific changes demanded",
-            ].map((t) => (
-              <li class="flex gap-3">
-                <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink" />
-                <span class="text-neutral-700">{t}</span>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-
-      <div class="card overflow-hidden">
-        <div class="border-b border-ink bg-neutral-50 px-5 py-3">
-          <span class="text-sm font-bold">Editor verdict</span>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-950">
+            Everything a writer would do first, done before the draft.
+          </h2>
         </div>
-        <div class="space-y-4 p-5 text-sm">
-          <div class="flex flex-wrap items-center gap-2">
-            <!-- Verdict badges stay literal, not brand moments: REWRITE is
-                 black, SHIP is lime with BLACK text (13:1), never lime text. -->
-            <span
-              class="rounded-full border border-ink bg-ink px-2.5 py-0.5 text-xs font-bold text-paper"
-              >REWRITE</span
-            >
-            <span
-              class="rounded-full border border-ink bg-punch px-2.5 py-0.5 text-xs font-bold text-ink"
-              >SHIP</span
-            >
-            <span class="text-neutral-500">3 required changes</span>
-          </div>
-          {
-            [
-              "Opening does not answer the question until paragraph three.",
-              "Claim about pricing is not supported by the audit or the brief.",
-              "Two sections cover the same intent — merge them.",
-            ].map((issue, i) => (
-              <p class="border-l-2 border-neutral-200 pl-3 text-neutral-700">
-                <span class="font-bold text-ink">{i + 1}.</span> {issue}
-              </p>
-            ))
-          }
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Use cases -->
-  <section id="usecases" class="border-b border-ink bg-neutral-50 scroll-mt-16">
-    <div class="wrap py-16 lg:py-24">
-      <p class="eyebrow">Use cases</p>
-      <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-        Written for the pages that earn their keep.
-      </h2>
-      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {
-          useCases.map((u) => (
-            <article class="card p-6">
-              <h3 class="font-bold">{u.title}</h3>
-              <p class="mt-2 text-sm text-neutral-700">{u.body}</p>
-            </article>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- Testimonials -->
-  <section class="border-b border-ink">
-    <div class="wrap py-16 lg:py-24">
-      <p class="eyebrow">What people say</p>
-      <div class="mt-10 grid gap-6 lg:grid-cols-3">
-        {
-          testimonials.map((t) => (
-            <figure class="card flex h-full flex-col p-6">
-              <blockquote class="grow text-neutral-700">“{t.quote}”</blockquote>
-              <figcaption class="mt-5 border-t border-neutral-200 pt-4 text-sm font-bold">
-                {t.role}
-              </figcaption>
-            </figure>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- Pricing -->
-  <section id="pricing" class="border-b border-ink bg-neutral-50 scroll-mt-16">
-    <div class="wrap py-16 lg:py-24">
-      <p class="eyebrow">Pricing</p>
-      <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-        Straightforward plans.
-      </h2>
-      <div class="mt-12 grid gap-6 lg:grid-cols-3">
-        {
-          plans.map((p) => (
-            <div
-              class={`card flex flex-col p-7 ${p.featured ? "border-2 border-brand shadow-lg" : ""}`}
-            >
-              {p.featured && (
-                /* Lime fill, BLACK label — the accessible pairing. */
-                <span class="mb-4 self-start rounded-full border border-ink bg-punch px-3 py-1 text-xs font-bold text-ink">
-                  Most popular
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div class="lg:col-span-7">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+              <div class="bg-slate-50 border-b border-slate-200 px-5 py-3.5 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-red-400"></span>
+                  <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                  <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                  <span class="ml-3 font-mono text-xs font-bold text-slate-700">OllaWrite Workspace Canvas</span>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-700 text-[11px] font-bold font-mono">
+                  LIVE AUDIT
                 </span>
-              )}
-              <h3 class="text-lg font-bold">{p.name}</h3>
-              <p class="mt-1 text-sm text-neutral-600">{p.blurb}</p>
-              <p class="mt-5">
-                <span class="text-4xl font-black">{p.price}</span>
-                <span class="text-neutral-500">{p.cadence}</span>
+              </div>
+
+              <div class="p-6 space-y-6">
+                <div class="space-y-1">
+                  <div class="text-xs font-mono font-bold text-blue-600 uppercase tracking-wider">
+                    SITE AUDIT INGESTION
+                  </div>
+                  <p class="text-sm font-medium text-slate-700">
+                    ✓ sitemap.xml ingested • 142 pages indexed
+                  </p>
+                </div>
+
+                <div class="space-y-2 pt-2">
+                  <div class="text-xs font-bold text-slate-900">
+                    4-Agent Workflow Progress:
+                  </div>
+                  <div class="flex flex-wrap gap-2 pt-1">
+                    <span class="px-3 py-1 rounded-md bg-blue-50 border border-blue-200 text-blue-700 font-mono text-xs font-bold">Research Agent</span>
+                    <span class="px-3 py-1 rounded-md bg-blue-50 border border-blue-200 text-blue-700 font-mono text-xs font-bold">SEO Auditor</span>
+                    <span class="px-3 py-1 rounded-md bg-blue-50 border border-blue-200 text-blue-700 font-mono text-xs font-bold">Writer</span>
+                    <span class="px-3 py-1 rounded-md bg-emerald-50 border border-emerald-300 text-emerald-700 font-mono text-xs font-bold">Editor Critic</span>
+                  </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 space-y-1">
+                  <div class="text-xs font-mono font-bold text-emerald-600 uppercase tracking-wider flex items-center gap-1.5">
+                    ✓ SHIP CLEARANCE GRANTED BY CRITIC
+                  </div>
+                  <p class="text-xs text-slate-500 font-medium">
+                    Draft claims 100% grounded in audited sitemap documentation.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 space-y-4">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex items-start gap-4 hover:border-slate-300 transition-colors">
+              <span class="w-8 h-8 rounded-full border-2 border-blue-500 text-blue-600 font-bold text-sm flex items-center justify-center shrink-0">1</span>
+              <div>
+                <h3 class="text-base font-bold text-slate-900">Reads your site first & SEO scoring</h3>
+                <p class="text-sm text-slate-600 mt-1 leading-relaxed">
+                  Pulls robots.txt and your sitemap, auditing real pages and grading readability before a single word is written.
+                </p>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex items-start gap-4 hover:border-slate-300 transition-colors">
+              <span class="w-8 h-8 rounded-full border-2 border-blue-500 text-blue-600 font-bold text-sm flex items-center justify-center shrink-0">2</span>
+              <div>
+                <h3 class="text-base font-bold text-slate-900">Specialist agents & Grounded drafts</h3>
+                <p class="text-sm text-slate-600 mt-1 leading-relaxed">
+                  Four dedicated agents handle research, writing, and editing, ensuring claims trace back directly to your own pages.
+                </p>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex items-start gap-4 hover:border-slate-300 transition-colors">
+              <span class="w-8 h-8 rounded-full border-2 border-blue-500 text-blue-600 font-bold text-sm flex items-center justify-center shrink-0">3</span>
+              <div>
+                <h3 class="text-base font-bold text-slate-900">Brand voice memory & Built-in critic</h3>
+                <p class="text-sm text-slate-600 mt-1 leading-relaxed">
+                  Maintains consistent tone across all outputs while an independent editor agent rejects thin or unsupported drafts.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <footer class="mt-14 pt-4 border-t border-slate-200 flex justify-between text-xs font-mono text-slate-400">
+          <span>OllaWrite Interactive Workspace Canvas</span>
+          <span>Live Desktop App Preview</span>
+        </footer>
+
+      </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 3: HOW IT WORKS (VISUAL MASTERPIECE 01)                             -->
+    <!-- ========================================================================= -->
+    <div id="view-page-3" class="page-container py-16 lg:py-24 border-b-2 border-slate-900 bg-white">
+      <div class="max-w-7xl mx-auto px-6 sm:px-10">
+        
+        <div class="text-center max-w-3xl mx-auto mb-14">
+          <div class="inline-flex items-center px-4 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-700 font-mono text-xs font-bold tracking-wider uppercase mb-4">
+            HOW IT WORKS // VISUAL MASTERPIECE 01
+          </div>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-950">
+            Four agents, each with one job.
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="w-8 h-8 rounded-full border border-blue-200 bg-blue-50 text-blue-700 font-mono text-xs font-bold flex items-center justify-center">01</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-700 text-[11px] font-bold font-mono">SITE CRAWLED</span>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 leading-snug">Point it at your domain</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">It maps the site and audits the pages that matter, and says plainly if the crawl was blocked or partial.</p>
+            </div>
+            <div class="mt-8 p-4 rounded-xl bg-slate-50 border border-slate-100 text-center">
+              <div class="w-10 h-10 mx-auto mb-2 rounded-full border-2 border-dashed border-blue-500 relative flex items-center justify-center">
+                <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+              </div>
+              <p class="text-[11px] font-mono font-bold text-blue-700">sitemap.xml Parsed • 142 Pages</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="w-8 h-8 rounded-full border border-blue-200 bg-blue-50 text-blue-700 font-mono text-xs font-bold flex items-center justify-center">02</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-300 text-blue-700 text-[11px] font-bold font-mono">GAP IDENTIFIED</span>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 leading-snug">Get a brief, not a guess</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">It reads what currently ranks for your topic and turns the gap into a brief a writer can follow.</p>
+            </div>
+            <div class="mt-8 p-4 rounded-xl bg-slate-50 border border-slate-100 text-center">
+              <div class="h-10 flex items-end justify-center gap-1.5 mb-2">
+                <span class="w-2 h-4 bg-slate-300 rounded-t"></span>
+                <span class="w-2 h-7 bg-blue-600 rounded-t"></span>
+                <span class="w-2 h-9 bg-blue-400 rounded-t"></span>
+              </div>
+              <p class="text-[11px] font-mono font-bold text-blue-700">SERP Competitor Gap: +450 Words</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="w-8 h-8 rounded-full border border-blue-200 bg-blue-50 text-blue-700 font-mono text-xs font-bold flex items-center justify-center">03</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-700 text-[11px] font-bold font-mono">100% GROUNDED</span>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 leading-snug">Draft, critiqued first</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">An editor agent checks the draft against the brief and sends it back if it is thin or unsupported.</p>
+            </div>
+            <div class="mt-8 p-3.5 rounded-xl bg-emerald-50 border border-emerald-400 text-center">
+              <p class="text-xs font-mono font-bold text-emerald-800 uppercase flex items-center justify-center gap-1">🛡️ EDITOR APPROVED</p>
+              <p class="text-[10px] text-emerald-700 mt-0.5">Claims Grounded in Site Audit</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="w-8 h-8 rounded-full border border-blue-200 bg-blue-50 text-blue-700 font-mono text-xs font-bold flex items-center justify-center">04</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-700 text-[11px] font-bold font-mono">READY TO SHIP</span>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 leading-snug">Publish or export</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">Ship it to your CMS, or take the markdown and do what you like with it.</p>
+            </div>
+            <div class="mt-8 p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-center">
+              <p class="text-xs font-mono font-bold text-blue-800 flex items-center justify-center gap-1">Markdown / CMS Stream 🚀</p>
+              <p class="text-[10px] text-blue-600 mt-0.5">WordPress • Ghost • Webflow</p>
+            </div>
+          </div>
+
+        </div>
+
+        <footer class="mt-14 pt-4 border-t border-slate-200 flex justify-between text-xs font-mono text-slate-400">
+          <span>OllaWrite Visual Masterpiece 01</span>
+          <span>Orbit Command Center • Graphic Visual FX</span>
+        </footer>
+
+      </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 4: SAMPLE OUTPUT (SWISS NEO-BRUTALIST GRID LAYOUT)                  -->
+    <!-- ========================================================================= -->
+    <div id="view-page-4" class="page-container py-16 lg:py-24 border-b-2 border-slate-900 bg-dot-pattern">
+      <div class="max-w-7xl mx-auto px-6 sm:px-10">
+        
+        <div class="mb-10">
+          <div class="inline-flex items-center px-3 py-1 border border-slate-900 font-mono text-xs font-bold uppercase tracking-wider text-slate-900 bg-white">
+            SAMPLE OUTPUT
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          <div class="lg:col-span-6 space-y-6">
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-950 leading-tight">
+              A brief you can argue with, then a draft you can ship.
+            </h2>
+            <p class="text-slate-600 text-base leading-relaxed">
+              Every draft arrives with the brief it was written against and the audit findings it drew on, so you can check the reasoning instead of trusting it.
+            </p>
+
+            <ul class="space-y-4 pt-2 font-bold text-sm text-slate-900">
+              <li class="flex items-center gap-3">
+                <span class="w-3.5 h-3.5 bg-[#bef264] border border-slate-900 shrink-0"></span>
+                <span>Target intent and the format that currently wins</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-3.5 h-3.5 bg-[#bef264] border border-slate-900 shrink-0"></span>
+                <span>Section outline with must-cover points</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-3.5 h-3.5 bg-[#bef264] border border-slate-900 shrink-0"></span>
+                <span>Editor verdict, with the specific changes demanded</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="lg:col-span-6">
+            <div class="bg-white p-7 border-2 border-slate-900 shadow-[8px_8px_0px_0px_#0f172a]">
+              <div class="border-b-2 border-slate-900 pb-4 mb-6">
+                <h3 class="font-black text-xl tracking-tight text-slate-950 uppercase">EDITOR VERDICT</h3>
+              </div>
+
+              <div class="flex items-center gap-3 mb-6">
+                <span class="px-3 py-1 rounded-full bg-slate-950 text-white font-mono text-xs font-bold">REWRITE</span>
+                <span class="px-3 py-1 rounded-full bg-[#bef264] text-slate-950 border border-slate-900 font-mono text-xs font-bold">SHIP</span>
+                <span class="text-xs font-bold text-slate-500 ml-auto">3 required changes</span>
+              </div>
+
+              <div class="space-y-4 text-sm font-medium text-slate-800">
+                <div class="flex items-start gap-2.5">
+                  <span class="font-bold text-[#1d4ed8]">1.</span>
+                  <p>Opening does not answer the question until paragraph three.</p>
+                </div>
+                <div class="flex items-start gap-2.5">
+                  <span class="font-bold text-[#1d4ed8]">2.</span>
+                  <p>Claim about pricing is not supported by the audit or the brief.</p>
+                </div>
+                <div class="flex items-start gap-2.5">
+                  <span class="font-bold text-[#1d4ed8]">3.</span>
+                  <p>Two sections cover the same intent — merge them.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="mt-16 pt-4 border-t-2 border-slate-900 flex justify-between text-xs font-mono text-slate-500 font-bold">
+          <span>OLLAWRITE SAMPLE OUTPUT • CONCEPT 03</span>
+          <span>SWISS NEO-BRUTALIST GRID LAYOUT</span>
+        </footer>
+
+      </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- PRICING SECTION: STRAIGHTFORWARD PLANS (PLACED AFTER WHAT PEOPLE SAY) -->
+    
+
+    <!-- ========================================================================= -->
+    <!-- PRICING SECTION: STRAIGHTFORWARD PLANS (PLACED DIRECTLY AFTER SAMPLE OUTPUT) -->
+    <!-- ========================================================================= -->
+    <!-- ========================================================================= -->
+    <div id="view-page-5" class="page-container py-16 lg:py-24 border-b-2 border-slate-900 bg-white">
+      <div class="max-w-7xl mx-auto px-6 sm:px-10">
+        
+        <div class="text-center max-w-3xl mx-auto mb-14">
+          <div class="inline-flex items-center px-4 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-700 font-mono text-xs font-bold tracking-wider uppercase mb-4">
+            • USE CASES
+          </div>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-950">
+            Written for the pages that earn their keep.
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-sm">🔍</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-700 text-[11px] font-bold font-mono">SITE CRAWLED</span>
+              </div>
+              <h3 class="text-base font-bold text-slate-900">Reads your site first</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">Pulls robots.txt and your sitemap, then audits your real pages before a single word is written.</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-sm">📊</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-300 text-blue-700 text-[11px] font-bold font-mono">96/100 GRADED</span>
+              </div>
+              <h3 class="text-base font-bold text-slate-900">SEO scoring per page</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">Titles, meta, headings, structured data and readability — graded so you know which pages drag.</p>
+            </div>
+            <div class="mt-6 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-blue-600 to-emerald-500 rounded-full" style="width: 96%;"></div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-sm">🤖</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-700 text-[11px] font-bold font-mono">4 AGENTS SYNCED</span>
+              </div>
+              <h3 class="text-base font-bold text-slate-900">Specialist agents</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">Research, a check on that research, writing, then an edit. Four agents, one job each.</p>
+            </div>
+            <div class="mt-4 flex flex-wrap gap-1.5">
+              <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-semibold border border-blue-100">Research</span>
+              <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-semibold border border-blue-100">Verify</span>
+              <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-semibold border border-blue-100">Write</span>
+              <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-semibold border border-blue-100">Edit</span>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-sm">📜</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-700 text-[11px] font-bold font-mono">GROUNDED</span>
+              </div>
+              <h3 class="text-base font-bold text-slate-900">Grounded drafts</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">The writer only sees the brief and the audit, so claims trace back to your own pages.</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-sm">🖋️</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-700 text-[11px] font-bold font-mono">TONE MATCHED</span>
+              </div>
+              <h3 class="text-base font-bold text-slate-900">Brand voice memory</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">Give it a few samples and it keeps tone consistent across everything it produces.</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:shadow-lg transition-all">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-sm">🛡️</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-700 text-[11px] font-bold font-mono">PASSED</span>
+              </div>
+              <h3 class="text-base font-bold text-slate-900">Built-in critic</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">An editor agent rejects thin or unsupported drafts before they ever reach you.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <footer class="mt-14 pt-4 border-t border-slate-200 flex justify-between text-xs font-mono text-slate-400">
+          <span>OllaWrite Pure White FX Suite</span>
+          <span>Light Glassmorphism • Pastel Ambient Orbs • Border Beams</span>
+        </footer>
+
+      </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 6: WHAT PEOPLE SAY / REAL WORDS ZERO SPIN (CREATIVE ARCHIVAL STYLES) -->
+    <!-- ========================================================================= -->
+    
+    <!-- ========================================================================= -->
+    <!-- USE CASES: WRITTEN FOR THE PAGES THAT EARN THEIR KEEP -->
+    <div id="view-page-6" class="page-container py-16 lg:py-24 border-b-2 border-slate-900 bg-[#FAFAFA]">
+      <div class="max-w-7xl mx-auto px-6 sm:px-10">
+        
+        <!-- Top Section Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-8 border-b-2 border-slate-900">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-50 border border-blue-200 text-blue-700 font-mono text-xs font-extrabold uppercase tracking-wider mb-3">
+              <span>✍️</span> WHAT PEOPLE SAY
+            </div>
+            <h2 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight leading-none">
+              Real Words
+            </h2>
+            <p class="text-2xl sm:text-3xl font-bold text-slate-400 tracking-tight mt-2 font-lora italic">
+              Zero spin.
+            </p>
+          </div>
+
+          <!-- Format Switcher Controls inside the section -->
+          <div class="flex flex-wrap items-center gap-2 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm self-start md:self-auto">
+            <button onclick="switchTestimonialFormat('index-cards')" id="fmt-btn-index" class="format-pill-btn active">🗂️ Library Index Cards</button>
+            <button onclick="switchTestimonialFormat('proof-ledger')" id="fmt-btn-ledger" class="format-pill-btn">📑 Editorial Proof Ledger</button>
+            <button onclick="switchTestimonialFormat('review-desk')" id="fmt-btn-desk" class="format-pill-btn">💬 Interactive Desk</button>
+            <button onclick="switchTestimonialFormat('swiss-bento')" id="fmt-btn-bento" class="format-pill-btn">🔲 Swiss Bento</button>
+          </div>
+        </div>
+
+        <!-- Dynamic Formats Container -->
+        
+        <!-- FORMAT 1: 🗂️ ARCHIVAL LIBRARY INDEX CARDS (DEFAULT) -->
+        <div id="testimonials-index-cards" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <!-- Card 01 -->
+          <div class="index-card">
+            <div class="pl-6">
+              <div class="flex items-center justify-between mb-4 text-xs font-mono font-bold text-slate-400 border-b border-slate-200 pb-2">
+                <span>REF: #AUDIT-01</span>
+                <span class="text-blue-600 font-black">01.</span>
+              </div>
+              <p class="text-slate-800 text-base font-medium leading-relaxed font-lora mb-6">
+                “The audit surfaced three template-level problems we had been shipping for two years. The drafts were almost a side benefit.”
               </p>
-              <ul class="mt-6 grow space-y-2.5">
-                {p.features.map((f) => (
-                  <li class="flex gap-2.5 text-sm text-neutral-700">
-                    <span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-ink" />
-                    {f}
-                  </li>
-                ))}
+              <div class="pt-3 border-t border-dashed border-slate-300 flex items-center justify-between">
+                <span class="font-mono text-[11px] font-black text-slate-900 tracking-wider uppercase">— HEAD OF CONTENT, B2B SAAS</span>
+                <span class="text-[10px] font-mono text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">VERIFIED</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 02 -->
+          <div class="index-card">
+            <div class="pl-6">
+              <div class="flex items-center justify-between mb-4 text-xs font-mono font-bold text-slate-400 border-b border-slate-200 pb-2">
+                <span>REF: #INGEST-02</span>
+                <span class="text-blue-600 font-black">02.</span>
+              </div>
+              <p class="text-slate-800 text-base font-medium leading-relaxed font-lora mb-6">
+                “It is the first tool that did not need me to explain what the company does. It had already read the site.”
+              </p>
+              <div class="pt-3 border-t border-dashed border-slate-300 flex items-center justify-between">
+                <span class="font-mono text-[11px] font-black text-slate-900 tracking-wider uppercase">— MARKETING</span>
+                <span class="text-[10px] font-mono text-blue-600 font-bold bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">INGESTED</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 03 -->
+          <div class="index-card">
+            <div class="pl-6">
+              <div class="flex items-center justify-between mb-4 text-xs font-mono font-bold text-slate-400 border-b border-slate-200 pb-2">
+                <span>REF: #CRITIC-03</span>
+                <span class="text-blue-600 font-black">03.</span>
+              </div>
+              <p class="text-slate-800 text-base font-medium leading-relaxed font-lora mb-6">
+                “The critic stage is the difference. We were getting confident nonsense from everything else we tried.”
+              </p>
+              <div class="pt-3 border-t border-dashed border-slate-300 flex items-center justify-between">
+                <span class="font-mono text-[11px] font-black text-slate-900 tracking-wider uppercase">— EDITOR</span>
+                <span class="text-[10px] font-mono text-purple-600 font-bold bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200">REVIEWED</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- FORMAT 2: 📑 EDITORIAL PROOF LEDGER -->
+        <div id="testimonials-proof-ledger" class="hidden border-t-2 border-slate-900 divide-y divide-slate-200 bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+          
+          <!-- Row 01 -->
+          <div class="ledger-row items-center">
+            <div class="flex items-center gap-4">
+              <span class="font-mono text-4xl font-black text-slate-950">01</span>
+              <div>
+                <span class="block font-mono text-xs font-black text-blue-600 uppercase tracking-wider">AUTHOR ROLE</span>
+                <span class="font-sans font-bold text-sm text-slate-900">HEAD OF CONTENT, B2B SAAS</span>
+              </div>
+            </div>
+            <p class="text-slate-800 text-lg sm:text-xl font-medium leading-relaxed font-lora">
+              “The audit surfaced three template-level problems we had been shipping for two years. The drafts were almost a side benefit.”
+            </p>
+          </div>
+
+          <!-- Row 02 -->
+          <div class="ledger-row items-center">
+            <div class="flex items-center gap-4">
+              <span class="font-mono text-4xl font-black text-slate-950">02</span>
+              <div>
+                <span class="block font-mono text-xs font-black text-blue-600 uppercase tracking-wider">AUTHOR ROLE</span>
+                <span class="font-sans font-bold text-sm text-slate-900">MARKETING</span>
+              </div>
+            </div>
+            <p class="text-slate-800 text-lg sm:text-xl font-medium leading-relaxed font-lora">
+              “It is the first tool that did not need me to explain what the company does. It had already read the site.”
+            </p>
+          </div>
+
+          <!-- Row 03 -->
+          <div class="ledger-row items-center">
+            <div class="flex items-center gap-4">
+              <span class="font-mono text-4xl font-black text-slate-950">03</span>
+              <div>
+                <span class="block font-mono text-xs font-black text-blue-600 uppercase tracking-wider">AUTHOR ROLE</span>
+                <span class="font-sans font-bold text-sm text-slate-900">EDITOR</span>
+              </div>
+            </div>
+            <p class="text-slate-800 text-lg sm:text-xl font-medium leading-relaxed font-lora">
+              “The critic stage is the difference. We were getting confident nonsense from everything else we tried.”
+            </p>
+          </div>
+
+        </div>
+
+        <!-- FORMAT 3: 💬 INTERACTIVE REVIEW DESK -->
+        <div id="testimonials-review-desk" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white p-8 sm:p-10 rounded-2xl border-2 border-slate-900 shadow-[8px_8px_0px_0px_#0f172a]">
+          
+          <!-- Left: 3 Selectable Roles -->
+          <div class="lg:col-span-4 space-y-3">
+            <div onclick="selectDeskQuote(1)" id="desk-tab-1" class="desk-tab-btn active-desk">
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-mono text-xs font-bold text-slate-400">#01 • SAAS AUDIT</span>
+                <span class="text-xs font-mono font-bold text-emerald-400">LIVE</span>
+              </div>
+              <h4 class="font-bold text-base">Head of Content</h4>
+              <p class="text-xs opacity-75 mt-0.5 font-mono">B2B SAAS LEAD</p>
+            </div>
+
+            <div onclick="selectDeskQuote(2)" id="desk-tab-2" class="desk-tab-btn">
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-mono text-xs font-bold text-slate-400">#02 • CONTEXT INGEST</span>
+                <span class="text-xs font-mono font-bold text-blue-400">LIVE</span>
+              </div>
+              <h4 class="font-bold text-base">Marketing Director</h4>
+              <p class="text-xs opacity-75 mt-0.5 font-mono">MARKETING</p>
+            </div>
+
+            <div onclick="selectDeskQuote(3)" id="desk-tab-3" class="desk-tab-btn">
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-mono text-xs font-bold text-slate-400">#03 • CRITIC VERDICT</span>
+                <span class="text-xs font-mono font-bold text-purple-400">LIVE</span>
+              </div>
+              <h4 class="font-bold text-base">Managing Editor</h4>
+              <p class="text-xs opacity-75 mt-0.5 font-mono">EDITOR</p>
+            </div>
+          </div>
+
+          <!-- Right: Big Highlighted Quote Panel -->
+          <div class="lg:col-span-8 bg-slate-50 border-2 border-slate-900 p-8 sm:p-10 rounded-xl min-h-[260px] flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-200 text-xs font-mono font-bold text-slate-500">
+                <span id="desk-ref-tag">INDEX #01 • B2B SAAS FEEDBACK</span>
+                <span class="text-blue-600">VERIFIED QUOTE</span>
+              </div>
+              <p id="desk-quote-text" class="text-xl sm:text-2xl font-lora font-medium text-slate-950 leading-relaxed">
+                “The audit surfaced three template-level problems we had been shipping for two years. The drafts were almost a side benefit.”
+              </p>
+            </div>
+            <div class="mt-8 pt-4 border-t border-slate-200 flex items-center justify-between">
+              <p id="desk-author-sign" class="font-mono text-xs font-black text-slate-900 uppercase tracking-wider">
+                — HEAD OF CONTENT, B2B SAAS
+              </p>
+              <span class="text-xs font-mono bg-white px-2.5 py-1 rounded border border-slate-200 font-bold text-slate-700">100% UNEDITED</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- FORMAT 4: 🔲 SWISS BENTO -->
+        <div id="testimonials-swiss-bento" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <div class="bg-white border-2 border-slate-900 rounded-xl p-7 flex flex-col justify-between shadow-[4px_4px_0px_0px_#0f172a] hover:shadow-[8px_8px_0px_0px_#1d4ed8] transition-all">
+            <div class="space-y-4">
+              <span class="inline-block font-mono text-xs font-black px-2 py-0.5 bg-lime-300 text-slate-950 border border-slate-900">01</span>
+              <p class="text-slate-900 text-base font-bold leading-snug">
+                “The audit surfaced three template-level problems we had been shipping for two years. The drafts were almost a side benefit.”
+              </p>
+            </div>
+            <div class="mt-8 pt-3 border-t border-slate-200">
+              <p class="font-mono text-xs font-black text-blue-600 uppercase">— HEAD OF CONTENT, B2B SAAS</p>
+            </div>
+          </div>
+
+          <div class="bg-white border-2 border-slate-900 rounded-xl p-7 flex flex-col justify-between shadow-[4px_4px_0px_0px_#0f172a] hover:shadow-[8px_8px_0px_0px_#1d4ed8] transition-all">
+            <div class="space-y-4">
+              <span class="inline-block font-mono text-xs font-black px-2 py-0.5 bg-lime-300 text-slate-950 border border-slate-900">02</span>
+              <p class="text-slate-900 text-base font-bold leading-snug">
+                “It is the first tool that did not need me to explain what the company does. It had already read the site.”
+              </p>
+            </div>
+            <div class="mt-8 pt-3 border-t border-slate-200">
+              <p class="font-mono text-xs font-black text-blue-600 uppercase">— MARKETING</p>
+            </div>
+          </div>
+
+          <div class="bg-white border-2 border-slate-900 rounded-xl p-7 flex flex-col justify-between shadow-[4px_4px_0px_0px_#0f172a] hover:shadow-[8px_8px_0px_0px_#1d4ed8] transition-all">
+            <div class="space-y-4">
+              <span class="inline-block font-mono text-xs font-black px-2 py-0.5 bg-lime-300 text-slate-950 border border-slate-900">03</span>
+              <p class="text-slate-900 text-base font-bold leading-snug">
+                “The critic stage is the difference. We were getting confident nonsense from everything else we tried.”
+              </p>
+            </div>
+            
+    <!-- ========================================================================= -->
+    <!-- ========================================================================= -->
+    <!-- PRICING SECTION: STRAIGHTFORWARD PLANS (MATCHING OLLAWRITE.COM EXACT ORDER) -->
+    <!-- ========================================================================= -->
+    <div id="pricing" class="py-16 lg:py-24 border-b-2 border-slate-900 bg-white">
+      <div class="max-w-7xl mx-auto px-6 sm:px-10">
+        
+        <div class="mb-14">
+          <div class="font-bold text-xs uppercase tracking-wider text-blue-600 mb-2 font-mono">
+            PRICING
+          </div>
+          <h2 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight leading-tight">
+            Straightforward plans.
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+          
+          <!-- Plan 1: Starter -->
+          <div class="bg-white border-2 border-slate-900 rounded-2xl p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+            <div>
+              <h3 class="text-2xl font-black text-slate-950 mb-1">Starter</h3>
+              <p class="text-sm text-slate-600 mb-8 font-medium">For a single site and one writer.</p>
+              
+              <div class="flex items-baseline gap-1 mb-8">
+                <span class="text-5xl font-black text-slate-950 tracking-tight">$29</span>
+                <span class="text-sm font-semibold text-slate-500">/month</span>
+              </div>
+
+              <ul class="space-y-4 text-sm font-medium text-slate-800 mb-10">
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900 inline-block"></span>
+                  <span>1 site</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900 inline-block"></span>
+                  <span>20 drafts a month</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900 inline-block"></span>
+                  <span>Full page audits</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900 inline-block"></span>
+                  <span>Markdown export</span>
+                </li>
               </ul>
-              <a
-                href={p.name === "Agency" ? "/contact" : APP}
-                class={`mt-7 rounded-lg border-2 px-5 py-2.5 text-center font-bold ${
-                  p.featured
-                    ? "border-brand bg-brand text-paper hover:border-brand-deep hover:bg-brand-deep"
-                    : "border-ink bg-paper text-ink hover:bg-neutral-100"
-                }`}
-              >
-                {p.cta}
+            </div>
+
+            <a href="https://login.ollawrite.com" class="w-full text-center py-3.5 px-6 rounded-xl border-2 border-slate-900 font-bold text-slate-950 hover:bg-slate-50 transition-colors block">
+              Start free
+            </a>
+          </div>
+
+          <!-- Plan 2: Studio (Most Popular) -->
+          <div class="bg-white border-2 border-blue-600 rounded-2xl p-8 flex flex-col justify-between shadow-lg relative -translate-y-2 lg:-translate-y-3">
+            <div>
+              <div class="inline-flex items-center px-3 py-0.5 rounded-full bg-[#bef264] border border-slate-900 text-xs font-black text-slate-950 mb-4">
+                Most popular
+              </div>
+              <h3 class="text-2xl font-black text-slate-950 mb-1">Studio</h3>
+              <p class="text-sm text-slate-600 mb-8 font-medium">For teams publishing every week.</p>
+              
+              <div class="flex items-baseline gap-1 mb-8">
+                <span class="text-5xl font-black text-slate-950 tracking-tight">$99</span>
+                <span class="text-sm font-semibold text-slate-500">/month</span>
+              </div>
+
+              <ul class="space-y-4 text-sm font-medium text-slate-800 mb-10">
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900 inline-block"></span>
+                  <span>5 sites</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900 inline-block"></span>
+                  <span>Unlimited drafts</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900 inline-block"></span>
+                  <span>Brand voice memory</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900 inline-block"></span>
+                  <span>Editor critic stage</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900 inline-block"></span>
+                  <span>CMS export</span>
+                </li>
+              </ul>
+            </div>
+
+            <a href="https://login.ollawrite.com" class="w-full text-center py-3.5 px-6 rounded-xl bg-blue-600 font-bold text-white hover:bg-blue-700 shadow-md transition-colors block">
+              Start free
+            </a>
+          </div>
+
+          <!-- Plan 3: Agency -->
+          <div class="bg-white border-2 border-slate-900 rounded-2xl p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+            <div>
+              <h3 class="text-2xl font-black text-slate-950 mb-1">Agency</h3>
+              <p class="text-sm text-slate-600 mb-8 font-medium">For teams running many client sites.</p>
+              
+              <div class="flex items-baseline gap-1 mb-8">
+                <span class="text-5xl font-black text-slate-950 tracking-tight">Custom</span>
+              </div>
+
+              <ul class="space-y-4 text-sm font-medium text-slate-800 mb-10">
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900 inline-block"></span>
+                  <span>Unlimited sites</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900 inline-block"></span>
+                  <span>Client workspaces</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900 inline-block"></span>
+                  <span>Shared brand profiles</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-900 inline-block"></span>
+                  <span>Priority support</span>
+                </li>
+              </ul>
+            </div>
+
+            <a href="/contact" class="w-full text-center py-3.5 px-6 rounded-xl border-2 border-slate-900 font-bold text-slate-950 hover:bg-slate-50 transition-colors block">
+              Talk to us
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div class="mt-8 pt-3 border-t border-slate-200">
+              <p class="font-mono text-xs font-black text-blue-600 uppercase">— EDITOR</p>
+            </div>
+          </div>
+
+        </div>
+
+        <footer class="mt-14 pt-4 border-t border-slate-200 flex justify-between text-xs font-mono text-slate-400">
+          <span>OllaWrite Testimonial Masterpiece</span>
+          <span>4 Distinct New Formats • 100% Exact Copy</span>
+        </footer>
+
+      </div>
+    </div>
+
+
+     ========================================================================= -->
+    <!-- PAGE 5: PURE WHITE FX SUITE (6-FEATURE GRID)                             -->
+
+
+     ========================================================================= -->
+    <!-- PAGE 7: QUESTIONS WORTH ASKING (PURE WHITE UNIQUE EDITORIAL DESIGNS)      -->
+    <!-- ========================================================================= -->
+    
+    </div>
+
+    id="view-page-7" class="page-container py-16 lg:py-24 border-b-2 border-slate-900 bg-white">
+      <div class="max-w-7xl mx-auto px-6 sm:px-10">
+        
+        <!-- Top Controls Bar -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12 pb-6 border-b border-slate-200">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-mono text-xs font-extrabold uppercase tracking-wider">
+            <span>❓</span> PURE WHITE FAQ ARCHITECTURE
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <button onclick="switchFaqFormat('split-cards')" id="faq-btn-split" class="format-pill-btn active">Editorial Split Cards</button>
+            <button onclick="switchFaqFormat('accordion')" id="faq-btn-acc" class="format-pill-btn">Clean Accordion</button>
+            <button onclick="switchFaqFormat('matrix')" id="faq-btn-matrix" class="format-pill-btn">2×2 Matrix</button>
+          </div>
+        </div>
+
+        <!-- FORMAT 1: EDITORIAL SPLIT CARDS (DEFAULT) -->
+        <div id="faq-format-split" class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          
+          <!-- Left Sticky Header Column -->
+          <div class="lg:col-span-5 lg:sticky lg:top-28 space-y-6">
+            <div>
+              <h2 class="text-4xl sm:text-5xl font-black text-slate-950 tracking-tight leading-[1.1]">
+                Questions worth asking
+              </h2>
+              <div class="mt-4 text-base text-slate-600 font-medium leading-relaxed">
+                <p>Still not answered?</p>
+                <p>We're one message away.</p>
+              </div>
+            </div>
+
+            <div>
+              <a href="#contact" class="inline-flex items-center gap-3 px-7 py-3.5 rounded-full bg-slate-950 text-white font-mono text-xs font-black uppercase tracking-wider hover:bg-blue-600 transition-all shadow-md shadow-slate-900/10 active:translate-y-0.5">
+                <span>ASK US</span>
+                <span class="text-sm font-bold">→</span>
               </a>
             </div>
-          ))
-        }
-      </div>
-      <p class="mt-6 text-sm text-neutral-500">
-        Illustrative pricing for this preview.
-      </p>
-    </div>
-  </section>
 
-  <!-- FAQ -->
-  <section id="faq" class="border-b border-ink scroll-mt-16">
-    <div class="wrap py-16 lg:py-24">
-      <p class="eyebrow">FAQ</p>
-      <h2 class="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-        Questions worth asking.
-      </h2>
-      <div class="mt-10 max-w-3xl divide-y divide-neutral-200 border-y border-neutral-200">
-        {
-          faqs.map((f) => (
-            <details class="group py-5">
-              <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold">
-                {f.q}
-                <span
-                  class="shrink-0 text-2xl leading-none text-brand group-open:hidden"
-                  aria-hidden="true"
-                >
-                  +
-                </span>
-                <span
-                  class="hidden shrink-0 text-2xl leading-none text-brand group-open:block"
-                  aria-hidden="true"
-                >
-                  −
-                </span>
-              </summary>
-              <p class="mt-3 max-w-2xl text-neutral-700">{f.a}</p>
-            </details>
-          ))
-        }
-      </div>
-    </div>
-  </section>
+            <div class="pt-6 border-t border-slate-100 hidden lg:block">
+              <p class="text-xs font-mono text-slate-400">
+                Indexed • 4 Core Architecture Answers
+              </p>
+            </div>
+          </div>
 
-  <!-- Closing CTA -->
-  <!-- The one full-saturation moment on the page. -->
-  <section class="bg-brand text-paper">
-    <div class="wrap py-16 text-center lg:py-24">
-      <h2 class="mx-auto max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">
-        See it against a site you already know well.
-      </h2>
-      <p class="mx-auto mt-5 max-w-xl text-brand-tint">
-        The fastest way to judge it is to point it at your own domain and see
-        whether the audit tells you anything you did not already know.
-      </p>
-      <div class="mt-8 flex flex-wrap justify-center gap-3">
-        <!-- Lime fill with BLACK label: ~13:1. The same lime as text on this
-             cobalt ground would be unreadable. -->
-        <a
-          href={APP}
-          class="rounded-lg border-2 border-punch bg-punch px-6 py-3 font-bold text-ink hover:brightness-95"
-          >Start writing free</a
-        >
-        <a
-          href="/contact"
-          class="rounded-lg border-2 border-paper px-6 py-3 font-bold text-paper hover:bg-brand-deep"
-          >Talk to us</a
-        >
+          <!-- Right Floating Cards Column -->
+          <div class="lg:col-span-7 space-y-5">
+            
+            <!-- Card 01 -->
+            <div class="faq-white-card">
+              <div class="flex items-start gap-4">
+                <span class="shrink-0 w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-mono text-xs font-black flex items-center justify-center">
+                  01
+                </span>
+                <div class="space-y-2 flex-1">
+                  <h3 class="text-lg font-bold text-slate-950 leading-snug">
+                    How is this different from normal AI?
+                  </h3>
+                  <p class="text-slate-600 text-sm sm:text-base leading-relaxed font-normal">
+                    Most tools start from your prompt and invent the rest. OllaWrite starts by crawling and auditing your site, so the draft is built from what is actually published rather than from a guess about your business.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 02 -->
+            <div class="faq-white-card">
+              <div class="flex items-start gap-4">
+                <span class="shrink-0 w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-mono text-xs font-black flex items-center justify-center">
+                  02
+                </span>
+                <div class="space-y-2 flex-1">
+                  <h3 class="text-lg font-bold text-slate-950 leading-snug">
+                    Does it need access to my CMS?
+                  </h3>
+                  <p class="text-slate-600 text-sm sm:text-base leading-relaxed font-normal">
+                    No. It reads what is publicly reachable — the same pages a search engine sees. CMS export is optional and only used when you ask for it.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 03 -->
+            <div class="faq-white-card">
+              <div class="flex items-start gap-4">
+                <span class="shrink-0 w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-mono text-xs font-black flex items-center justify-center">
+                  03
+                </span>
+                <div class="space-y-2 flex-1">
+                  <h3 class="text-lg font-bold text-slate-950 leading-snug">
+                    What if my site blocks crawlers?
+                  </h3>
+                  <p class="text-slate-600 text-sm sm:text-base leading-relaxed font-normal">
+                    It tells you. A blocked or partial crawl is reported in the audit rather than quietly producing a thin result that looks complete.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 04 -->
+            <div class="faq-white-card">
+              <div class="flex items-start gap-4">
+                <span class="shrink-0 w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-mono text-xs font-black flex items-center justify-center">
+                  04
+                </span>
+                <div class="space-y-2 flex-1">
+                  <h3 class="text-lg font-bold text-slate-950 leading-snug">
+                    Can it match our tone of voice?
+                  </h3>
+                  <p class="text-slate-600 text-sm sm:text-base leading-relaxed font-normal">
+                    Give it a handful of existing pieces and it keeps tone consistent across everything it writes afterwards.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- FORMAT 2: CLEAN ACCORDION -->
+        <div id="faq-format-accordion" class="hidden max-w-4xl mx-auto space-y-4">
+          <div class="text-center mb-10">
+            <h2 class="text-4xl font-black text-slate-950 tracking-tight">Questions worth asking</h2>
+            <p class="text-slate-600 mt-2">Still not answered? We're one message away.</p>
+          </div>
+
+          <div class="border border-slate-200 rounded-2xl p-8 bg-white shadow-sm divide-y divide-slate-100">
+            
+            <div class="py-5">
+              <div class="flex items-center gap-3 font-bold text-lg text-slate-950">
+                <span class="font-mono text-xs text-blue-600 font-black">01.</span>
+                <h4>How is this different from normal AI?</h4>
+              </div>
+              <p class="mt-2 text-slate-600 text-sm sm:text-base leading-relaxed pl-7">
+                Most tools start from your prompt and invent the rest. OllaWrite starts by crawling and auditing your site, so the draft is built from what is actually published rather than from a guess about your business.
+              </p>
+            </div>
+
+            <div class="py-5">
+              <div class="flex items-center gap-3 font-bold text-lg text-slate-950">
+                <span class="font-mono text-xs text-blue-600 font-black">02.</span>
+                <h4>Does it need access to my CMS?</h4>
+              </div>
+              <p class="mt-2 text-slate-600 text-sm sm:text-base leading-relaxed pl-7">
+                No. It reads what is publicly reachable — the same pages a search engine sees. CMS export is optional and only used when you ask for it.
+              </p>
+            </div>
+
+            <div class="py-5">
+              <div class="flex items-center gap-3 font-bold text-lg text-slate-950">
+                <span class="font-mono text-xs text-blue-600 font-black">03.</span>
+                <h4>What if my site blocks crawlers?</h4>
+              </div>
+              <p class="mt-2 text-slate-600 text-sm sm:text-base leading-relaxed pl-7">
+                It tells you. A blocked or partial crawl is reported in the audit rather than quietly producing a thin result that looks complete.
+              </p>
+            </div>
+
+            <div class="py-5">
+              <div class="flex items-center gap-3 font-bold text-lg text-slate-950">
+                <span class="font-mono text-xs text-blue-600 font-black">04.</span>
+                <h4>Can it match our tone of voice?</h4>
+              </div>
+              <p class="mt-2 text-slate-600 text-sm sm:text-base leading-relaxed pl-7">
+                Give it a handful of existing pieces and it keeps tone consistent across everything it writes afterwards.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- FORMAT 3: 2x2 MATRIX -->
+        <div id="faq-format-matrix" class="hidden">
+          <div class="text-center mb-12">
+            <h2 class="text-4xl font-black text-slate-950 tracking-tight">Questions worth asking</h2>
+            <p class="text-slate-600 mt-2">Still not answered? We're one message away.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div class="p-8 rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col justify-between hover:border-slate-300 transition-colors">
+              <div class="space-y-3">
+                <span class="font-mono text-xs font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded border border-blue-200 inline-block">01</span>
+                <h3 class="text-lg font-bold text-slate-950">How is this different from normal AI?</h3>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                  Most tools start from your prompt and invent the rest. OllaWrite starts by crawling and auditing your site, so the draft is built from what is actually published rather than from a guess about your business.
+                </p>
+              </div>
+            </div>
+
+            <div class="p-8 rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col justify-between hover:border-slate-300 transition-colors">
+              <div class="space-y-3">
+                <span class="font-mono text-xs font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded border border-blue-200 inline-block">02</span>
+                <h3 class="text-lg font-bold text-slate-950">Does it need access to my CMS?</h3>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                  No. It reads what is publicly reachable — the same pages a search engine sees. CMS export is optional and only used when you ask for it.
+                </p>
+              </div>
+            </div>
+
+            <div class="p-8 rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col justify-between hover:border-slate-300 transition-colors">
+              <div class="space-y-3">
+                <span class="font-mono text-xs font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded border border-blue-200 inline-block">03</span>
+                <h3 class="text-lg font-bold text-slate-950">What if my site blocks crawlers?</h3>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                  It tells you. A blocked or partial crawl is reported in the audit rather than quietly producing a thin result that looks complete.
+                </p>
+              </div>
+            </div>
+
+            <div class="p-8 rounded-2xl border border-slate-200 bg-white shadow-sm flex flex-col justify-between hover:border-slate-300 transition-colors">
+              <div class="space-y-3">
+                <span class="font-mono text-xs font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded border border-blue-200 inline-block">04</span>
+                <h3 class="text-lg font-bold text-slate-950">Can it match our tone of voice?</h3>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                  Give it a handful of existing pieces and it keeps tone consistent across everything it writes afterwards.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <footer class="mt-14 pt-4 border-t border-slate-200 flex justify-between text-xs font-mono text-slate-400">
+          <span>OllaWrite Pure White FAQ Architecture</span>
+          <span>100% Exact Copy • 3 Clean Formats</span>
+        </footer>
+
       </div>
     </div>
-  </section>
-</Layout>
+
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 8: PURE WHITE UNIQUE WRITE-CENTERED CTA & FOOTER                     -->
+    <!-- ========================================================================= -->
+    <div id="view-page-8" class="page-container py-16 lg:py-24 border-b-2 border-slate-900 bg-white">
+      <div class="max-w-7xl mx-auto px-6 sm:px-10">
+        
+        <!-- Top Format Switcher Bar -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 pb-4 border-b border-slate-100">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-mono text-xs font-extrabold uppercase tracking-wider">
+            <span>🚀</span> PURE WHITE CTA & FOOTER
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <button onclick="switchCtaFormat('studio-master')" id="cta-btn-studio" class="format-pill-btn active">Pure White Studio</button>
+            <button onclick="switchCtaFormat('split-broad')" id="cta-btn-split" class="format-pill-btn">Split Architectural</button>
+            <button onclick="switchCtaFormat('minimal-sheet')" id="cta-btn-minimal" class="format-pill-btn">Minimal Clean Sheet</button>
+          </div>
+        </div>
+
+        <!-- FORMAT 1: PURE WHITE STUDIO MASTERPIECE (DEFAULT) -->
+        <div id="cta-format-studio" class="space-y-16">
+          
+          <!-- Master CTA Card -->
+          <div class="cta-white-master p-8 sm:p-14 lg:p-20 text-center max-w-5xl mx-auto">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-slate-700 font-mono text-xs font-bold uppercase tracking-wider mb-8">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18"></path></svg>
+              AI WRITING RESEARCH WORKSPACE
+            </div>
+
+            <h2 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-950 tracking-tight leading-[1.12] max-w-4xl mx-auto">
+              See it against a site you already know well.
+            </h2>
+
+            <p class="mt-6 text-slate-600 text-base sm:text-xl max-w-2xl mx-auto leading-relaxed font-normal">
+              The fastest way to judge it is to point it at your own domain and see whether the audit tells you anything you did not already know.
+            </p>
+
+            <div class="mt-10 flex flex-wrap justify-center gap-4">
+              <button class="bg-[#0f172a] text-white font-bold text-base px-8 py-4 rounded-xl hover:bg-blue-600 transition-all shadow-xl shadow-slate-900/10 active:translate-y-0.5">
+                Start writing free
+              </button>
+              <button class="bg-white text-slate-900 border border-slate-300 font-bold text-base px-8 py-4 rounded-xl hover:bg-slate-50 transition-all active:translate-y-0.5">
+                Talk to us
+              </button>
+            </div>
+          </div>
+
+          <!-- Pure White 4-Column Footer -->
+          <footer class="pt-12 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10">
+            
+            <!-- Column 1: Brand & Tagline -->
+            <div class="lg:col-span-5 space-y-4">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-slate-950 text-white font-black text-sm flex items-center justify-center">O</div>
+                <span class="font-black text-xl tracking-tight text-slate-950">OllaWrite</span>
+              </div>
+              <p class="text-sm text-slate-600 leading-relaxed max-w-sm font-normal">
+                An AI content writer that reads your site first, then writes from what is actually there.
+              </p>
+              <div class="pt-2 flex items-center gap-2 text-xs font-mono text-emerald-600 font-bold">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>System Operational • Ingestion Ready</span>
+              </div>
+            </div>
+
+            <!-- Column 2: PRODUCT -->
+            <div class="lg:col-span-2 space-y-3">
+              <div class="font-mono text-xs font-extrabold text-slate-950 uppercase tracking-widest">PRODUCT</div>
+              <ul class="space-y-2.5 text-sm text-slate-600 font-medium">
+                <li><a href="#features" class="hover:text-blue-600 transition-colors">Features</a></li>
+                <li><a href="#how" class="hover:text-blue-600 transition-colors">How it works</a></li>
+                <li><a href="#showcase" class="hover:text-blue-600 transition-colors">Sample output</a></li>
+                <li><a href="#pricing" class="hover:text-blue-600 transition-colors">Pricing</a></li>
+              </ul>
+            </div>
+
+            <!-- Column 3: USE CASES -->
+            <div class="lg:col-span-2 space-y-3">
+              <div class="font-mono text-xs font-extrabold text-slate-950 uppercase tracking-widest">USE CASES</div>
+              <ul class="space-y-2.5 text-sm text-slate-600 font-medium">
+                <li><a href="#usecases" class="hover:text-blue-600 transition-colors">Blog and SEO</a></li>
+                <li><a href="#usecases" class="hover:text-blue-600 transition-colors">Landing pages</a></li>
+                <li><a href="#usecases" class="hover:text-blue-600 transition-colors">Product copy</a></li>
+                <li><a href="#usecases" class="hover:text-blue-600 transition-colors">Newsletters</a></li>
+              </ul>
+            </div>
+
+            <!-- Column 4: COMPANY -->
+            <div class="lg:col-span-3 space-y-3">
+              <div class="font-mono text-xs font-extrabold text-slate-950 uppercase tracking-widest">COMPANY</div>
+              <ul class="space-y-2.5 text-sm text-slate-600 font-medium">
+                <li><a href="#blog" class="hover:text-blue-600 transition-colors">Blog</a></li>
+                <li><a href="#contact" class="hover:text-blue-600 transition-colors">Contact</a></li>
+                <li><a href="#faq" class="hover:text-blue-600 transition-colors">FAQ</a></li>
+                <li><a href="#signin" class="hover:text-blue-600 transition-colors">Sign in</a></li>
+              </ul>
+            </div>
+
+          </footer>
+
+          <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center text-xs font-mono text-slate-400 gap-2">
+            <span>© 2026 OLLAWRITE • AI WRITING RESEARCH WORKSPACE</span>
+            <span>LOGIN AT DASHBOARD.OLLAWRITE.COM</span>
+          </div>
+
+        </div>
+
+        <!-- FORMAT 2: SPLIT ARCHITECTURAL -->
+        <div id="cta-format-split" class="hidden space-y-16">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center p-8 sm:p-14 border border-slate-200 rounded-3xl bg-white shadow-sm">
+            <div class="lg:col-span-7 space-y-4">
+              <h2 class="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight leading-tight">
+                See it against a site you already know well.
+              </h2>
+            </div>
+            <div class="lg:col-span-5 space-y-6">
+              <p class="text-slate-600 text-base leading-relaxed">
+                The fastest way to judge it is to point it at your own domain and see whether the audit tells you anything you did not already know.
+              </p>
+              <div class="flex flex-wrap gap-4">
+                <button class="bg-[#0f172a] text-white font-bold text-sm px-6 py-3.5 rounded-lg hover:bg-blue-600 transition-all shadow-md">Start writing free</button>
+                <button class="bg-white text-slate-900 border border-slate-300 font-bold text-sm px-6 py-3.5 rounded-lg hover:bg-slate-50 transition-all">Talk to us</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Minimal Pure White Footer -->
+          <footer class="pt-8 border-t border-slate-200 grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+            <div>
+              <div class="font-bold text-slate-950 mb-3">OllaWrite</div>
+              <p class="text-xs text-slate-500">An AI content writer that reads your site first, then writes from what is actually there.</p>
+            </div>
+            <div>
+              <div class="font-bold text-slate-950 mb-3">Product</div>
+              <ul class="space-y-2 text-slate-600 text-xs">
+                <li><a href="#">Features</a></li>
+                <li><a href="#">How it works</a></li>
+                <li><a href="#">Sample output</a></li>
+                <li><a href="#">Pricing</a></li>
+              </ul>
+            </div>
+            <div>
+              <div class="font-bold text-slate-950 mb-3">Use Cases</div>
+              <ul class="space-y-2 text-slate-600 text-xs">
+                <li><a href="#">Blog and SEO</a></li>
+                <li><a href="#">Landing pages</a></li>
+                <li><a href="#">Product copy</a></li>
+                <li><a href="#">Newsletters</a></li>
+              </ul>
+            </div>
+            <div>
+              <div class="font-bold text-slate-950 mb-3">Company</div>
+              <ul class="space-y-2 text-slate-600 text-xs">
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">FAQ</a></li>
+                <li><a href="#">Sign in</a></li>
+              </ul>
+            </div>
+          </footer>
+        </div>
+
+        <!-- FORMAT 3: MINIMAL CLEAN SHEET -->
+        <div id="cta-format-minimal" class="hidden space-y-16 text-center max-w-4xl mx-auto py-8">
+          <div class="space-y-6">
+            <h2 class="text-4xl sm:text-5xl font-black text-slate-950 tracking-tight">
+              See it against a site you already know well.
+            </h2>
+            <p class="text-slate-600 text-lg max-w-xl mx-auto leading-relaxed">
+              The fastest way to judge it is to point it at your own domain and see whether the audit tells you anything you did not already know.
+            </p>
+            <div class="flex justify-center gap-4 pt-2">
+              <button class="bg-[#2563eb] text-white font-bold text-base px-8 py-3.5 rounded-full hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20">Start writing free</button>
+              <button class="bg-white text-slate-900 border border-slate-300 font-bold text-base px-8 py-3.5 rounded-full hover:bg-slate-50 transition-all">Talk to us</button>
+            </div>
+          </div>
+
+          <footer class="pt-12 border-t border-slate-200 flex flex-wrap justify-between items-center text-xs text-slate-500 gap-4">
+            <div class="flex items-center gap-3">
+              <span class="font-bold text-slate-900">OllaWrite</span>
+              <span>•</span>
+              <span>An AI content writer that reads your site first, then writes from what is actually there.</span>
+            </div>
+            <div class="flex gap-4">
+              <a href="#" class="hover:text-slate-900">Features</a>
+              <a href="#" class="hover:text-slate-900">Pricing</a>
+              <a href="#" class="hover:text-slate-900">Blog</a>
+              <a href="#" class="hover:text-slate-900">Contact</a>
+            </div>
+          </footer>
+        </div>
+    <script src="/main.js"></script>
+</body>
+</html>
