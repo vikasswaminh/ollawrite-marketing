@@ -86,6 +86,7 @@ const parseBlog = (body: string) => {
   let keyPointsHtml = "";
   let faqHtml = "";
   let wrappingUpHtml = "";
+  let mistakesHtml = "";
   const chapterBoxes: { id: string; title: string; html: string }[] = [];
 
   // Split by ## sections
@@ -198,7 +199,55 @@ const parseBlog = (body: string) => {
       return;
     }
 
-    // 5. Regular Chapter Boxes (Blue Border Chapter Cards, NO EMOJIS, SIMPLE HIGHLIGHTED BACKLINKS)
+    // 5. Mistakes Section (Restored in same place with borderless outer box)
+    if (firstLine.toLowerCase().includes("mistake")) {
+      const id = slugify(firstLine);
+      headings.push({ id, text: firstLine });
+      const linesArr = restLines.split("\n");
+      const introParas: string[] = [];
+      const mistakeItems: string[] = [];
+
+      linesArr.forEach(l => {
+        const trimmed = l.trim();
+        if (trimmed.startsWith("- ")) {
+          const rawItem = trimmed.replace(/^-\s*/, "");
+          const boldMatch = rawItem.match(/^\*\*(.*?)\*\*:\s*(.*)$/);
+          if (boldMatch) {
+            const mTitle = boldMatch[1];
+            const mDesc = boldMatch[2];
+            mistakeItems.push(`
+              <li class="rounded-xl border-2 border-blue-400 bg-red-50/30 p-5 sm:p-6 shadow-sm transition-all hover:border-red-500 flex flex-col gap-2">
+                <span class="text-red-600 font-black text-base sm:text-lg tracking-tight">${inline(mTitle)}</span>
+                <p class="text-slate-700 text-[1.02rem] leading-relaxed m-0 font-normal">${inline(mDesc)}</p>
+              </li>
+            `);
+          } else {
+            mistakeItems.push(`
+              <li class="rounded-xl border-2 border-blue-400 bg-red-50/30 p-5 sm:p-6 shadow-sm flex gap-3.5 items-start">
+                <span class="text-red-600 font-black text-xl leading-none flex-shrink-0 mt-0.5">•</span>
+                <div class="text-slate-700 text-[1.02rem] leading-relaxed">${inline(rawItem)}</div>
+              </li>
+            `);
+          }
+        } else if (trimmed) {
+          introParas.push(`<p class="text-slate-700 text-[1.12rem] leading-relaxed mb-4">${inline(trimmed)}</p>`);
+        }
+      });
+
+      mistakesHtml = `
+        <section id="${id}" class="chapter-box my-8 scroll-mt-28 rounded-2xl bg-white p-6 sm:p-8 shadow-xs">
+          <div class="flex items-center justify-between mb-6 border-l-4 border-red-600 pl-4">
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900">${inline(firstLine)}</h2>
+            <span class="text-xs uppercase tracking-wider font-black px-3 py-1 bg-red-100 text-red-700 rounded-full border border-red-200">Critical Pitfalls</span>
+          </div>
+          ${introParas.join("")}
+          <ul class="space-y-4 list-none p-0 m-0 mt-6">${mistakeItems.join("")}</ul>
+        </section>
+      `;
+      return;
+    }
+
+    // 6. Regular Chapter Boxes (Blue Border Chapter Cards, NO EMOJIS, SIMPLE HIGHLIGHTED BACKLINKS)
     const id = slugify(firstLine);
     headings.push({ id, text: firstLine });
 
@@ -289,6 +338,7 @@ const parseBlog = (body: string) => {
     keyPointsHtml,
     faqHtml,
     wrappingUpHtml,
+    mistakesHtml,
     chapterBoxes,
     headings,
   };
@@ -299,6 +349,7 @@ const {
   keyPointsHtml,
   faqHtml,
   wrappingUpHtml,
+  mistakesHtml,
   chapterBoxes,
   headings,
 } = parseBlog(post.body);
@@ -375,6 +426,9 @@ const tocItems = headings;
 
             <!-- Individual Chapter Boxes with Blue Borders Inside the Content Box -->
             {chapterBoxes.map((chap) => <div set:html={chap.html} />)}
+
+            <!-- Mistakes Section (Borderless Outer Box) Inside the Content Box -->
+            {mistakesHtml && <div set:html={mistakesHtml} />}
           </div>
 
           <!-- 4. Standalone FAQ Section Box (With Blue Border) -->
