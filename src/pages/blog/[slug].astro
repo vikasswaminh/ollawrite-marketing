@@ -174,24 +174,25 @@ const parseBlog = (body: string) => {
       return;
     }
 
-    // 4. Wrapping Up Section (EXTRA PROMINENT BLUE HIGHLIGHT, NO EMOJIS)
+    // 4. Wrapping Up Section (ULTRA COMPACT, DECENT, NO EXCESS GAPS, SAME HIGHLIGHTS & SIGNUP)
     if (
       firstLine.startsWith("Wrapping Up") ||
       firstLine.startsWith("Final Verdict") ||
       firstLine.startsWith("Final Thoughts")
     ) {
       headings.push({ id: "wrapping-it-up", text: "Wrapping It Up" });
-      const paragraphs = restLines.split(/\n\n+/).map(p => `<p class="text-slate-800 text-[1.12rem] leading-relaxed mb-5 last:mb-0 font-normal">${inline(p.trim())}</p>`).join("");
+      const paragraphs = restLines.split(/\n\n+/).map(p => `<p class="text-slate-800 text-[0.93rem] sm:text-[0.98rem] leading-relaxed mb-2 last:mb-0 font-normal">${inline(p.trim())}</p>`).join("");
       wrappingUpHtml = `
-        <section id="wrapping-it-up" class="my-12 scroll-mt-28 rounded-3xl border-3 border-blue-600 bg-gradient-to-br from-blue-50 via-sky-50 to-blue-100/90 p-8 sm:p-14 text-center shadow-2xl shadow-blue-500/15">
-          <div class="mb-4">
-            <span class="text-xs uppercase tracking-widest font-black text-blue-700 bg-blue-100/80 border border-blue-300 px-3 py-1 rounded-full">Final Take</span>
+        <section id="wrapping-it-up" class="my-5 scroll-mt-24 rounded-2xl border-2 border-blue-400 bg-blue-50/40 p-4 sm:p-5 shadow-xs">
+          <div class="flex items-center justify-between gap-2 mb-2.5 pb-2 border-b border-blue-200">
+            <h3 class="text-base sm:text-lg font-black text-slate-900">Wrapping It Up</h3>
+            <span class="text-[0.65rem] uppercase tracking-wider font-bold text-blue-700 bg-blue-100/90 border border-blue-300 px-2.5 py-0.5 rounded-full">Summary</span>
           </div>
-          <h2 class="text-3xl sm:text-5xl font-black text-slate-950 mb-6 tracking-tight">Wrapping It Up</h2>
-          <div class="space-y-4 max-w-3xl mx-auto mb-10 text-left sm:text-center">${paragraphs}</div>
-          <div class="flex justify-center">
-            <a href="https://www.ollawrite.com" class="inline-flex items-center justify-center font-black px-12 py-5 text-lg sm:text-xl rounded-2xl bg-blue-600 hover:bg-blue-700 text-white shadow-2xl shadow-blue-600/40 hover:scale-105 transition-all">
-              Start free with OllaWrite →
+          <div class="space-y-2 text-left">${paragraphs}</div>
+          <div class="mt-3.5 pt-2.5 border-t border-blue-100 flex items-center justify-between gap-3 flex-wrap">
+            <span class="text-xs text-slate-600 font-medium">Streamline your content workflow with site-grounded AI:</span>
+            <a href="https://login.ollawrite.com" class="inline-flex items-center justify-center font-bold px-4 py-1.5 text-xs sm:text-sm rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-xs hover:scale-[1.02] transition-all">
+              Start writing with OllaWrite →
             </a>
           </div>
         </section>
