@@ -40,6 +40,192 @@
       }
     }
   </script>
+  <style>
+/* Custom Styles, Dot Pattern & Pure White Unique Layout Themes */
+
+.bg-dot-pattern {
+  background-color: #ffffff;
+  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
+}
+
+/* Page View Switcher Controls */
+.view-btn {
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  color: #94a3b8;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.view-btn:hover {
+  color: #ffffff;
+  background-color: #334155;
+  border-color: #475569;
+}
+
+.view-btn.active-tab {
+  color: #ffffff;
+  background-color: #2563eb;
+  border-color: #3b82f6;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+}
+
+/* Page transitions */
+.page-container {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.page-container.hidden-view {
+  display: none !important;
+}
+
+/* ==========================================================================
+   STYLE 1: ARCHIVAL LIBRARY INDEX CARDS (Write-Themed for Page 6)
+   ========================================================================== */
+.index-card {
+  background: #FFFDF9;
+  border: 1px solid #E5DFD5;
+  border-top: 4px solid #0F172A;
+  border-radius: 8px;
+  padding: 24px 28px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.02);
+  position: relative;
+  transition: all 0.2s ease;
+  background-image: linear-gradient(#F0EBE1 1px, transparent 1px);
+  background-size: 100% 28px;
+}
+.index-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  border-top-color: #2563EB;
+}
+
+.index-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 45px;
+  width: 1px;
+  background-color: rgba(239, 68, 68, 0.3);
+}
+
+.ledger-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 2.5rem 0;
+  border-bottom: 1px solid #E2E8F0;
+  transition: background 0.15s ease;
+}
+@media (min-width: 768px) {
+  .ledger-row {
+    grid-template-columns: 280px 1fr;
+    gap: 3rem;
+  }
+}
+.ledger-row:hover {
+  background: #F8FAFC;
+}
+
+.desk-tab-btn {
+  width: 100%;
+  text-align: left;
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.desk-tab-btn.active-desk {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+}
+
+.format-pill-btn {
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  color: #475569;
+  transition: all 0.15s;
+}
+.format-pill-btn:hover {
+  background: #F1F5F9;
+  color: #0F172A;
+}
+.format-pill-btn.active {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+}
+
+/* ==========================================================================
+   PAGE 7: UNIQUE PURE WHITE FAQ STYLES
+   ========================================================================== */
+.faq-white-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 1rem;
+  padding: 1.75rem 2rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+.faq-white-card:hover {
+  border-color: #2563EB;
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.06);
+  transform: translateY(-2px);
+}
+
+.faq-accordion-item {
+  border-bottom: 1px solid #E2E8F0;
+  padding: 1.5rem 0;
+  transition: all 0.2s ease;
+}
+.faq-accordion-item:last-child {
+  border-bottom: none;
+}
+
+/* ==========================================================================
+   PAGE 8: UNIQUE PURE WHITE CTA & FOOTER STYLES
+   ========================================================================== */
+.cta-white-master {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-white-master::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #2563eb, #60a5fa, #a3e635, #2563eb);
+}
+
+.footer-white-section {
+  background: #FFFFFF;
+  border-top: 1px solid #E2E8F0;
+}
+
+</style>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body class="bg-white text-slate-900 font-sans antialiased selection:bg-lime-200">
@@ -1364,7 +1550,233 @@
             </div>
           </footer>
         </div>
-    <script is:inline src="/main.js"></script>
+    <script is:inline>
+// Page-by-Page View Switcher Logic
+
+function switchView(viewName) {
+  const pages = [
+    'page-1',
+    'page-2',
+    'page-3',
+    'page-4',
+    'page-5',
+    'page-6',
+    'pricing',
+    'page-7',
+    'page-8'
+  ];
+
+  const allBtn = document.getElementById('btn-all');
+  const buttons = {
+    'all': allBtn,
+    'page-1': document.getElementById('btn-page-1'),
+    'page-2': document.getElementById('btn-page-2'),
+    'page-3': document.getElementById('btn-page-3'),
+    'page-4': document.getElementById('btn-page-4'),
+    'page-5': document.getElementById('btn-page-5'),
+    'page-6': document.getElementById('btn-page-6'),
+    'pricing': document.getElementById('btn-pricing'),
+    'page-7': document.getElementById('btn-page-7'),
+    'page-8': document.getElementById('btn-page-8')
+  };
+
+  // Reset all button styles
+  Object.values(buttons).forEach(btn => {
+    if (btn) {
+      btn.classList.remove('active-tab');
+      btn.classList.remove('active');
+    }
+  });
+
+  // Activate chosen button
+  if (buttons[viewName]) {
+    buttons[viewName].classList.add('active-tab');
+    buttons[viewName].classList.add('active');
+  }
+
+  function getElement(name) {
+    if (name === 'pricing') {
+      return document.getElementById('pricing') || document.getElementById('view-pricing');
+    }
+    return document.getElementById(`view-${name}`) || document.getElementById(name);
+  }
+
+  if (viewName === 'all') {
+    // Show all pages in order
+    pages.forEach(p => {
+      const el = getElement(p);
+      if (el) el.classList.remove('hidden-view');
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    // Show only the selected page
+    pages.forEach(p => {
+      const el = getElement(p);
+      if (el) {
+        if (p === viewName) {
+          el.classList.remove('hidden-view');
+        } else {
+          el.classList.add('hidden-view');
+        }
+      }
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+// What People Say - Format Switcher
+function switchTestimonialFormat(format) {
+  const elIndex = document.getElementById('testimonials-index-cards');
+  const elLedger = document.getElementById('testimonials-proof-ledger');
+  const elDesk = document.getElementById('testimonials-review-desk');
+  const elBento = document.getElementById('testimonials-swiss-bento');
+
+  const btnIndex = document.getElementById('fmt-btn-index');
+  const btnLedger = document.getElementById('fmt-btn-ledger');
+  const btnDesk = document.getElementById('fmt-btn-desk');
+  const btnBento = document.getElementById('fmt-btn-bento');
+
+  [btnIndex, btnLedger, btnDesk, btnBento].forEach(b => {
+    if (b) b.classList.remove('active');
+  });
+
+  if (elIndex) elIndex.classList.add('hidden');
+  if (elLedger) elLedger.classList.add('hidden');
+  if (elDesk) elDesk.classList.add('hidden');
+  if (elBento) elBento.classList.add('hidden');
+
+  if (format === 'index-cards') {
+    if (elIndex) elIndex.classList.remove('hidden');
+    if (btnIndex) btnIndex.classList.add('active');
+  } else if (format === 'proof-ledger') {
+    if (elLedger) elLedger.classList.remove('hidden');
+    if (btnLedger) btnLedger.classList.add('active');
+  } else if (format === 'review-desk') {
+    if (elDesk) elDesk.classList.remove('hidden');
+    if (btnDesk) btnDesk.classList.add('active');
+  } else if (format === 'swiss-bento') {
+    if (elBento) elBento.classList.remove('hidden');
+    if (btnBento) btnBento.classList.add('active');
+  }
+}
+
+// Interactive Review Desk Logic
+const deskQuotes = {
+  1: {
+    ref: "INDEX #01 • B2B SAAS FEEDBACK",
+    quote: "“The audit surfaced three template-level problems we had been shipping for two years. The drafts were almost a side benefit.”",
+    author: "— HEAD OF CONTENT, B2B SAAS"
+  },
+  2: {
+    ref: "INDEX #02 • SITE CONTEXT INGESTION",
+    quote: "“It is the first tool that did not need me to explain what the company does. It had already read the site.”",
+    author: "— MARKETING"
+  },
+  3: {
+    ref: "INDEX #03 • CRITIC STAGE VERDICT",
+    quote: "“The critic stage is the difference. We were getting confident nonsense from everything else we tried.”",
+    author: "— EDITOR"
+  }
+};
+
+function selectDeskQuote(id) {
+  [1, 2, 3].forEach(i => {
+    const tab = document.getElementById(`desk-tab-${i}`);
+    if (tab) tab.classList.remove('active-desk');
+  });
+
+  const activeTab = document.getElementById(`desk-tab-${id}`);
+  if (activeTab) activeTab.classList.add('active-desk');
+
+  const data = deskQuotes[id];
+  if (data) {
+    const refEl = document.getElementById('desk-ref-tag');
+    const quoteEl = document.getElementById('desk-quote-text');
+    const authorEl = document.getElementById('desk-author-sign');
+
+    if (refEl) refEl.innerText = data.ref;
+    if (quoteEl) quoteEl.innerText = data.quote;
+    if (authorEl) authorEl.innerText = data.author;
+  }
+}
+
+// Page 7: FAQ Format Switcher
+function switchFaqFormat(format) {
+  const elSplit = document.getElementById('faq-format-split');
+  const elAcc = document.getElementById('faq-format-accordion');
+  const elMatrix = document.getElementById('faq-format-matrix');
+
+  const btnSplit = document.getElementById('faq-btn-split');
+  const btnAcc = document.getElementById('faq-btn-acc');
+  const btnMatrix = document.getElementById('faq-btn-matrix');
+
+  [btnSplit, btnAcc, btnMatrix].forEach(b => {
+    if (b) b.classList.remove('active');
+  });
+
+  if (elSplit) elSplit.classList.add('hidden');
+  if (elAcc) elAcc.classList.add('hidden');
+  if (elMatrix) elMatrix.classList.add('hidden');
+
+  if (format === 'split-cards') {
+    if (elSplit) elSplit.classList.remove('hidden');
+    if (btnSplit) btnSplit.classList.add('active');
+  } else if (format === 'accordion') {
+    if (elAcc) elAcc.classList.remove('hidden');
+    if (btnAcc) btnAcc.classList.add('active');
+  } else if (format === 'matrix') {
+    if (elMatrix) elMatrix.classList.remove('hidden');
+    if (btnMatrix) btnMatrix.classList.add('active');
+  }
+}
+
+// Page 8: CTA & Footer Format Switcher
+function switchCtaFormat(format) {
+  const elStudio = document.getElementById('cta-format-studio');
+  const elSplit = document.getElementById('cta-format-split');
+  const elMinimal = document.getElementById('cta-format-minimal');
+
+  const btnStudio = document.getElementById('cta-btn-studio');
+  const btnSplit = document.getElementById('cta-btn-split');
+  const btnMinimal = document.getElementById('cta-btn-minimal');
+
+  [btnStudio, btnSplit, btnMinimal].forEach(b => {
+    if (b) b.classList.remove('active');
+  });
+
+  if (elStudio) elStudio.classList.add('hidden');
+  if (elSplit) elSplit.classList.add('hidden');
+  if (elMinimal) elMinimal.classList.add('hidden');
+
+  if (format === 'studio-master') {
+    if (elStudio) elStudio.classList.remove('hidden');
+    if (btnStudio) btnStudio.classList.add('active');
+  } else if (format === 'split-broad') {
+    if (elSplit) elSplit.classList.remove('hidden');
+    if (btnSplit) btnSplit.classList.add('active');
+  } else if (format === 'minimal-sheet') {
+    if (elMinimal) elMinimal.classList.remove('hidden');
+    if (btnMinimal) btnMinimal.classList.add('active');
+  }
+}
+
+// Make functions globally accessible
+window.switchView = switchView;
+window.switchTestimonialFormat = switchTestimonialFormat;
+window.selectDeskQuote = selectDeskQuote;
+window.switchFaqFormat = switchFaqFormat;
+window.switchCtaFormat = switchCtaFormat;
+
+
+// Initialize active sub-formats on page load
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof switchTestimonialFormat === 'function') switchTestimonialFormat('index-cards');
+  if (typeof switchFaqFormat === 'function') switchFaqFormat('split-cards');
+  if (typeof switchCtaFormat === 'function') switchCtaFormat('studio-master');
+});
+
+</script>
+  <script is:inline src="/main.js"></script>
       </div>
     </div>
   </main>

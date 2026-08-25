@@ -1,0 +1,183 @@
+/* Custom Styles, Dot Pattern & Pure White Unique Layout Themes */
+
+.bg-dot-pattern {
+  background-color: #ffffff;
+  background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
+}
+
+/* Page View Switcher Controls */
+.view-btn {
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  color: #94a3b8;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.view-btn:hover {
+  color: #ffffff;
+  background-color: #334155;
+  border-color: #475569;
+}
+
+.view-btn.active-tab {
+  color: #ffffff;
+  background-color: #2563eb;
+  border-color: #3b82f6;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+}
+
+/* Page transitions */
+.page-container {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.page-container.hidden-view {
+  display: none !important;
+}
+
+/* ==========================================================================
+   STYLE 1: ARCHIVAL LIBRARY INDEX CARDS (Write-Themed for Page 6)
+   ========================================================================== */
+.index-card {
+  background: #FFFDF9;
+  border: 1px solid #E5DFD5;
+  border-top: 4px solid #0F172A;
+  border-radius: 8px;
+  padding: 24px 28px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.02);
+  position: relative;
+  transition: all 0.2s ease;
+  background-image: linear-gradient(#F0EBE1 1px, transparent 1px);
+  background-size: 100% 28px;
+}
+.index-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  border-top-color: #2563EB;
+}
+
+.index-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 45px;
+  width: 1px;
+  background-color: rgba(239, 68, 68, 0.3);
+}
+
+.ledger-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding: 2.5rem 0;
+  border-bottom: 1px solid #E2E8F0;
+  transition: background 0.15s ease;
+}
+@media (min-width: 768px) {
+  .ledger-row {
+    grid-template-columns: 280px 1fr;
+    gap: 3rem;
+  }
+}
+.ledger-row:hover {
+  background: #F8FAFC;
+}
+
+.desk-tab-btn {
+  width: 100%;
+  text-align: left;
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.desk-tab-btn.active-desk {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+}
+
+.format-pill-btn {
+  padding: 0.4rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  color: #475569;
+  transition: all 0.15s;
+}
+.format-pill-btn:hover {
+  background: #F1F5F9;
+  color: #0F172A;
+}
+.format-pill-btn.active {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+}
+
+/* ==========================================================================
+   PAGE 7: UNIQUE PURE WHITE FAQ STYLES
+   ========================================================================== */
+.faq-white-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 1rem;
+  padding: 1.75rem 2rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+.faq-white-card:hover {
+  border-color: #2563EB;
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.06);
+  transform: translateY(-2px);
+}
+
+.faq-accordion-item {
+  border-bottom: 1px solid #E2E8F0;
+  padding: 1.5rem 0;
+  transition: all 0.2s ease;
+}
+.faq-accordion-item:last-child {
+  border-bottom: none;
+}
+
+/* ==========================================================================
+   PAGE 8: UNIQUE PURE WHITE CTA & FOOTER STYLES
+   ========================================================================== */
+.cta-white-master {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 1.5rem;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-white-master::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #2563eb, #60a5fa, #a3e635, #2563eb);
+}
+
+.footer-white-section {
+  background: #FFFFFF;
+  border-top: 1px solid #E2E8F0;
+}
