@@ -8,12 +8,12 @@ const categories = [
   "AI Writing & Strategy",
   "AI Workforce & Architecture",
   "Product & Research",
-  "Engineering",
   "SEO & Strategy",
 ];
 
-const featuredPost = BLOG_POSTS[0];
-const secondaryPosts = BLOG_POSTS.slice(1);
+const augustPosts = BLOG_POSTS;
+const featuredPost = augustPosts[0];
+const remainingAugustPosts = augustPosts.slice(1);
 ---
 
 <Layout
@@ -66,11 +66,26 @@ const secondaryPosts = BLOG_POSTS.slice(1);
       </div>
     </div>
 
-    <!-- Articles -->
+    <!-- August Blogs Section -->
     <div class="wrap py-12">
+      <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between border-b-2 border-brand/20 pb-6 gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="rounded-full bg-brand px-3 py-0.5 text-xs font-black uppercase text-white">
+              August 2026 Edition
+            </span>
+            <span class="text-xs font-bold text-neutral-500">5 In-Depth Guides</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black text-ink tracking-tight">
+            August Blogs &amp; Technical Dispatches
+          </h2>
+          <p class="mt-1.5 text-neutral-600 max-w-2xl">
+            All 5 comprehensive August 2026 guides organized strictly in date order.
+          </p>
+        </div>
+      </div>
 
-
-      <!-- Featured Latest Dispatch -->
+      <!-- 1. Featured Latest August Dispatch (26-08-2026) -->
       <article
         class="card blog-card mb-10 overflow-hidden p-6 shadow-[4px_4px_0_0_#1d4ed8] sm:p-8"
         data-category={featuredPost.category}
@@ -102,7 +117,7 @@ const secondaryPosts = BLOG_POSTS.slice(1);
             <div class="mt-5 flex items-center gap-3 text-sm text-neutral-500">
               <span class="font-bold text-ink">{featuredPost.author.name}</span>
               <span>·</span>
-              <span class="font-semibold text-brand">{featuredPost.date}</span>
+              <span class="font-bold text-brand bg-blue-50 px-2 py-0.5 rounded border border-blue-200">{featuredPost.date}</span>
               <span>·</span>
               <span>{featuredPost.readTime}</span>
             </div>
@@ -118,19 +133,19 @@ const secondaryPosts = BLOG_POSTS.slice(1);
               <ul class="mt-3 space-y-2 text-sm text-neutral-700">
                 <li class="flex items-start gap-2">
                   <span class="mt-0.5 font-bold text-brand">✓</span>
-                  <span>5-tier generator comparison: prompt vs grounded</span>
+                  <span>Hybrid workflows: AI velocity + human domain expertise</span>
                 </li>
                 <li class="flex items-start gap-2">
                   <span class="mt-0.5 font-bold text-brand">✓</span>
-                  <span>How LLMs predict tokens &amp; instruction-tuning</span>
+                  <span>Site-grounded drafting vs prompt guessing breakdown</span>
                 </li>
                 <li class="flex items-start gap-2">
                   <span class="mt-0.5 font-bold text-brand">✓</span>
-                  <span>5 practical habits to humanize AI output</span>
+                  <span>The economics and quality gates of modern publishing</span>
                 </li>
                 <li class="flex items-start gap-2">
                   <span class="mt-0.5 font-bold text-brand">✓</span>
-                  <span>Negative prompting &amp; built-in self-critique</span>
+                  <span>Direct ranking strategies for organic visibility</span>
                 </li>
               </ul>
             </div>
@@ -144,25 +159,25 @@ const secondaryPosts = BLOG_POSTS.slice(1);
         </div>
       </article>
 
-      <!-- Grid -->
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- 2. Grid of Remaining 4 August Blogs in Date Order -->
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
         {
-          secondaryPosts.map((post) => (
+          remainingAugustPosts.map((post, idx) => (
             <article
               class="card blog-card flex flex-col justify-between p-6 transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#1d4ed8]"
               data-category={post.category}
               data-search={`${post.title} ${post.excerpt}`.toLowerCase()}
             >
               <div>
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-bold uppercase tracking-wider text-neutral-500">
+                <div class="flex items-center justify-between gap-2 flex-wrap mb-2">
+                  <span class="text-xs font-bold uppercase tracking-wider text-brand">
                     {post.category}
                   </span>
-                  <span class="text-xs font-medium text-neutral-400">
+                  <span class="text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
                     {post.date}
                   </span>
                 </div>
-                <h3 class="mt-2.5 text-lg font-bold leading-snug">
+                <h3 class="mt-2 text-xl font-bold leading-snug">
                   <a
                     href={`/blog/${post.slug}`}
                     class="transition-colors hover:text-brand"
@@ -170,7 +185,7 @@ const secondaryPosts = BLOG_POSTS.slice(1);
                     {post.title}
                   </a>
                 </h3>
-                <p class="mt-2 text-sm text-neutral-600 line-clamp-3 leading-relaxed">
+                <p class="mt-2.5 text-sm text-neutral-600 line-clamp-3 leading-relaxed">
                   {post.excerpt}
                 </p>
               </div>
@@ -182,7 +197,7 @@ const secondaryPosts = BLOG_POSTS.slice(1);
                   href={`/blog/${post.slug}`}
                   class="inline-flex items-center gap-1 font-bold text-brand hover:text-brand-deep hover:underline"
                 >
-                  Read more →
+                  Read full guide →
                 </a>
               </div>
             </article>
